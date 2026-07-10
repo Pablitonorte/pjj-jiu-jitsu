@@ -3,174 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - PJJ Pará Jiu-Jitsu</title>
+    <title>Área do Administrador - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-        
+
         * {
-            font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
         }
 
         :root {
-            --preto-principal: #0A0A0A;
-            --preto-card: #151515;
-            --vermelho-pjj: #D10000;
-            --vermelho-claro: #FF1A1A;
-            --branco: #FFFFFF;
-            --cinza-texto: #B0B0B0;
-            --verde-status: #00C853;
-            --amarelo-status: #FFC107;
-            --vermelho-status: #D10000;
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
         }
 
         body {
-            background-color: var(--preto-principal);
-            color: var(--branco);
-            min-height: 100vh;
+            background-color: var(--fundo-escuro);
+            color: var(--texto-branco);
             display: flex;
+            min-height: 100vh;
         }
 
-        /* Menu Lateral */
+        /* MENU LATERAL — IGUAL A FOTO */
         .menu-lateral {
-            width: 220px;
-            background-color: var(--preto-principal);
-            border-right: 1px solid #222;
-            height: 100vh;
-            padding: 20px 0;
+            width: 240px;
+            background-color: var(--fundo-escuro);
+            border-right: 1px solid var(--borda);
+            padding: 30px 0;
             position: fixed;
-            transition: transform 0.3s ease;
-            z-index: 999;
+            height: 100vh;
         }
-        .logo-pjj {
+
+        .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .logo img {
+            width: 90px;
+            margin-bottom: 10px;
+        }
+
+        .logo h1 {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .menu-navegacao ul {
+            list-style: none;
             padding: 0 15px;
         }
-        .logo-pjj img {
-            width: 100px;
-            height: auto;
-        }
-        .menu-navegacao ul { list-style: none; }
+
         .menu-navegacao li a {
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: var(--cinza-texto);
-            padding: 12px 20px;
+            gap: 10px;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            color: var(--texto-cinza);
             text-decoration: none;
-            font-weight: 500;
-            transition: 0.3s;
-            border-left: 3px solid transparent;
-        }
-        .menu-navegacao li a.ativo, .menu-navegacao li a:hover {
-            color: var(--branco);
-            background-color: #1A1A1A;
-            border-left-color: var(--vermelho-pjj);
-        }
-
-        /* Botão Menu Mobile */
-        .btn-menu {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1000;
-            background: var(--vermelho-pjj);
-            color: white;
-            border: none;
-            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
             border-radius: 6px;
-            font-size: 1.3rem;
-            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Conteúdo Principal */
-        .conteudo-principal {
-            margin-left: 220px;
-            padding: 25px 35px;
-            width: 100%;
-            transition: margin-left 0.3s ease;
+        .menu-navegacao li a.ativo,
+        .menu-navegacao li a:hover {
+            background-color: rgba(209, 0, 0, 0.15);
+            color: var(--vermelho-principal);
         }
-        .cabecalho-pagina {
+
+        /* CONTEÚDO PRINCIPAL */
+        .conteudo {
+            flex: 1;
+            margin-left: 240px;
+            padding: 35px 45px;
+        }
+
+        .cabecalho {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #222;
+            margin-bottom: 35px;
         }
-        .cabecalho-pagina h1 {
-            font-size: 22px;
+
+        .titulo-pagina {
+            font-size: 26px;
             font-weight: 800;
-            color: var(--branco);
             position: relative;
         }
-        .cabecalho-pagina h1::after {
+
+        .titulo-pagina::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -8px;
             left: 0;
-            width: 60px;
+            width: 70px;
             height: 3px;
-            background-color: var(--vermelho-pjj);
+            background-color: var(--vermelho-principal);
+        }
+
+        .info-topo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--texto-cinza);
+            font-size: 14px;
+        }
+
+        /* CARDS DO DASHBOARD — IGUAL A FOTO */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
         }
 
         .card {
-            background-color: var(--preto-card);
-            border-radius: 8px;
-            padding: 20px;
-            border: 1px solid #222;
+            background-color: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 25px;
             transition: transform 0.2s;
         }
-        .card:hover { transform: translateY(-2px); }
 
-        .card-info { text-align: center; }
-        .card-info .titulo { font-size: 12px; color: var(--cinza-texto); font-weight: 600; margin-bottom: 8px; }
-        .card-info .valor { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
-        .card-info .subvalor { font-size: 11px; color: var(--cinza-texto); }
+        .card:hover {
+            transform: translateY(-3px);
+        }
 
-        .btn-acao {
-            background-color: var(--vermelho-pjj);
-            color: white;
+        .card .titulo-card {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--texto-cinza);
+            margin-bottom: 12px;
+        }
+
+        .card .numero {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .card .subtexto {
+            font-size: 12px;
+            color: var(--texto-cinza);
+            margin-bottom: 18px;
+        }
+
+        .card .btn-card {
+            width: 100%;
+            padding: 10px;
             border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-weight: 600;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
             cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            transition: 0.2s;
         }
-        .btn-acao:hover { background-color: var(--vermelho-claro); transform: scale(1.02); }
-        .btn-secundario {
-            background-color: #222;
+
+        .btn-card.vermelho {
+            background-color: var(--vermelho-principal);
             color: white;
-            border: 1px solid #444;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
         }
-        .btn-secundario:hover { background-color: #333; }
 
-        .esconder { display: none !important; }
-        .text-verde { color: var(--verde-status); }
-        .text-vermelho { color: var(--vermelho-status); }
-        .text-amarelo { color: var(--amarelo-status); }
+        .btn-card.vermelho:hover {
+            background-color: var(--vermelho-claro);
+        }
 
-        /* Responsivo */
+        .btn-card.cinza {
+            background-color: #29292E;
+            color: white;
+        }
+
+        .btn-card.cinza:hover {
+            background-color: #3A3A40;
+        }
+
+        /* GRID INFERIOR — TABELAS E AÇÕES RÁPIDAS */
+        .grid-inferior {
+            display: grid;
+            grid-template-columns: 1fr 1fr 280px;
+            gap: 20px;
+        }
+
+        .card-tabela {
+            background-color: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .card-tabela h3 {
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            color: var(--texto-cinza);
+        }
+
+        .vazio {
+            font-size: 13px;
+            color: var(--texto-cinza);
+            margin-bottom: 20px;
+        }
+
+        .btn-largo {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-largo.vermelho {
+            background-color: var(--vermelho-principal);
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-largo.vermelho:hover {
+            background-color: var(--vermelho-claro);
+        }
+
+        .btn-largo.cinza {
+            background-color: #29292E;
+            color: white;
+            text-align: left;
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-largo.cinza:hover {
+            background-color: #3A3A40;
+        }
+
+        /* CORES DOS NÚMEROS */
+        .verde { color: #00C853; }
+        .vermelho { color: #D10000; }
+        .amarelo { color: #FFC107; }
+        .roxo { color: #9C27B0; }
+
+        /* RESPONSIVO CELULAR */
         @media (max-width: 768px) {
-            .btn-menu { display: block; }
             .menu-lateral { transform: translateX(-100%); }
-            .menu-lateral.aberto { transform: translateX(0); }
-            .conteudo-principal { margin-left: 0; padding: 20px 15px; padding-top: 70px; }
+            .conteudo { margin-left: 0; padding: 20px; }
+            .grid-cards, .grid-inferior { grid-template-columns: 1fr; }
         }
     </style>
 
@@ -181,109 +274,77 @@
 </head>
 <body>
 
-    <button class="btn-menu" onclick="alternarMenu()">☰</button>
-
-    <aside class="menu-lateral" id="menuLateral">
-        <div class="logo-pjj">
-            <img src="imagens/logopjj.png" alt="Logo PJJ Pará Jiu-Jitsu">
+    <!-- MENU LATERAL -->
+    <aside class="menu-lateral">
+        <div class="logo">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
+            <h1>PJJ<br>Pará Jiu-Jitsu</h1>
         </div>
         <nav class="menu-navegacao">
             <ul>
-                <li><a href="#" class="ativo" onclick="mostrarAba('dashboard', this)"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
-                <li><a href="#" onclick="mostrarAba('alunos', this)"><i class="fa-solid fa-users"></i> Alunos</a></li>
-                <li><a href="#" onclick="mostrarAba('controle-peso', this)"><i class="fa-solid fa-weight-scale"></i> Controle de Peso</a></li>
-                <li><a href="#" onclick="mostrarAba('financeiro', this)"><i class="fa-solid fa-sack-dollar"></i> Financeiro</a></li>
-                <li><a href="#" onclick="mostrarAba('graduacoes', this)"><i class="fa-solid fa-medal"></i> Graduações</a></li>
-                <li><a href="#" onclick="mostrarAba('relatorios', this)"><i class="fa-solid fa-file-report"></i> Relatórios</a></li>
-                <li><a href="#" onclick="mostrarAba('configuracoes', this)"><i class="fa-solid fa-gear"></i> Configurações</a></li>
-                <li><a href="#" class="mt-2 block text-center bg-red-800 py-2 rounded" onclick="sairDoSistema()"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+                <li><a href="#" class="ativo" onclick="irPara('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" onclick="irPara('alunos', this)"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="#" onclick="irPara('financeiro', this)"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="#" onclick="irPara('graduacoes', this)"><i class="fas fa-medal"></i> Graduações</a></li>
+                <li><a href="#" onclick="irPara('relatorios', this)"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="#" onclick="irPara('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#" style="margin-top: 20px; color: #FF4D4D;" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
     </aside>
 
-    <main class="conteudo-principal">
-        <div class="cabecalho-pagina">
-            <h1 id="titulo-pagina">DASHBOARD</h1>
-            <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-400" id="data-atual-admin"></span>
-                <span class="text-sm flex items-center gap-2"><i class="fa-solid fa-user-circle"></i> Administrador</span>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo">
+        <div class="cabecalho">
+            <h1 class="titulo-pagina">Dashboard</h1>
+            <div class="info-topo">
+                <span id="dataAtual"></span>
+                <span><i class="fas fa-user-circle"></i> Administrador</span>
             </div>
         </div>
 
-        <div id="aba-dashboard" class="conteudo-aba">
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                <div class="card card-info">
-                    <div class="titulo">ALUNOS ATIVOS</div>
-                    <div class="valor text-verde" id="qtd-alunos">0</div>
-                    <div class="subvalor">Nenhum aluno cadastrado ainda</div>
-                    <button class="btn-secundario w-full text-xs mt-2" onclick="irParaAba('alunos')">Ver todos</button>
-                </div>
-                <div class="card card-info">
-                    <div class="titulo">CONTROLE DE PESO</div>
-                    <div class="valor text-amarelo" id="qtd-pesados">0</div>
-                    <div class="subvalor">Sem registros de peso</div>
-                    <button class="btn-secundario w-full text-xs mt-2" onclick="irParaAba('controle-peso')">Ver categorias</button>
-                </div>
-                <div class="card card-info">
-                    <div class="titulo">MENSALIDADES PENDENTES</div>
-                    <div class="valor text-vermelho" id="qtd-pendentes">0</div>
-                    <div class="subvalor" id="valor-pendente">R$ 0,00 em aberto</div>
-                    <button class="btn-acao w-full text-xs mt-2" onclick="irParaAba('financeiro')">Cobrar</button>
-                </div>
+        <!-- CARDS DO TOPO → Sem os que não quer -->
+        <div class="grid-cards">
+            <div class="card">
+                <div class="titulo-card">Alunos Ativos</div>
+                <div class="numero verde">0</div>
+                <div class="subtexto">Nenhum aluno cadastrado ainda</div>
+                <button class="btn-card cinza" onclick="irPara('alunos')">Ver todos</button>
+            </div>
+
+            <div class="card">
+                <div class="titulo-card">Mensalidades Pendentes</div>
+                <div class="numero vermelho">0</div>
+                <div class="subtexto">R$ 0,00 em aberto</div>
+                <button class="btn-card vermelho">Cobrar</button>
             </div>
         </div>
 
-        <div id="aba-alunos" class="conteudo-aba esconder">
-            <div class="card mb-6">
-                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-users"></i> Gerenciar Alunos</h2>
-                <p class="text-gray-400 mb-4">Cadastre, edite e visualize os dados dos alunos da academia.</p>
-                <button class="btn-acao" onclick="alert('Abrir cadastro de aluno')">+ Novo Aluno</button>
+        <!-- PARTE INFERIOR → Igual visual, sem o que não precisa -->
+        <div class="grid-inferior">
+            <div class="card-tabela">
+                <h3>Últimas Mensalidades</h3>
+                <div class="vazio">Nenhuma mensalidade lançada até o momento</div>
+                <button class="btn-largo vermelho">Ver Todas</button>
             </div>
-        </div>
 
-        <div id="aba-controle-peso" class="conteudo-aba esconder">
-            <div class="card mb-6">
-                <h2 class="text-xl font-bold text-amarelo-500 flex items-center gap-2 mb-4"><i class="fa-solid fa-weight-scale"></i> Controle de Peso</h2>
-                <p class="text-gray-400 mb-4">Registre e acompanhe o peso e a categoria de cada aluno.</p>
-                <button class="btn-acao" onclick="alert('Abrir registro de peso')">+ Registrar Peso</button>
+            <div class="card-tabela">
+                <h3>Últimas Graduações</h3>
+                <div class="vazio">Nenhuma graduação cadastrada</div>
+                <button class="btn-largo vermelho">Ver Histórico Completo</button>
             </div>
-        </div>
 
-        <div id="aba-financeiro" class="conteudo-aba esconder">
-            <div class="card mb-6">
-                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-sack-dollar"></i> Financeiro</h2>
-                <p class="text-gray-400 mb-4">Controle de mensalidades, pagamentos e valores pendentes.</p>
-                <button class="btn-acao" onclick="alert('Lançar nova mensalidade')">+ Lançar Pagamento</button>
-            </div>
-        </div>
-
-        <div id="aba-graduacoes" class="conteudo-aba esconder">
-            <div class="card mb-6">
-                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-medal"></i> Graduações</h2>
-                <p class="text-gray-400 mb-4">Gerencie prazos e agende as trocas de faixa.</p>
-                <button class="btn-acao" onclick="alert('Agendar nova graduação')">+ Agendar</button>
-            </div>
-        </div>
-
-        <div id="aba-relatorios" class="conteudo-aba esconder">
-            <div class="card mb-6">
-                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-file-report"></i> Relatórios</h2>
-                <p class="text-gray-400 mb-4">Gere relatórios completos da academia.</p>
-                <button class="btn-acao" onclick="alert('Gerar relatório')">+ Gerar Relatório</button>
-            </div>
-        </div>
-
-        <div id="aba-configuracoes" class="conteudo-aba esconder">
-            <div class="card mb-6">
-                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-gear"></i> Configurações</h2>
-                <p class="text-gray-400 mb-4">Ajustes gerais do sistema e da academia.</p>
-                <button class="btn-acao" onclick="alert('Salvar alterações')">Salvar Configurações</button>
+            <div class="card-tabela">
+                <h3>Ações Rápidas</h3>
+                <button class="btn-largo vermelho">➕ Novo Aluno</button>
+                <button class="btn-largo cinza">💸 Lançar Pagamento</button>
+                <button class="btn-largo cinza">📄 Gerar Relatório</button>
             </div>
         </div>
     </main>
 
     <script>
-        // Configuração Firebase
+        // Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -295,41 +356,27 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Data atual
-        function obterDataAtual() {
-            const hoje = new Date();
-            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-            return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
-        }
-        document.getElementById('data-atual-admin').textContent = obterDataAtual();
+        // Data atual igual da foto
+        const hoje = new Date();
+        document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', {
+            day: '2-digit', month: 'long', year: 'numeric'
+        });
 
-        // Alternar menu no celular
-        function alternarMenu() {
-            document.getElementById('menuLateral').classList.toggle('aberto');
-        }
-
-        // Navegação entre páginas
-        function mostrarAba(nomeAba, elemento) {
-            document.querySelectorAll('.conteudo-aba').forEach(div => div.classList.add('esconder'));
-            document.getElementById('aba-' + nomeAba).classList.remove('esconder');
-            document.getElementById('titulo-pagina').innerText = nomeAba.charAt(0).toUpperCase() + nomeAba.slice(1).replace('-', ' ');
-            
-            document.querySelectorAll('.menu-navegacao a').forEach(link => link.classList.remove('ativo'));
-            if(elemento) elemento.classList.add('ativo');
-
-            if (window.innerWidth <= 768) alternarMenu();
+        // Navegação
+        function irPara(pagina, link) {
+            document.querySelectorAll('.menu-navegacao a').forEach(a => a.classList.remove('ativo'));
+            if(link) link.classList.add('ativo');
+            // Aqui depois ligamos as páginas
         }
 
-        function irParaAba(nome) { mostrarAba(nome); }
-
-        // Função sair
-        function sairDoSistema() { 
-            if(confirm('Deseja realmente sair do sistema?')) {
+        // Sair
+        function sair() {
+            if(confirm('Deseja sair?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
-        // Verificar se está logado
+        // Segurança
         auth.onAuthStateChanged(usuario => {
             if (!usuario) window.location.href = "login.html";
         });
