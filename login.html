@@ -162,6 +162,7 @@
 
         .sucesso { background-color: #2ecc71; color: white; }
         .erro { background-color: #e74c3c; color: white; }
+        .aviso { background-color: #f39c12; color: white; }
 
         @media (max-width: 400px) {
             .formulario-login { padding: 25px 20px; }
@@ -192,12 +193,12 @@
         <form id="formLogin">
             <div class="grupo-campo">
                 <label for="emailLogin">E-mail</label>
-                <input type="email" id="emailLogin" name="emailLogin" required>
+                <input type="email" id="emailLogin" name="emailLogin" required autocomplete="email">
             </div>
 
             <div class="grupo-campo">
                 <label for="senhaLogin">Senha</label>
-                <input type="password" id="senhaLogin" name="senhaLogin" required>
+                <input type="password" id="senhaLogin" name="senhaLogin" required autocomplete="current-password">
             </div>
 
             <div class="esquecer-senha">
@@ -214,7 +215,7 @@
 
     <script>
         // --------------------------
-        // 🔧 CONFIGURAÇÃO DO FIREBASE (direto no código)
+        // 🔧 CONFIGURAÇÃO DO FIREBASE
         // --------------------------
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -231,52 +232,102 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Função para exibir mensagens
         function mostrarMensagem(texto, tipo) {
             const div = document.getElementById('mensagem');
             div.textContent = texto;
             div.className = tipo;
             div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 4000);
+            setTimeout(() => div.style.display = 'none', 5000);
         }
 
-        document.getElementById('formLogin').addEventListener('submit', function(e) {
+        // --------------------------
+        // 🚀 LOGIN COM VERIFICAÇÃO COMPLETA
+        // --------------------------
+        document.getElementById('formLogin').addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value.trim();
 
-            auth.signInWithEmailAndPassword(email, senha)
-                .then(async (userCredential) => {
-                    const usuario = userCredential.user;
-                    const doc = await db.collection('usuarios').doc(usuario.uid).get();
-                    if (doc.exists) {
-                        const dados = doc.data();
-                        if (dados.tipo === 'admin') {
-                            mostrarMensagem("🔐 Bem-vindo Administrador!", "sucesso");
-                            setTimeout(() => window.location.href = "admin.html", 1000);
-                        } else {
-                            mostrarMensagem("✅ Bem-vindo à Área do Aluno!", "sucesso");
-                            setTimeout(() => window.location.href = "aluno.html", 1000);
-                        }
+            if (!email || !senha) {
+                mostrarMensagem("Preencha e-mail e senha!", "aviso");
+                return;
+            }
+
+            try {
+                // Autentica no Firebase Auth
+                const userCredential = await auth.signInWithEmailAndPassword(email, senha);
+                const usuario = userCredential.user;
+
+                // Busca os dados no Firestore com o UID do usuário
+                const docRef = db.collection('usuarios').doc(usuario.uid);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    const dados = doc.data();
+                    console.log("Dados do usuário:", dados); // Para debug no console
+
+                    // Verifica o tipo de usuário
+                    if (dados.tipo === 'admin') {
+                        mostrarMensagem("🔐 Bem-vindo, Administrador!", "sucesso");
+                        setTimeout(() => window.location.href = "admin.html", 1200);
+                    } else if (dados.tipo === 'aluno') {
+                        mostrarMensagem("✅ Bem-vindo à Área do Aluno!", "sucesso");
+                        setTimeout(() => window.location.href = "aluno.html", 1200);
                     } else {
-                        mostrarMensagem("❌ Cadastro não encontrado no sistema!", "erro");
+                        mostrarMensagem("⚠️ Perfil de usuário não definido!", "erro");
                     }
-                })
-                .catch((erro) => {
-                    let mensagem = "Erro ao fazer login!";
-                    if (erro.code === 'auth/user-not-found') mensagem = "E-mail não cadastrado!";
-                    if (erro.code === 'auth/wrong-password') mensagem = "Senha incorreta!";
-                    if (erro.code === 'auth/invalid-email') mensagem = "Formato de e-mail inválido!";
-                    mostrarMensagem(mensagem, "erro");
-                });
+                } else {
+                    mostrarMensagem("❌ Usuário cadastrado no sistema, mas sem dados completos. Contate o suporte!", "erro");
+                }
+
+            } catch (erro) {
+                console.error("Erro completo:", erro); // Mostra detalhes no console para diagnóstico
+                let mensagem = "Erro ao fazer login!";
+
+                // Tratamento detalhado dos erros
+                switch (erro.code) {
+                    case 'auth/user-not-found':
+                        mensagem = "❌ E-mail não cadastrado!";
+                        break;
+                    case 'auth/wrong-password':
+                        mensagem = "❌ Senha incorreta!";
+                        break;
+                    case 'auth/invalid-email':
+                        mensagem = "❌ Formato de e-mail inválido!";
+                        break;
+                    case 'auth/too-many-requests':
+                        mensagem = "⚠️ Muitas tentativas! Tente novamente mais tarde ou redefina sua senha.";
+                        break;
+                    case 'auth/network-request-failed':
+                        mensagem = "📶 Sem conexão com a internet ou com o servidor!";
+                        break;
+                    default:
+                        mensagem = `❌ Erro: ${erro.message}`;
+                }
+
+                mostrarMensagem(mensagem, "erro");
+            }
         });
 
+        // --------------------------
+        // 🔑 RECUPERAR SENHA
+        // --------------------------
         function recuperarSenha() {
-            const email = prompt("Digite o e-mail cadastrado para receber a redefinição:");
-            if (email) {
-                auth.sendPasswordResetEmail(email)
-                    .then(() => mostrarMensagem("📩 E-mail enviado! Verifique sua caixa de entrada.", "sucesso"))
-                    .catch(() => mostrarMensagem("E-mail não encontrado ou inválido!", "erro"));
-            }
+            const email = prompt("Digite o e-mail cadastrado para receber o link de redefinição:");
+            if (!email) return;
+
+            auth.sendPasswordResetEmail(email.trim())
+                .then(() => mostrarMensagem("📩 E-mail enviado! Verifique sua caixa de entrada ou spam.", "sucesso"))
+                .catch((erro) => {
+                    if (erro.code === 'auth/invalid-email') {
+                        mostrarMensagem("❌ Formato de e-mail inválido!", "erro");
+                    } else if (erro.code === 'auth/user-not-found') {
+                        mostrarMensagem("❌ E-mail não cadastrado no sistema!", "erro");
+                    } else {
+                        mostrarMensagem("❌ Não foi possível enviar o e-mail. Tente novamente.", "erro");
+                    }
+                });
         }
     </script>
 
