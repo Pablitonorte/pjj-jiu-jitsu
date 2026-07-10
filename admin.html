@@ -124,7 +124,7 @@
         /* CARDS DO TOPO */
         .grid-cards {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             margin-bottom: 25px;
         }
@@ -190,7 +190,7 @@
             background-color: #3A3A40;
         }
 
-        /* GRID INFERIOR COMPLETO */
+        /* GRID INFERIOR */
         .grid-inferior {
             display: grid;
             grid-template-columns: 1fr 1fr 280px;
@@ -265,11 +265,119 @@
             background-color: #3A3A40;
         }
 
+        /* MODAL (JANELA DE FORMULÁRIO) */
+        .fundo-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        }
+
+        .modal h2 {
+            color: var(--vermelho-principal);
+            margin-bottom: 25px;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .fechar-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--texto-cinza);
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .fechar-modal:hover {
+            color: var(--vermelho-principal);
+        }
+
+        .grupo-form {
+            margin-bottom: 18px;
+        }
+
+        .grupo-form label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .grupo-form input,
+        .grupo-form select {
+            width: 100%;
+            padding: 12px;
+            background: var(--fundo-escuro);
+            border: 1px solid var(--vermelho-principal);
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .grupo-form input:focus,
+        .grupo-form select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(209,0,0,0.3);
+        }
+
+        .arquivo-foto {
+            border: 2px dashed var(--borda);
+            padding: 15px;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--texto-cinza);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .arquivo-foto:hover {
+            border-color: var(--vermelho-principal);
+        }
+
+        .btn-salvar {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn-salvar:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
         /* CORES DOS NÚMEROS */
         .verde { color: #00C853; }
         .vermelho { color: #D10000; }
-        .amarelo { color: #FFC107; }
-        .roxo { color: #9C27B0; }
 
         /* RESPONSIVO */
         @media (max-width: 768px) {
@@ -294,12 +402,12 @@
         </div>
         <nav class="menu-navegacao">
             <ul>
-                <li><a href="#" class="ativo" onclick="irPara('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#" onclick="irPara('alunos', this)"><i class="fas fa-users"></i> Alunos</a></li>
-                <li><a href="#" onclick="irPara('financeiro', this)"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                <li><a href="#" onclick="irPara('graduacoes', this)"><i class="fas fa-medal"></i> Graduações</a></li>
-                <li><a href="#" onclick="irPara('relatorios', this)"><i class="fas fa-file-alt"></i> Relatórios</a></li>
-                <li><a href="#" onclick="irPara('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="#"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="#"><i class="fas fa-medal"></i> Graduações</a></li>
+                <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" style="margin-top: 20px; color: #FF4D4D;" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
@@ -319,20 +427,20 @@
         <div class="grid-cards">
             <div class="card">
                 <div class="titulo-card">Alunos Ativos</div>
-                <div class="numero verde">0</div>
+                <div class="numero verde" id="qtdAlunos">0</div>
                 <div class="subtexto">Nenhum aluno cadastrado ainda</div>
-                <button class="btn-card cinza" onclick="irPara('alunos')">Ver todos</button>
+                <button class="btn-card cinza">Ver todos</button>
             </div>
 
             <div class="card">
                 <div class="titulo-card">Mensalidades Pendentes</div>
-                <div class="numero vermelho">0</div>
+                <div class="numero vermelho" id="qtdPendentes">0</div>
                 <div class="subtexto">R$ 0,00 em aberto</div>
                 <button class="btn-card vermelho">Cobrar</button>
             </div>
         </div>
 
-        <!-- PARTE INFERIOR COMPLETA -->
+        <!-- PARTE INFERIOR -->
         <div class="grid-inferior">
             <div class="card-bloco">
                 <h3>Últimas Mensalidades</h3>
@@ -361,16 +469,98 @@
 
             <div class="card-bloco">
                 <h3>Ações Rápidas</h3>
-                <button class="btn-largo vermelho"><i class="fas fa-user-plus"></i> Novo Aluno</button>
-                <button class="btn-largo cinza"><i class="fas fa-dollar-sign"></i> Lançar Pagamento</button>
-                <button class="btn-largo cinza"><i class="fas fa-weight"></i> Registrar Peso</button>
-                <button class="btn-largo cinza"><i class="fas fa-bell"></i> Cadastrar Aviso</button>
+                <button class="btn-largo vermelho" onclick="abrirModalAluno()">
+                    <i class="fas fa-user-plus"></i> Novo Aluno
+                </button>
+                <button class="btn-largo cinza" onclick="abrirModalPagamento()">
+                    <i class="fas fa-dollar-sign"></i> Lançar Pagamento
+                </button>
+                <button class="btn-largo cinza">
+                    <i class="fas fa-weight"></i> Registrar Peso
+                </button>
+                <button class="btn-largo cinza">
+                    <i class="fas fa-bell"></i> Cadastrar Aviso
+                </button>
             </div>
         </div>
     </main>
 
+    <!-- MODAL CADASTRAR ALUNO -->
+    <div id="modalAluno" class="fundo-modal">
+        <div class="modal">
+            <button class="fechar-modal" onclick="fecharModalAluno()">×</button>
+            <h2>Cadastrar Novo Aluno</h2>
+            <form id="formAluno">
+                <div class="grupo-form">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="nomeAluno" required>
+                </div>
+                <div class="grupo-form">
+                    <label>CPF *</label>
+                    <input type="text" id="cpfAluno" required placeholder="000.000.000-00">
+                </div>
+                <div class="grupo-form">
+                    <label>E-mail</label>
+                    <input type="email" id="emailAluno">
+                </div>
+                <div class="grupo-form">
+                    <label>Telefone</label>
+                    <input type="text" id="telAluno" placeholder="(00) 00000-0000">
+                </div>
+                <div class="grupo-form">
+                    <label>📸 Foto do Aluno (OPCIONAL)</label>
+                    <input type="file" id="fotoAluno" accept="image/*" style="display:none">
+                    <div class="arquivo-foto" onclick="document.getElementById('fotoAluno').click()">
+                        Nenhum arquivo escolhido<br>
+                        <small>Não é obrigatório, pode adicionar depois</small>
+                    </div>
+                </div>
+                <div class="grupo-form">
+                    <label>Faixa Inicial *</label>
+                    <select id="faixaAluno" required>
+                        <option value="Branca">Branca</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Roxa">Roxa</option>
+                        <option value="Marrom">Marrom</option>
+                        <option value="Preta">Preta</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-salvar">Salvar Aluno</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL LANÇAR PAGAMENTO -->
+    <div id="modalPagamento" class="fundo-modal">
+        <div class="modal">
+            <button class="fechar-modal" onclick="fecharModalPagamento()">×</button>
+            <h2>Lançar Pagamento</h2>
+            <form id="formPagamento">
+                <div class="grupo-form">
+                    <label>Aluno *</label>
+                    <select id="alunoPagamento" required>
+                        <option value="">Selecione um aluno</option>
+                    </select>
+                </div>
+                <div class="grupo-form">
+                    <label>Referência (Mês/Ano) *</label>
+                    <input type="text" id="refPagamento" required placeholder="Ex: Julho/2026">
+                </div>
+                <div class="grupo-form">
+                    <label>Valor R$ *</label>
+                    <input type="number" step="0.01" id="valorPagamento" required placeholder="150.00">
+                </div>
+                <div class="grupo-form">
+                    <label>Data de Vencimento *</label>
+                    <input type="date" id="vencPagamento" required>
+                </div>
+                <button type="submit" class="btn-salvar">Lançar Mensalidade</button>
+            </form>
+        </div>
+    </div>
+
     <script>
-        // Firebase
+        // Configuração Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -379,8 +569,17 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+
+        // Inicializa Firebase corretamente
+        let app, auth, db;
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            auth = firebase.auth();
+            db = firebase.firestore();
+            console.log("✅ Firebase conectado com sucesso");
+        } catch (erro) {
+            console.error("❌ Erro no Firebase:", erro);
+        }
 
         // Data atual
         const hoje = new Date();
@@ -388,22 +587,132 @@
             day: '2-digit', month: 'long', year: 'numeric'
         });
 
-        // Navegação
-        function irPara(pagina, link) {
-            document.querySelectorAll('.menu-navegacao a').forEach(a => a.classList.remove('ativo'));
-            if(link) link.classList.add('ativo');
+        // ------------------- FUNÇÕES DO MODAL ALUNO -------------------
+        function abrirModalAluno() {
+            document.getElementById('modalAluno').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
-        // Sair
-        function sair() {
-            if(confirm('Deseja sair da conta?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
+        function fecharModalAluno() {
+            document.getElementById('modalAluno').style.display = 'none';
+            document.getElementById('formAluno').reset();
+            document.body.style.overflow = 'auto';
+        }
+
+        // Salvar aluno no Firestore
+        document.getElementById('formAluno').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const dadosAluno = {
+                    nome: document.getElementById('nomeAluno').value.trim(),
+                    cpf: document.getElementById('cpfAluno').value.trim(),
+                    email: document.getElementById('emailAluno').value.trim(),
+                    telefone: document.getElementById('telAluno').value.trim(),
+                    faixa: document.getElementById('faixaAluno').value,
+                    dataCadastro: firebase.firestore.Timestamp.fromDate(new Date())
+                };
+
+                await db.collection('alunos').add(dadosAluno);
+                alert('✅ Aluno cadastrado com sucesso!');
+                fecharModalAluno();
+                atualizarContadores();
+            } catch (erro) {
+                console.error(erro);
+                alert('❌ Erro ao cadastrar: ' + erro.message);
+            }
+        });
+
+        // ------------------- FUNÇÕES DO MODAL PAGAMENTO -------------------
+        function abrirModalPagamento() {
+            carregarAlunosSelect();
+            document.getElementById('modalPagamento').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharModalPagamento() {
+            document.getElementById('modalPagamento').style.display = 'none';
+            document.getElementById('formPagamento').reset();
+            document.body.style.overflow = 'auto';
+        }
+
+        // Carregar lista de alunos no select
+        async function carregarAlunosSelect() {
+            const select = document.getElementById('alunoPagamento');
+            select.innerHTML = '<option value="">Selecione um aluno</option>';
+            try {
+                const snapshot = await db.collection('alunos').orderBy('nome').get();
+                snapshot.forEach(doc => {
+                    const aluno = doc.data();
+                    const opcao = document.createElement('option');
+                    opcao.value = doc.id;
+                    opcao.textContent = aluno.nome;
+                    select.appendChild(opcao);
+                });
+            } catch (erro) {
+                console.error(erro);
+                alert('❌ Erro ao carregar alunos: ' + erro.message);
             }
         }
 
-        // Segurança
+        // Salvar pagamento no Firestore
+        document.getElementById('formPagamento').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const dadosPagamento = {
+                    alunoId: document.getElementById('alunoPagamento').value,
+                    referencia: document.getElementById('refPagamento').value.trim(),
+                    valor: parseFloat(document.getElementById('valorPagamento').value),
+                    vencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('vencPagamento').value)),
+                    status: 'Pendente',
+                    dataLancamento: firebase.firestore.Timestamp.fromDate(new Date())
+                };
+
+                await db.collection('mensalidades').add(dadosPagamento);
+                alert('✅ Pagamento lançado com sucesso!');
+                fecharModalPagamento();
+                atualizarContadores();
+            } catch (erro) {
+                console.error(erro);
+                alert('❌ Erro ao lançar pagamento: ' + erro.message);
+            }
+        });
+
+        // ------------------- ATUALIZAR CONTADORES -------------------
+        async function atualizarContadores() {
+            try {
+                const alunos = await db.collection('alunos').get();
+                document.getElementById('qtdAlunos').textContent = alunos.size;
+
+                const pendentes = await db.collection('mensalidades').where('status', '==', 'Pendente').get();
+                document.getElementById('qtdPendentes').textContent = pendentes.size;
+            } catch (erro) {
+                console.error(erro);
+            }
+        }
+
+        // ------------------- SEGURANÇA E INICIALIZAÇÃO -------------------
+        function sair() {
+            if (confirm('Deseja realmente sair?')) {
+                auth.signOut().then(() => {
+                    window.location.href = "login.html";
+                });
+            }
+        }
+
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) window.location.href = "login.html";
+            if (!usuario) {
+                window.location.href = "login.html";
+            } else {
+                atualizarContadores();
+            }
+        });
+
+        // Fechar modal clicando fora da janela
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('fundo-modal')) {
+                e.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
         });
     </script>
 
