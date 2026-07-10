@@ -174,8 +174,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-    <!-- Importa a configuração do Firebase (arquivo local, não vai para o GitHub) -->
-    <script src="config-firebase.js"></script>
 </head>
 <body>
 
@@ -215,7 +213,20 @@
     </div>
 
     <script>
-        // Inicializa o Firebase usando os dados do arquivo separado
+        // --------------------------
+        // 🔧 CONFIGURAÇÃO DO FIREBASE (direto no código)
+        // --------------------------
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967",
+          measurementId: "G-S5K8S7GMS6"
+        };
+
+        // Inicializa o Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -246,12 +257,15 @@
                             mostrarMensagem("✅ Bem-vindo à Área do Aluno!", "sucesso");
                             setTimeout(() => window.location.href = "aluno.html", 1000);
                         }
+                    } else {
+                        mostrarMensagem("❌ Cadastro não encontrado no sistema!", "erro");
                     }
                 })
                 .catch((erro) => {
                     let mensagem = "Erro ao fazer login!";
                     if (erro.code === 'auth/user-not-found') mensagem = "E-mail não cadastrado!";
                     if (erro.code === 'auth/wrong-password') mensagem = "Senha incorreta!";
+                    if (erro.code === 'auth/invalid-email') mensagem = "Formato de e-mail inválido!";
                     mostrarMensagem(mensagem, "erro");
                 });
         });
