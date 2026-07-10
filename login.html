@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="css/estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,10 +17,8 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
-            position: relative;
             margin: 0;
         }
-
         .voltar-inicio {
             position: absolute;
             top: 20px;
@@ -31,14 +29,9 @@
             align-items: center;
             gap: 8px;
             font-size: 1rem;
-            transition: color 0.3s;
             z-index: 10;
         }
-
-        .voltar-inicio:hover {
-            color: #D10000;
-        }
-
+        .voltar-inicio:hover { color: #D10000; }
         .formulario-login {
             background-color: #151515;
             padding: 35px 30px;
@@ -48,133 +41,83 @@
             border: 2px solid #D10000;
             box-shadow: 0 0 25px rgba(209, 0, 0, 0.25);
         }
-
-        .logo-login {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .logo-login img {
-            height: 85px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .formulario-login h2 {
+        .logo-login { text-align: center; margin-bottom: 25px; }
+        .logo-login img { height: 85px; width: auto; }
+        h2 {
             text-align: center;
             margin-bottom: 30px;
             color: #ffffff;
             font-size: 1.8rem;
-            font-weight: 800;
         }
-
-        .grupo-campo {
-            margin-bottom: 20px;
-        }
-
-        .grupo-campo label {
+        .grupo-campo { margin-bottom: 20px; }
+        label {
             display: block;
             margin-bottom: 8px;
             color: #B0B0B0;
             font-size: 0.95rem;
         }
-
-        .grupo-campo input {
+        input {
+            width: 100%;
+            padding: 14px;
             background-color: #0A0A0A;
             border: 1px solid #D10000;
             color: #ffffff;
-            width: 100%;
-            padding: 14px;
             border-radius: 6px;
             font-size: 1rem;
-            transition: border 0.3s ease;
-            margin: 0;
         }
-
-        .grupo-campo input:focus {
+        input:focus {
             outline: none;
             border-color: #ffffff;
-            box-shadow: 0 0 0 2px rgba(209, 0, 0, 0.2);
         }
-
         .esquecer-senha {
             text-align: right;
             margin-bottom: 25px;
         }
-
         .esquecer-senha a {
             color: #B0B0B0;
             font-size: 0.9rem;
             text-decoration: none;
-            transition: color 0.3s;
-            cursor: pointer;
         }
-
-        .esquecer-senha a:hover {
-            color: #D10000;
-        }
-
+        .esquecer-senha a:hover { color: #D10000; }
         .btn-login {
             width: 100%;
             padding: 14px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
             background-color: #D10000;
             color: #ffffff;
             border: none;
             border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s ease;
         }
-
-        .btn-login:hover {
-            background-color: #FF1A1A;
-            transform: translateY(-1px);
-        }
-
+        .btn-login:hover { background-color: #FF1A1A; }
         .link-cadastro {
             text-align: center;
             margin-top: 25px;
-            font-size: 0.95rem;
             color: #B0B0B0;
         }
-
         .link-cadastro a {
             color: #D10000;
             text-decoration: none;
-            font-weight: 700;
+            font-weight: bold;
         }
-
-        .link-cadastro a:hover {
-            text-decoration: underline;
-        }
-
         #mensagem {
             display: none;
             padding: 12px;
-            text-align: center;
             border-radius: 6px;
             margin-bottom: 18px;
-            font-size: 0.95rem;
-            font-weight: 500;
+            text-align: center;
+            font-weight: bold;
         }
-
         .sucesso { background-color: #2ecc71; color: white; }
         .erro { background-color: #e74c3c; color: white; }
         .aviso { background-color: #f39c12; color: white; }
-
-        @media (max-width: 400px) {
-            .formulario-login { padding: 25px 20px; }
-            .formulario-login h2 { font-size: 1.5rem; }
-        }
     </style>
 
-    <!-- Bibliotecas do Firebase mantidas compatíveis -->
+    <!-- Firebase - Versão estável e compatível -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
 </head>
 <body>
 
@@ -184,7 +127,7 @@
 
     <div class="formulario-login">
         <div class="logo-login">
-            <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
         </div>
         <h2>FAÇA SEU LOGIN</h2>
 
@@ -193,18 +136,15 @@
         <form id="formLogin">
             <div class="grupo-campo">
                 <label for="emailLogin">E-mail</label>
-                <input type="email" id="emailLogin" name="emailLogin" required autocomplete="email">
+                <input type="email" id="emailLogin" required>
             </div>
-
             <div class="grupo-campo">
                 <label for="senhaLogin">Senha</label>
-                <input type="password" id="senhaLogin" name="senhaLogin" required autocomplete="current-password">
+                <input type="password" id="senhaLogin" required>
             </div>
-
             <div class="esquecer-senha">
-                <a onclick="recuperarSenha()">Esqueceu sua senha?</a>
+                <a href="#" onclick="recuperarSenha(); return false;">Esqueceu sua senha?</a>
             </div>
-
             <button type="submit" class="btn-login">Entrar</button>
         </form>
 
@@ -214,125 +154,95 @@
     </div>
 
     <script>
-        // --------------------------
-        // 🔧 CONFIGURAÇÃO DO FIREBASE
-        // --------------------------
+        // Configuração do Firebase
         const firebaseConfig = {
-          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
-          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
-          projectId: "pjj-para-jiu-jitsu",
-          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
-          messagingSenderId: "72563195814",
-          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967",
-          measurementId: "G-S5K8S7GMS6"
+            apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+            authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+            projectId: "pjj-para-jiu-jitsu",
+            storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+            messagingSenderId: "72563195814",
+            appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
 
-        // Inicializa o Firebase
+        // Inicializa Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Função para exibir mensagens
+        // Função para mostrar mensagens
         function mostrarMensagem(texto, tipo) {
-            const div = document.getElementById('mensagem');
-            div.textContent = texto;
-            div.className = tipo;
-            div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 5000);
+            const el = document.getElementById('mensagem');
+            el.textContent = texto;
+            el.className = tipo;
+            el.style.display = "block";
         }
 
-        // --------------------------
-        // 🚀 LOGIN COM VERIFICAÇÃO COMPLETA
-        // --------------------------
-        document.getElementById('formLogin').addEventListener('submit', async function(e) {
+        // Função principal de login
+        document.getElementById('formLogin').addEventListener('submit', function(e) {
+            // IMPEDIR O ENVIO PADRÃO DO FORMULÁRIO - ESSA É A LINHA QUE FALTAVA ANTES
             e.preventDefault();
+
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value.trim();
 
             if (!email || !senha) {
-                mostrarMensagem("Preencha e-mail e senha!", "aviso");
+                mostrarMensagem("⚠️ Preencha e-mail e senha!", "aviso");
                 return;
             }
 
-            try {
-                // Autentica no Firebase Auth
-                const userCredential = await auth.signInWithEmailAndPassword(email, senha);
-                const usuario = userCredential.user;
+            mostrarMensagem("🔄 Entrando...", "aviso");
 
-                // Busca os dados no Firestore com o UID do usuário
-                const docRef = db.collection('usuarios').doc(usuario.uid);
-                const doc = await docRef.get();
-
-                if (doc.exists) {
-                    const dados = doc.data();
-                    console.log("Dados do usuário:", dados);
-
-                    // Verifica o tipo de usuário
-                    if (dados.tipo === 'admin') {
-                        mostrarMensagem("🔐 Bem-vindo, Administrador!", "sucesso");
-                        setTimeout(() => window.location.href = "admin.html", 1200);
-                    } else if (dados.tipo === 'aluno') {
-                        mostrarMensagem("✅ Bem-vindo à Área do Aluno!", "sucesso");
-                        setTimeout(() => window.location.href = "aluno.html", 1200);
-                    } else {
-                        mostrarMensagem("⚠️ Perfil de usuário não definido!", "erro");
-                    }
-                } else {
-                    mostrarMensagem("❌ Usuário cadastrado, mas sem dados completos. Contate o suporte!", "erro");
+            // Faz login
+            auth.signInWithEmailAndPassword(email, senha)
+            .then((resultado) => {
+                const usuario = resultado.user;
+                // Busca dados no Firestore
+                return db.collection('usuarios').doc(usuario.uid).get();
+            })
+            .then((documento) => {
+                if (!documento.exists) {
+                    throw new Error("Usuário não cadastrado no sistema");
                 }
 
-            } catch (erro) {
-                console.error("Erro completo:", erro);
-                let mensagem = "Erro ao fazer login!";
+                const dados = documento.data();
+                console.log("Dados carregados:", dados);
 
-                // Tratamento detalhado dos erros
-                switch (erro.code) {
-                    case 'auth/user-not-found':
-                        mensagem = "❌ E-mail não cadastrado!";
-                        break;
-                    case 'auth/wrong-password':
-                        mensagem = "❌ Senha incorreta!";
-                        break;
-                    case 'auth/invalid-email':
-                        mensagem = "❌ Formato de e-mail inválido!";
-                        break;
-                    case 'auth/too-many-requests':
-                        mensagem = "⚠️ Muitas tentativas! Redefina sua senha ou tente mais tarde.";
-                        break;
-                    case 'auth/network-request-failed':
-                        mensagem = "📶 Sem conexão com a internet ou servidor!";
-                        break;
-                    default:
-                        mensagem = `❌ Erro: ${erro.message}`;
+                if (dados.tipo === "admin") {
+                    mostrarMensagem("✅ Acesso de Administrador! Redirecionando...", "sucesso");
+                    setTimeout(() => {
+                        window.location.href = "admin.html";
+                    }, 1000);
+                } else if (dados.tipo === "aluno") {
+                    mostrarMensagem("✅ Acesso de Aluno! Redirecionando...", "sucesso");
+                    setTimeout(() => {
+                        window.location.href = "aluno.html";
+                    }, 1000);
+                } else {
+                    throw new Error("Tipo de usuário não definido");
+                }
+            })
+            .catch((erro) => {
+                console.error("Erro:", erro);
+                let mensagem = "❌ Erro ao fazer login";
+
+                switch(erro.code) {
+                    case 'auth/user-not-found': mensagem = "❌ E-mail não cadastrado"; break;
+                    case 'auth/wrong-password': mensagem = "❌ Senha incorreta"; break;
+                    case 'auth/invalid-email': mensagem = "❌ E-mail inválido"; break;
+                    default: mensagem = `❌ ${erro.message}`;
                 }
 
                 mostrarMensagem(mensagem, "erro");
-            }
+            });
         });
 
-        // --------------------------
-        // 🔑 RECUPERAR SENHA MELHORADA
-        // --------------------------
+        // Recuperar senha
         function recuperarSenha() {
-            const email = prompt("Digite o e-mail cadastrado para receber o link de redefinição:");
+            const email = prompt("Digite seu e-mail:");
             if (!email) return;
-
-            // Configuração para funcionar no GitHub Pages
-            const acoes = {
-                url: "https://pablitonorte.github.io/pjj-jiu-jitsu/login.html"
-            };
-
-            auth.sendPasswordResetEmail(email.trim(), acoes)
-                .then(() => mostrarMensagem("📩 E-mail enviado! Verifique sua caixa de entrada ou pasta de SPAM.", "sucesso"))
-                .catch((erro) => {
-                    if (erro.code === 'auth/invalid-email') {
-                        mostrarMensagem("❌ Formato de e-mail inválido!", "erro");
-                    } else if (erro.code === 'auth/user-not-found') {
-                        mostrarMensagem("❌ E-mail não cadastrado no sistema!", "erro");
-                    } else {
-                        mostrarMensagem("❌ Não foi possível enviar o e-mail. Tente novamente.", "erro");
-                    }
-                });
+            auth.sendPasswordResetEmail(email.trim())
+            .then(() => mostrarMensagem("📩 E-mail de redefinição enviado!", "sucesso"))
+            .catch(() => mostrarMensagem("❌ E-mail não encontrado", "erro"));
         }
     </script>
 
