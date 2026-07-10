@@ -1,33 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Teste Simples</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PJJ Pará Jiu-Jitsu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body {
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('imagens/capactpjj.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .caixa-login {
+            background-color: #151515;
+            padding: 35px 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid #D10000;
+            box-shadow: 0 0 20px rgba(209, 0, 0, 0.2);
+        }
+        .logo { text-align: center; margin-bottom: 25px; }
+        .logo img { height: 80px; }
+        h2 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 1.6rem;
+        }
+        .campo { margin-bottom: 20px; }
+        label {
+            display: block;
+            color: #B0B0B0;
+            margin-bottom: 8px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background-color: #0A0A0A;
+            border: 1px solid #D10000;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input:focus { outline: none; border-color: #fff; }
+        .btn-entrar {
+            width: 100%;
+            padding: 13px;
+            background-color: #D10000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-entrar:hover { background-color: #ff1a1a; }
+        #mensagem {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        .sucesso { background-color: #2ecc71; color: white; }
+        .erro { background-color: #e74c3c; color: white; }
+    </style>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <h2>Teste de Funcionamento</h2>
-    <div id="resultado" style="padding:15px; background:#f0f0f0; margin:15px 0;">Aguardando clique...</div>
+    <div class="caixa-login">
+        <div class="logo">
+            <img src="imagens/logopjj.png" alt="Logo PJJ Pará Jiu-Jitsu">
+        </div>
+        <h2>Acesse sua conta</h2>
 
-    <form id="meuFormulario">
-        <input type="email" id="email" placeholder="Digite seu e-mail" style="width:100%; padding:10px; margin:8px 0;">
-        <br>
-        <input type="password" id="senha" placeholder="Digite sua senha" style="width:100%; padding:10px; margin:8px 0;">
-        <br>
-        <button type="submit" style="padding:10px 20px; background:red; color:white; border:none;">Entrar</button>
-    </form>
+        <div id="mensagem"></div>
+
+        <form id="formLogin">
+            <div class="campo">
+                <label>E-mail</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="campo">
+                <label>Senha</label>
+                <input type="password" id="senha" required>
+            </div>
+            <button type="submit" class="btn-entrar">Entrar</button>
+        </form>
+    </div>
 
     <script>
-        // ESSE CÓDIGO É 100% GARANTIDO DE FUNCIONAR
-        const form = document.getElementById('meuFormulario');
-        const divResultado = document.getElementById('resultado');
+        // Configuração do Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // IMPEDIR LIMPAR OS CAMPOS
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-            divResultado.textContent = "✅ O CÓDIGO ESTÁ FUNCIONANDO! Os campos não vão mais limpar.";
-            divResultado.style.background = "#d4edda";
-            divResultado.style.color = "#155724";
+        // Função para exibir mensagens
+        function mostrarMensagem(texto, tipo) {
+            const el = document.getElementById('mensagem');
+            el.textContent = texto;
+            el.className = tipo;
+            el.style.display = 'block';
+        }
+
+        // Lógica do login
+        document.getElementById('formLogin').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value.trim();
+
+            mostrarMensagem("🔄 Verificando dados...", "");
+
+            auth.signInWithEmailAndPassword(email, senha)
+            .then(resultado => {
+                const usuario = resultado.user;
+                return db.collection('usuarios').doc(usuario.uid).get();
+            })
+            .then(doc => {
+                if (!doc.exists) throw new Error("Cadastro não encontrado");
+
+                const dados = doc.data();
+
+                if (dados.tipo === "admin") {
+                    mostrarMensagem("✅ Acesso de Administrador! Entrando...", "sucesso");
+                    setTimeout(() => window.location.href = "admin.html", 1200);
+                } else if (dados.tipo === "aluno") {
+                    mostrarMensagem("✅ Acesso de Aluno! Entrando...", "sucesso");
+                    setTimeout(() => window.location.href = "aluno.html", 1200);
+                } else {
+                    throw new Error("Perfil de usuário inválido");
+                }
+            })
+            .catch(erro => {
+                let msg = "❌ Erro ao acessar";
+                if (erro.code === "auth/user-not-found") msg = "❌ E-mail não cadastrado";
+                if (erro.code === "auth/wrong-password") msg = "❌ Senha incorreta";
+                if (erro.code === "auth/invalid-email") msg = "❌ E-mail inválido";
+                mostrarMensagem(msg, "erro");
+            });
         });
     </script>
 
