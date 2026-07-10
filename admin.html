@@ -9,6 +9,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #f8f9fa; color: #333; }
 
+        /* Botão abrir menu no celular */
         .btn-menu {
             display: none;
             position: fixed;
@@ -22,8 +23,10 @@
             border-radius: 6px;
             font-size: 1.2rem;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
+        /* Menu Lateral */
         .sidebar {
             width: 260px;
             height: 100vh;
@@ -60,6 +63,7 @@
             border-left: 4px solid white;
         }
 
+        /* Conteúdo Principal */
         .conteudo-principal {
             margin-left: 260px;
             padding: 30px;
@@ -74,6 +78,15 @@
             flex-wrap: wrap;
             gap: 15px;
         }
+        .data { color: #666; font-size: 0.95rem; }
+        .admin-info { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+
+        /* Áreas de conteúdo */
+        .pagina { display: none; }
+        .pagina.ativa { display: block; }
+        .pagina h2 { color: #D10000; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+
+        /* Cards do Dashboard */
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -86,7 +99,9 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             text-align: center;
         }
-        .card .numero { font-size: 2.5rem; font-weight: bold; margin: 15px 0 10px; }
+        .card h3 { font-size: 1rem; color: #555; margin-bottom: 15px; }
+        .card .numero { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; }
+        .card p { color: #888; font-size: 0.9rem; margin-bottom: 15px; }
         .card button {
             background: #e9ecef;
             border: none;
@@ -94,10 +109,13 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
-            margin-top: 10px;
+            transition: background 0.2s;
         }
-        .card .btn-vermelho { background: #D10000; color: white; }
+        .card button:hover { background: #dee2e6; }
+        .btn-vermelho { background: #D10000 !important; color: white !important; }
+        .btn-vermelho:hover { background: #ff1a1a !important; }
 
+        /* Responsivo para celular */
         @media (max-width: 768px) {
             .btn-menu { display: block; }
             .sidebar { transform: translateX(-100%); }
@@ -108,68 +126,140 @@
         }
     </style>
 
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
+    <!-- Botão abrir menu no celular -->
     <button class="btn-menu" onclick="alternarMenu()">☰</button>
 
+    <!-- Menu Lateral -->
     <nav class="sidebar" id="menuLateral">
         <div class="sidebar-logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
         </div>
         <ul class="sidebar-menu">
-            <li><a href="javascript:void(0)" class="ativo" onclick="marcarMenu(this); return false;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-users"></i> Alunos</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-medal"></i> Graduações</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-chalkboard-teacher"></i> Professores</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-calendar-alt"></i> Eventos / Torneios</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-bell"></i> Avisos</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-file-alt"></i> Relatórios</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-cog"></i> Configurações</a></li>
-            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-user"></i> Área do Aluno</a></li>
-            <li><a href="javascript:void(0)" onclick="sair(); return false;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            <li><a href="#" class="ativo" onclick="abrirPagina('dashboard'); return false;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" onclick="abrirPagina('alunos'); return false;"><i class="fas fa-users"></i> Alunos</a></li>
+            <li><a href="#" onclick="abrirPagina('peso'); return false;"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
+            <li><a href="#" onclick="abrirPagina('financeiro'); return false;"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+            <li><a href="#" onclick="abrirPagina('graduacoes'); return false;"><i class="fas fa-medal"></i> Graduações</a></li>
+            <li><a href="#" onclick="abrirPagina('professores'); return false;"><i class="fas fa-chalkboard-teacher"></i> Professores</a></li>
+            <li><a href="#" onclick="abrirPagina('eventos'); return false;"><i class="fas fa-calendar-alt"></i> Eventos / Torneios</a></li>
+            <li><a href="#" onclick="abrirPagina('avisos'); return false;"><i class="fas fa-bell"></i> Avisos</a></li>
+            <li><a href="#" onclick="abrirPagina('relatorios'); return false;"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+            <li><a href="#" onclick="abrirPagina('configuracoes'); return false;"><i class="fas fa-cog"></i> Configurações</a></li>
+            <li><a href="#" onclick="abrirPagina('aluno'); return false;"><i class="fas fa-user"></i> Área do Aluno</a></li>
+            <li><a href="#" onclick="sair(); return false;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
         </ul>
     </nav>
 
+    <!-- Conteúdo Principal -->
     <main class="conteudo-principal">
         <div class="cabecalho">
-            <div class="data">10 de Julho de 2026</div>
+            <div class="data" id="dataAtual"></div>
             <div class="admin-info"><i class="fas fa-user-circle"></i> Administrador</div>
         </div>
 
-        <div class="cards">
-            <div class="card">
-                <h3>ALUNOS ATIVOS</h3>
-                <div class="numero">0</div>
-                <p>Nenhum aluno cadastrado ainda</p>
-                <button onclick="alert('Abrindo lista de Alunos')">Ver todos</button>
+        <!-- Página Dashboard -->
+        <div id="pagina-dashboard" class="pagina ativa">
+            <h2>Dashboard</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>ALUNOS ATIVOS</h3>
+                    <div class="numero" id="qtdAlunos">0</div>
+                    <p>Nenhum aluno cadastrado ainda</p>
+                    <button onclick="abrirPagina('alunos')">Ver todos</button>
+                </div>
+                <div class="card">
+                    <h3>CONTROLE DE PESO</h3>
+                    <div class="numero" style="color: #f39c12;" id="qtdPeso">0</div>
+                    <p>Sem registros de peso</p>
+                    <button onclick="abrirPagina('peso')">Ver categorias</button>
+                </div>
+                <div class="card">
+                    <h3>MENSALIDADES PENDENTES</h3>
+                    <div class="numero" style="color: #e74c3c;" id="qtdPendentes">0</div>
+                    <p>R$ 0,00 em aberto</p>
+                    <button class="btn-vermelho" onclick="abrirPagina('financeiro')">Cobrar</button>
+                </div>
+                <div class="card">
+                    <h3>GRADUAÇÕES PREVISTAS</h3>
+                    <div class="numero" style="color: #9b59b6;" id="qtdGraduacoes">0</div>
+                    <p>Nenhuma agendada</p>
+                    <button onclick="abrirPagina('graduacoes')">Ver calendário</button>
+                </div>
             </div>
-            <div class="card">
-                <h3>CONTROLE DE PESO</h3>
-                <div class="numero" style="color: #f39c12;">0</div>
-                <p>Sem registros de peso</p>
-                <button onclick="alert('Abrindo Controle de Peso')">Ver categorias</button>
-            </div>
-            <div class="card">
-                <h3>MENSALIDADES PENDENTES</h3>
-                <div class="numero" style="color: #e74c3c;">0</div>
-                <p>R$ 0,00 em aberto</p>
-                <button class="btn-vermelho" onclick="alert('Abrindo Financeiro')">Cobrar</button>
-            </div>
-            <div class="card">
-                <h3>GRADUAÇÕES PREVISTAS</h3>
-                <div class="numero" style="color: #9b59b6;">0</div>
-                <p>Nenhuma agendada</p>
-                <button onclick="alert('Abrindo Graduações')">Ver calendário</button>
-            </div>
+        </div>
+
+        <!-- Página Alunos -->
+        <div id="pagina-alunos" class="pagina">
+            <h2>Gerenciamento de Alunos</h2>
+            <p>Aqui você vai cadastrar, editar e excluir alunos. Os dados serão salvos diretamente no Firebase.</p>
+            <br>
+            <button class="btn-vermelho" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">+ Cadastrar Novo Aluno</button>
+        </div>
+
+        <!-- Página Controle de Peso -->
+        <div id="pagina-peso" class="pagina">
+            <h2>Controle de Peso</h2>
+            <p>Registro e acompanhamento do peso dos alunos por período.</p>
+        </div>
+
+        <!-- Página Financeiro -->
+        <div id="pagina-financeiro" class="pagina">
+            <h2>Controle Financeiro</h2>
+            <p>Gestão de mensalidades, pagamentos e valores pendentes.</p>
+        </div>
+
+        <!-- Página Graduações -->
+        <div id="pagina-graduacoes" class="pagina">
+            <h2>Graduações</h2>
+            <p>Agendamento e registro de faixas e avaliações.</p>
+        </div>
+
+        <!-- Página Professores -->
+        <div id="pagina-professores" class="pagina">
+            <h2>Professores e Instrutores</h2>
+            <p>Cadastro e gerenciamento da equipe.</p>
+        </div>
+
+        <!-- Página Eventos -->
+        <div id="pagina-eventos" class="pagina">
+            <h2>Eventos e Torneios</h2>
+            <p>Agenda e inscrições para competições e atividades.</p>
+        </div>
+
+        <!-- Página Avisos -->
+        <div id="pagina-avisos" class="pagina">
+            <h2>Avisos e Comunicados</h2>
+            <p>Envio de mensagens para alunos e responsáveis.</p>
+        </div>
+
+        <!-- Página Relatórios -->
+        <div id="pagina-relatorios" class="pagina">
+            <h2>Relatórios</h2>
+            <p>Geração de relatórios de frequência, financeiro e graduações.</p>
+        </div>
+
+        <!-- Página Configurações -->
+        <div id="pagina-configuracoes" class="pagina">
+            <h2>Configurações do Sistema</h2>
+            <p>Ajustes gerais, dados da academia e permissões.</p>
+        </div>
+
+        <!-- Página Área do Aluno -->
+        <div id="pagina-aluno" class="pagina">
+            <h2>Área do Aluno</h2>
+            <p>Visualização da página de acesso dos alunos.</p>
         </div>
     </main>
 
     <script>
+        // Configuração Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -178,26 +268,79 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
+
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.firestore();
 
+        // Mostrar data atual
+        const hoje = new Date();
+        const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', opcoes);
+
+        // Alternar menu no celular
         function alternarMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        function marcarMenu(item) {
+        // Abrir e trocar páginas
+        function abrirPagina(nomePagina) {
+            // Esconder todas as páginas
+            document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativa'));
+            // Mostrar a página escolhida
+            document.getElementById(`pagina-${nomePagina}`).classList.add('ativa');
+
+            // Marcar item ativo no menu
             document.querySelectorAll('.sidebar-menu li a').forEach(a => a.classList.remove('ativo'));
-            item.classList.add('ativo');
+            event.currentTarget.classList.add('ativo');
+
+            // Fechar menu no celular após escolher
             if (window.innerWidth <= 768) alternarMenu();
+
+            // Carregar dados do Firebase para o Dashboard
+            if(nomePagina === 'dashboard') carregarDadosDashboard();
         }
 
-        function sair() {
-            if(confirm('Deseja sair da conta?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
+        // Carregar números do Firebase
+        async function carregarDadosDashboard() {
+            try {
+                const contagemAlunos = await db.collection('alunos').get();
+                document.getElementById('qtdAlunos').textContent = contagemAlunos.size;
+
+                const contagemPendentes = await db.collection('mensalidades').where('pago', '==', false).get();
+                document.getElementById('qtdPendentes').textContent = contagemPendentes.size;
+
+            } catch (erro) {
+                console.log("Aguardando cadastro de dados:", erro);
             }
         }
 
-        auth.onAuthStateChanged(u => { if(!u) window.location.href='login.html' });
+        // Função de sair
+        function sair() {
+            if(confirm('Deseja realmente sair da sua conta?')) {
+                auth.signOut().then(() => {
+                    window.location.href = "login.html";
+                });
+            }
+        }
+
+        // Fechar menu ao clicar fora
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('menuLateral');
+            const btn = document.querySelector('.btn-menu');
+            if (window.innerWidth <= 768 && !menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove('aberto');
+            }
+        });
+
+        // Verificar se está logado
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) {
+                window.location.href = "login.html";
+            } else {
+                carregarDadosDashboard();
+            }
+        });
     </script>
 
 </body>
