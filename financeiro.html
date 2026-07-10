@@ -12,66 +12,118 @@
         :root {
             --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
+            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb;
         }
-        body { background: var(--fundo-escuro); color: var(--texto-branco); display: flex; min-height: 100vh; }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; overflow-x: hidden; }
 
-        /* MENU LATERAL */
-        .menu-lateral { width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda); padding: 30px 0; position: fixed; height: 100vh; }
+        .btn-menu {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .menu-lateral {
+            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            transition: transform 0.3s ease;
+        }
+        .menu-lateral.fechado { transform: translateX(-100%); }
+
         .logo { text-align: center; margin-bottom: 40px; }
         .logo img { width: 90px; margin-bottom: 10px; }
         .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
             display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
-            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: all 0.2s;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
 
-        /* CONTEÚDO */
-        .conteudo { flex: 1; margin-left: 240px; padding: 35px 45px; }
-        .cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+        .conteudo { margin-left: 240px; padding: 35px 45px; padding-top: 30px; min-height: 100vh; }
+        .cabecalho {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
+        }
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
-        .info-topo { display: flex; align-items: center; gap: 20px; color: var(--texto-cinza); font-size: 14px; }
+        
+        .btn-novo { 
+            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; 
+            border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-novo:hover { background: var(--vermelho-claro); }
 
-        /* ÁREA PRINCIPAL */
-        .area-principal { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; }
-        .titulo-area { font-size: 18px; font-weight: 800; color: var(--vermelho-principal); display: flex; align-items: center; gap: 8px; margin-bottom: 25px; }
+        /* Abas de navegação */
+        .abas { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .aba {
+            padding: 10px 18px; background: var(--fundo-card); border: 1px solid var(--borda);
+            border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
+        }
+        .aba.ativa { background: var(--vermelho-principal); border-color: var(--vermelho-principal); }
 
-        /* CARDS VALORES */
-        .grid-valores { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 25px; }
-        .card-valor { background: var(--fundo-escuro); border: 1px solid var(--borda); border-radius: 8px; padding: 20px; text-align: center; }
-        .card-valor .rotulo { font-size: 14px; font-weight: 600; color: var(--texto-cinza); margin-bottom: 10px; }
-        .card-valor .valor { font-size: 32px; font-weight: 800; }
-        .verde { color: #00C853; }
-        .vermelho { color: #D10000; }
-        .branco { color: white; }
+        .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .card-filtro input, .card-filtro select {
+            flex: 1; min-width: 200px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            border-radius: 6px; color: white; font-size: 14px; outline: none;
+        }
+        .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); }
 
-        .btn-lancar { background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; margin-bottom: 25px; transition: 0.2s; }
-        .btn-lancar:hover { background: var(--vermelho-claro); }
+        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+        .tabela th { background: #1f1f25; padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
+        .tabela tr:hover { background: rgba(255,255,255,0.03); }
+        .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        /* TABELA */
-        .tabela { width: 100%; border-collapse: collapse; }
-        .tabela th { text-align: left; padding: 12px; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; border-bottom: 1px solid var(--borda); }
-        .tabela td { padding: 15px 12px; font-size: 14px; border-bottom: 1px solid var(--borda); }
-        .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); font-size: 14px; }
-        .btn-confirmar { background: var(--vermelho-principal); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .btn-confirmar:hover { background: var(--vermelho-claro); }
+        .status-pago { color: var(--verde); font-weight: 600; }
+        .status-pendente { color: var(--amarelo); font-weight: 600; }
+        .status-atrasado { color: var(--vermelho-principal); font-weight: 600; }
+        .destaque-atraso { background: rgba(209, 0, 0, 0.1); }
 
-        /* MODAL */
-        .fundo-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center; }
-        .modal { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 30px; width: 90%; max-width: 450px; position: relative; }
-        .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 20px; font-weight: 800; }
-        .fechar-modal { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--texto-cinza); font-size: 24px; cursor: pointer; }
-        .grupo-form { margin-bottom: 18px; }
-        .grupo-form label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
-        .grupo-form input, .grupo-form select { width: 100%; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--vermelho-principal); border-radius: 4px; color: white; font-size: 14px; }
-        .btn-salvar { width: 100%; padding: 14px; background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d); border: none; border-radius: 6px; color: white; font-weight: 800; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
+        .btn-pagar { background: var(--verde); color: white; }
+        .btn-editar { background: var(--azul); color: white; }
+        .btn-excluir { background: var(--vermelho-principal); color: white; }
+
+        .fundo-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
+            padding: 30px; width: 100%; max-width: 480px; position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+        }
+        .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
+        .fechar-modal {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: var(--texto-cinza); font-size: 28px; cursor: pointer; transition: 0.2s;
+        }
+        .fechar-modal:hover { color: var(--vermelho-principal); }
+
+        .grupo-form { margin-bottom: 20px; }
+        .grupo-form label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+        .grupo-form input, .grupo-form select {
+            width: 100%; padding: 13px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            border-radius: 4px; color: white; font-size: 14px;
+        }
+        .grupo-form input:focus, .grupo-form select:focus {
+            outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2);
+        }
+
+        .btn-salvar {
+            width: 100%; padding: 15px; background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
+            border: none; border-radius: 6px; color: white; font-weight: 800; font-size: 16px;
+            cursor: pointer; margin-top: 10px; transition: 0.2s;
+        }
+        .btn-salvar:hover { opacity: 0.9; transform: translateY(-1px); }
 
         @media (max-width: 768px) {
-            .menu-lateral { transform: translateX(-100%); }
-            .conteudo { margin-left: 0; padding: 20px; }
-            .grid-valores { grid-template-columns: 1fr; }
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
+            .cabecalho { flex-direction: column; align-items: flex-start; }
+            .tabela { display: block; overflow-x: auto; }
         }
     </style>
 
@@ -80,7 +132,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <aside class="menu-lateral">
+
+    <button class="btn-menu" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
             <h1>PJJ<br>Pará Jiu-Jitsu</h1>
@@ -93,83 +150,67 @@
                 <li><a href="#"><i class="fas fa-medal"></i> Graduações</a></li>
                 <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
-                <li><a href="#" style="margin-top: 20px; color: #FF4D4D;" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
     </aside>
 
     <main class="conteudo">
         <div class="cabecalho">
-            <h1 class="titulo-pagina">Financeiro</h1>
-            <div class="info-topo">
-                <span id="dataAtual"></span>
-                <span><i class="fas fa-user-circle"></i> Administrador</span>
-            </div>
+            <h1 class="titulo-pagina">Controle Financeiro</h1>
+            <button class="btn-novo" onclick="abrirModalConfig()">
+                <i class="fas fa-cog"></i> Configurar Mensalidade
+            </button>
         </div>
 
-        <div class="area-principal">
-            <h2 class="titulo-area"><i class="fas fa-dollar-sign"></i> Financeiro</h2>
-
-            <div class="grid-valores">
-                <div class="card-valor">
-                    <div class="rotulo">Receita do Mês</div>
-                    <div class="valor verde" id="receitaMes">R$ 0,00</div>
-                </div>
-                <div class="card-valor">
-                    <div class="rotulo">Pendências</div>
-                    <div class="valor vermelho" id="pendencias">R$ 0,00</div>
-                </div>
-                <div class="card-valor">
-                    <div class="rotulo">Previsão</div>
-                    <div class="valor branco" id="previsao">R$ 0,00</div>
-                </div>
-            </div>
-
-            <button class="btn-lancar" onclick="abrirModalPagamento()"><i class="fas fa-plus"></i> Lançar Pagamento</button>
-
-            <table class="tabela">
-                <thead>
-                    <tr>
-                        <th>Aluno</th>
-                        <th>Referência</th>
-                        <th>Valor</th>
-                        <th>Vencimento</th>
-                        <th>Status</th>
-                        <th>Confirmar</th>
-                    </tr>
-                </thead>
-                <tbody id="listaPagamentos">
-                    <tr><td colspan="6" class="vazio">Nenhuma mensalidade lançada até o momento</td></tr>
-                </tbody>
-            </table>
+        <!-- Abas -->
+        <div class="abas">
+            <div class="aba ativa" onclick="mudarAba('todas')">Todas as Mensalidades</div>
+            <div class="aba" onclick="mudarAba('pendentes')">Alunos Pendentes</div>
         </div>
+
+        <div class="card-filtro">
+            <input type="text" id="buscaFin" placeholder="🔍 Buscar por aluno ou mês...">
+            <select id="filtroStatus">
+                <option value="">Todos os status</option>
+                <option value="Pendente">Pendentes</option>
+                <option value="Pago">Pagas</option>
+                <option value="Atrasado">Atrasadas</option>
+            </select>
+        </div>
+
+        <table class="tabela" id="tabelaPrincipal">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Mês/Ano</th>
+                    <th>Valor</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaDados">
+                <tr><td colspan="6" class="vazio">Carregando...</td></tr>
+            </tbody>
+        </table>
     </main>
 
-    <!-- MODAL LANÇAR PAGAMENTO -->
-    <div id="modalPagamento" class="fundo-modal">
+    <!-- Modal de Configuração da Mensalidade -->
+    <div id="modalConfig" class="fundo-modal">
         <div class="modal">
-            <button class="fechar-modal" onclick="fecharModalPagamento()">×</button>
-            <h2>Lançar Pagamento</h2>
-            <form id="formPagamento">
+            <button class="fechar-modal" onclick="fecharModalConfig()">&times;</button>
+            <h2>Configurar Valor da Mensalidade</h2>
+            <form id="formConfig">
                 <div class="grupo-form">
-                    <label>Aluno *</label>
-                    <select id="alunoPagamento" required>
-                        <option value="">Selecione um aluno</option>
-                    </select>
+                    <label>Valor padrão da mensalidade R$ *</label>
+                    <input type="number" step="0.01" id="valorPadrao" required placeholder="Ex: 120.00">
                 </div>
                 <div class="grupo-form">
-                    <label>Referência (Mês/Ano) *</label>
-                    <input type="text" id="refPagamento" required placeholder="Ex: Julho/2026">
+                    <label>Dia de vencimento de cada mês *</label>
+                    <input type="number" min="1" max="31" id="diaVencimento" required placeholder="Ex: 10">
                 </div>
-                <div class="grupo-form">
-                    <label>Valor R$ *</label>
-                    <input type="number" step="0.01" id="valorPagamento" required placeholder="150.00">
-                </div>
-                <div class="grupo-form">
-                    <label>Data de Vencimento *</label>
-                    <input type="date" id="vencPagamento" required>
-                </div>
-                <button type="submit" class="btn-salvar">Lançar Mensalidade</button>
+                <button type="submit" class="btn-salvar">Salvar Configuração</button>
             </form>
         </div>
     </div>
@@ -183,90 +224,202 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
+
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        document.getElementById('dataAtual').textContent = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'long', year:'numeric'});
+        let abaAtiva = 'todas';
 
-        function abrirModalPagamento() { carregarAlunosSelect(); document.getElementById('modalPagamento').style.display='flex'; }
-        function fecharModalPagamento() { document.getElementById('modalPagamento').style.display='none'; document.getElementById('formPagamento').reset(); }
-
-        async function carregarAlunosSelect() {
-            const select = document.getElementById('alunoPagamento');
-            select.innerHTML = '<option value="">Selecione um aluno</option>';
-            const snapshot = await db.collection('alunos').orderBy('nome').get();
-            snapshot.forEach(doc => {
-                const op = document.createElement('option');
-                op.value = doc.id;
-                op.textContent = doc.data().nome;
-                select.appendChild(op);
-            });
+        function toggleMenu() {
+            document.getElementById('menuLateral').classList.toggle('fechado');
         }
 
-        document.getElementById('formPagamento').addEventListener('submit', async e => {
+        function mudarAba(nome) {
+            abaAtiva = nome;
+            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
+            event.target.classList.add('ativa');
+            carregarDados();
+        }
+
+        // Formatar data para "Mês/Ano"
+        function formatarMesAno(data) {
+            const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+            return `${meses[data.getMonth()]}/${data.getFullYear()}`;
+        }
+
+        // Gerar mensalidades automaticamente até o mês atual
+        async function gerarMensalidadesAutomaticas() {
+            const configDoc = await db.collection('configuracoes').doc('financeiro').get();
+            if (!configDoc.exists) return;
+
+            const { valorPadrao, diaVencimento } = configDoc.data();
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth();
+            const anoAtual = hoje.getFullYear();
+
+            const alunosSnapshot = await db.collection('alunos').get();
+            for (const alunoDoc of alunosSnapshot.docs) {
+                const aluno = alunoDoc.data();
+                const dataCadastro = aluno.dataCadastro ? aluno.dataCadastro.toDate() : new Date();
+                let mesInicio = dataCadastro.getMonth();
+                let anoInicio = dataCadastro.getFullYear();
+
+                // Percorre todos os meses desde o cadastro até o mês atual
+                while (anoInicio < anoAtual || (anoInicio === anoAtual && mesInicio <= mesAtual)) {
+                    const dataVenc = new Date(anoInicio, mesInicio, diaVencimento);
+                    const refMes = formatarMesAno(new Date(anoInicio, mesInicio, 1));
+
+                    // Verifica se já existe mensalidade para esse mês
+                    const existe = await db.collection('mensalidades')
+                        .where('alunoId', '==', alunoDoc.id)
+                        .where('referencia', '==', refMes)
+                        .get();
+
+                    if (existe.empty) {
+                        await db.collection('mensalidades').add({
+                            alunoId: alunoDoc.id,
+                            referencia: refMes,
+                            valor: valorPadrao,
+                            vencimento: firebase.firestore.Timestamp.fromDate(dataVenc),
+                            status: 'Pendente',
+                            dataGeracao: firebase.firestore.Timestamp.fromDate(new Date())
+                        });
+                    }
+
+                    mesInicio++;
+                    if (mesInicio > 11) { mesInicio = 0; anoInicio++; }
+                }
+            }
+        }
+
+        async function carregarDados() {
+            const lista = document.getElementById('listaDados');
+            lista.innerHTML = '';
+            const hoje = new Date();
+
+            await gerarMensalidadesAutomaticas();
+
+            let query = db.collection('mensalidades').orderBy('vencimento', 'desc');
+            if (abaAtiva === 'pendentes') {
+                query = query.where('status', 'in', ['Pendente', 'Atrasado']);
+            }
+
+            const snapshot = await query.get();
+            if (snapshot.empty) {
+                lista.innerHTML = `<tr><td colspan="6" class="vazio">Nenhuma mensalidade encontrada.</td></tr>`;
+                return;
+            }
+
+            const alunosMap = new Map();
+            const alunosSnapshot = await db.collection('alunos').get();
+            alunosSnapshot.forEach(doc => alunosMap.set(doc.id, doc.data().nome));
+
+            for (const doc of snapshot.docs) {
+                const m = doc.data();
+                const dataVenc = m.vencimento.toDate();
+                let status = m.status;
+                let classeStatus = '';
+                let linhaClasse = '';
+
+                if (status === 'Pago') {
+                    classeStatus = 'status-pago';
+                } else {
+                    if (dataVenc < hoje) {
+                        status = 'Atrasado';
+                        classeStatus = 'status-atrasado';
+                        linhaClasse = 'destaque-atraso';
+                    } else {
+                        classeStatus = 'status-pendente';
+                    }
+                }
+
+                const nomeAluno = alunosMap.get(m.alunoId) || 'Aluno não encontrado';
+
+                lista.innerHTML += `
+                <tr class="${linhaClasse}">
+                    <td><strong>${nomeAluno}</strong></td>
+                    <td>${m.referencia}</td>
+                    <td>R$ ${m.valor.toFixed(2).replace('.', ',')}</td>
+                    <td>${dataVenc.toLocaleDateString('pt-BR')}</td>
+                    <td class="${classeStatus}">${status}</td>
+                    <td>
+                        ${status !== 'Pago' ? `<button class="btn-acao btn-pagar" onclick="marcarPago('${doc.id}')">Marcar como Pago</button>` : ''}
+                        <button class="btn-acao btn-excluir" onclick="excluirLancamento('${doc.id}')">Excluir</button>
+                    </td>
+                </tr>`;
+            }
+        }
+
+        async function marcarPago(id) {
+            if (confirm('Confirmar pagamento desta mensalidade?')) {
+                await db.collection('mensalidades').doc(id).update({ status: 'Pago' });
+                carregarDados();
+            }
+        }
+
+        async function excluirLancamento(id) {
+            if (confirm('Excluir este lançamento?')) {
+                await db.collection('mensalidades').doc(id).delete();
+                carregarDados();
+            }
+        }
+
+        function abrirModalConfig() {
+            document.getElementById('modalConfig').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            carregarConfiguracao();
+        }
+
+        function fecharModalConfig() {
+            document.getElementById('modalConfig').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        async function carregarConfiguracao() {
+            const doc = await db.collection('configuracoes').doc('financeiro').get();
+            if (doc.exists) {
+                const dados = doc.data();
+                document.getElementById('valorPadrao').value = dados.valorPadrao;
+                document.getElementById('diaVencimento').value = dados.diaVencimento;
+            }
+        }
+
+        document.getElementById('formConfig').addEventListener('submit', async (e) => {
             e.preventDefault();
-            try {
-                await db.collection('mensalidades').add({
-                    alunoId: document.getElementById('alunoPagamento').value,
-                    referencia: document.getElementById('refPagamento').value.trim(),
-                    valor: parseFloat(document.getElementById('valorPagamento').value),
-                    vencimento: new Date(document.getElementById('vencPagamento').value),
-                    status: 'Pendente',
-                    dataLancamento: new Date()
-                });
-                alert('✅ Lançado com sucesso!');
-                fecharModalPagamento();
-                carregarPagamentos();
-                atualizarValores();
-            } catch (erro) { alert('❌ Erro: ' + erro.message); }
+            const valor = parseFloat(document.getElementById('valorPadrao').value);
+            const dia = parseInt(document.getElementById('diaVencimento').value);
+
+            await db.collection('configuracoes').doc('financeiro').set({
+                valorPadrao: valor,
+                diaVencimento: dia
+            });
+
+            alert('✅ Configurações salvas! As mensalidades serão geradas automaticamente.');
+            fecharModalConfig();
+            carregarDados();
         });
 
-        async function carregarPagamentos() {
-            const lista = document.getElementById('listaPagamentos');
-            lista.innerHTML = '';
-            const snapshot = await db.collection('mensalidades').orderBy('dataLancamento','desc').get();
-            if (snapshot.empty) { lista.innerHTML = `<tr><td colspan="6" class="vazio">Nenhuma mensalidade lançada até o momento</td></tr>`; return; }
-            snapshot.forEach(async doc => {
-                const p = doc.data();
-                const aluno = await db.collection('alunos').doc(p.alunoId).get();
-                const nomeAluno = aluno.exists ? aluno.data().nome : 'Aluno não encontrado';
-                lista.innerHTML += `
-                <tr>
-                    <td>${nomeAluno}</td>
-                    <td>${p.referencia}</td>
-                    <td>R$ ${p.valor.toFixed(2).replace('.',',')}</td>
-                    <td>${new Date(p.vencimento.seconds*1000).toLocaleDateString('pt-BR')}</td>
-                    <td style="color:${p.status==='Pago'?'#00C853':'#D10000'};font-weight:600">${p.status}</td>
-                    <td><button class="btn-confirmar" onclick="marcarPago('${doc.id}')">Confirmar</button></td>
-                </tr>`;
-            });
+        function sair() {
+            if(confirm('Deseja realmente sair?')) auth.signOut().then(()=>window.location.href='login.html');
         }
 
-        window.marcarPago = async function(id) {
-            await db.collection('mensalidades').doc(id).update({status:'Pago'});
-            alert('✅ Pagamento confirmado!');
-            carregarPagamentos();
-            atualizarValores();
-        };
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) window.location.href='login.html';
+            else carregarDados();
+        });
 
-        async function atualizarValores() {
-            let receita = 0, pendentes = 0, previsao = 0;
-            const snapshot = await db.collection('mensalidades').get();
-            snapshot.forEach(doc => {
-                const p = doc.data();
-                if (p.status === 'Pago') receita += p.valor;
-                else if (p.status === 'Pendente') { pendentes += p.valor; previsao += p.valor; }
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('fundo-modal')) fecharModalConfig();
+        });
+
+        // Filtro por texto
+        document.getElementById('buscaFin').addEventListener('input', () => {
+            const termo = document.getElementById('buscaFin').value.toLowerCase();
+            document.querySelectorAll('#listaDados tr').forEach(linha => {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
             });
-            document.getElementById('receitaMes').textContent = `R$ ${receita.toFixed(2).replace('.',',')}`;
-            document.getElementById('pendencias').textContent = `R$ ${pendentes.toFixed(2).replace('.',',')}`;
-            document.getElementById('previsao').textContent = `R$ ${previsao.toFixed(2).replace('.',',')}`;
-        }
-
-        function sair() { if(confirm('Sair?')) auth.signOut().then(()=>window.location.href='login.html'); }
-
-        auth.onAuthStateChanged(u => { if(!u) window.location.href='login.html'; else { carregarPagamentos(); atualizarValores(); } });
-        window.onclick = e => { if(e.target.classList.contains('fundo-modal')) e.target.style.display='none'; }
+        });
     </script>
 </body>
 </html>

@@ -13,12 +13,14 @@
             --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
         }
-        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; overflow-x: hidden; }
 
+        /* ✅ Botão do menu (3 pontinhos/ícone) */
         .btn-menu {
             display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
             background: var(--vermelho-principal); border: none; color: white;
             width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         .menu-lateral {
@@ -39,13 +41,18 @@
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
 
-        .conteudo { margin-left: 240px; padding: 35px 45px; padding-top: 30px; }
+        .conteudo { margin-left: 240px; padding: 35px 45px; padding-top: 30px; min-height: 100vh; }
         .cabecalho {
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 35px;
         }
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
-        .btn-novo { background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        .btn-novo { 
+            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; 
+            border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
+        }
         .btn-novo:hover { background: var(--vermelho-claro); }
 
         .card-busca { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; }
@@ -53,7 +60,7 @@
             width: 100%; padding: 14px; background: var(--fundo-escuro); border: 1px solid var(--borda);
             border-radius: 6px; color: white; font-size: 14px; outline: none;
         }
-        .card-busca input:focus { border-color: var(--vermelho-principal); }
+        .card-busca input:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2); }
 
         .tabela-alunos { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
         .tabela-alunos th { background: #1f1f25; padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
@@ -61,10 +68,47 @@
         .tabela-alunos tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; }
+        .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-editar { background: #2563eb; color: white; }
+        .btn-editar:hover { background: #1d4ed8; }
         .btn-excluir { background: var(--vermelho-principal); color: white; }
+        .btn-excluir:hover { background: var(--vermelho-claro); }
 
+        /* ✅ Modal de cadastro */
+        .fundo-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
+            padding: 30px; width: 100%; max-width: 480px; position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+        }
+        .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
+        .fechar-modal {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: var(--texto-cinza); font-size: 28px; cursor: pointer; transition: 0.2s;
+        }
+        .fechar-modal:hover { color: var(--vermelho-principal); }
+
+        .grupo-form { margin-bottom: 20px; }
+        .grupo-form label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+        .grupo-form input, .grupo-form select {
+            width: 100%; padding: 13px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            border-radius: 4px; color: white; font-size: 14px;
+        }
+        .grupo-form input:focus, .grupo-form select:focus {
+            outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2);
+        }
+
+        .btn-salvar {
+            width: 100%; padding: 15px; background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
+            border: none; border-radius: 6px; color: white; font-weight: 800; font-size: 16px;
+            cursor: pointer; margin-top: 10px; transition: 0.2s;
+        }
+        .btn-salvar:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Responsivo */
         @media (max-width: 768px) {
             .btn-menu { display: flex; }
             .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
@@ -79,10 +123,12 @@
 </head>
 <body>
 
+    <!-- Botão do menu -->
     <button class="btn-menu" onclick="toggleMenu()">
         <i class="fas fa-bars"></i>
     </button>
 
+    <!-- Menu lateral -->
     <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
@@ -101,10 +147,13 @@
         </nav>
     </aside>
 
+    <!-- Conteúdo principal -->
     <main class="conteudo">
         <div class="cabecalho">
             <h1 class="titulo-pagina">Gerenciar Alunos</h1>
-            <button class="btn-novo" onclick="window.location.href='admin.html'"><i class="fas fa-plus"></i> Novo Aluno</button>
+            <button class="btn-novo" onclick="abrirModalAluno()">
+                <i class="fas fa-user-plus"></i> Novo Aluno
+            </button>
         </div>
 
         <div class="card-busca">
@@ -127,6 +176,43 @@
         </table>
     </main>
 
+    <!-- ✅ Modal de Cadastro de Aluno -->
+    <div id="modalAluno" class="fundo-modal">
+        <div class="modal">
+            <button class="fechar-modal" onclick="fecharModalAluno()">&times;</button>
+            <h2>Cadastrar Novo Aluno</h2>
+            <form id="formAluno">
+                <div class="grupo-form">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="nomeAluno" required>
+                </div>
+                <div class="grupo-form">
+                    <label>CPF *</label>
+                    <input type="text" id="cpfAluno" required placeholder="000.000.000-00">
+                </div>
+                <div class="grupo-form">
+                    <label>E-mail</label>
+                    <input type="email" id="emailAluno">
+                </div>
+                <div class="grupo-form">
+                    <label>Telefone</label>
+                    <input type="text" id="telAluno" placeholder="(00) 00000-0000">
+                </div>
+                <div class="grupo-form">
+                    <label>Faixa Inicial *</label>
+                    <select id="faixaAluno" required>
+                        <option value="Branca">Branca</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Roxa">Roxa</option>
+                        <option value="Marrom">Marrom</option>
+                        <option value="Preta">Preta</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-salvar">Salvar Aluno</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -141,10 +227,47 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Função do menu
         function toggleMenu() {
             document.getElementById('menuLateral').classList.toggle('fechado');
         }
 
+        // Funções do modal
+        function abrirModalAluno() {
+            document.getElementById('modalAluno').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharModalAluno() {
+            document.getElementById('modalAluno').style.display = 'none';
+            document.getElementById('formAluno').reset();
+            document.body.style.overflow = 'auto';
+        }
+
+        // Salvar aluno
+        document.getElementById('formAluno').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                const dadosAluno = {
+                    nome: document.getElementById('nomeAluno').value.trim(),
+                    cpf: document.getElementById('cpfAluno').value.trim(),
+                    email: document.getElementById('emailAluno').value.trim(),
+                    telefone: document.getElementById('telAluno').value.trim(),
+                    faixa: document.getElementById('faixaAluno').value,
+                    dataCadastro: firebase.firestore.Timestamp.fromDate(new Date())
+                };
+
+                await db.collection('alunos').add(dadosAluno);
+                alert('✅ Aluno cadastrado com sucesso!');
+                fecharModalAluno();
+                carregarAlunos();
+            } catch (erro) {
+                console.error(erro);
+                alert('❌ Erro ao cadastrar: ' + erro.message);
+            }
+        });
+
+        // Carregar lista de alunos
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '';
@@ -169,7 +292,7 @@
                         <td>${dataCad.toLocaleDateString('pt-BR')}</td>
                         <td>
                             <button class="btn-acao btn-editar">Editar</button>
-                            <button class="btn-acao btn-excluir">Excluir</button>
+                            <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
                         </td>
                     </tr>`;
                 });
@@ -190,6 +313,18 @@
             });
         }
 
+        async function excluirAluno(id) {
+            if (confirm('Tem certeza que deseja excluir este aluno?')) {
+                try {
+                    await db.collection('alunos').doc(id).delete();
+                    alert('✅ Aluno excluído!');
+                    carregarAlunos();
+                } catch (erro) {
+                    alert('❌ Erro ao excluir: ' + erro.message);
+                }
+            }
+        }
+
         function sair() {
             if(confirm('Deseja realmente sair?')) auth.signOut().then(()=>window.location.href='login.html');
         }
@@ -197,6 +332,13 @@
         auth.onAuthStateChanged(usuario => {
             if (!usuario) window.location.href='login.html';
             else carregarAlunos();
+        });
+
+        // Fechar modal clicando fora
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('fundo-modal')) {
+                fecharModalAluno();
+            }
         });
     </script>
 </body>
