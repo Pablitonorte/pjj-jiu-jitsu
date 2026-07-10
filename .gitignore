@@ -1,0 +1,5 @@
+config-firebase.js
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
