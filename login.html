@@ -170,7 +170,7 @@
         }
     </style>
 
-    <!-- Bibliotecas do Firebase -->
+    <!-- Bibliotecas do Firebase mantidas compatíveis -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -265,7 +265,7 @@
 
                 if (doc.exists) {
                     const dados = doc.data();
-                    console.log("Dados do usuário:", dados); // Para debug no console
+                    console.log("Dados do usuário:", dados);
 
                     // Verifica o tipo de usuário
                     if (dados.tipo === 'admin') {
@@ -278,11 +278,11 @@
                         mostrarMensagem("⚠️ Perfil de usuário não definido!", "erro");
                     }
                 } else {
-                    mostrarMensagem("❌ Usuário cadastrado no sistema, mas sem dados completos. Contate o suporte!", "erro");
+                    mostrarMensagem("❌ Usuário cadastrado, mas sem dados completos. Contate o suporte!", "erro");
                 }
 
             } catch (erro) {
-                console.error("Erro completo:", erro); // Mostra detalhes no console para diagnóstico
+                console.error("Erro completo:", erro);
                 let mensagem = "Erro ao fazer login!";
 
                 // Tratamento detalhado dos erros
@@ -297,10 +297,10 @@
                         mensagem = "❌ Formato de e-mail inválido!";
                         break;
                     case 'auth/too-many-requests':
-                        mensagem = "⚠️ Muitas tentativas! Tente novamente mais tarde ou redefina sua senha.";
+                        mensagem = "⚠️ Muitas tentativas! Redefina sua senha ou tente mais tarde.";
                         break;
                     case 'auth/network-request-failed':
-                        mensagem = "📶 Sem conexão com a internet ou com o servidor!";
+                        mensagem = "📶 Sem conexão com a internet ou servidor!";
                         break;
                     default:
                         mensagem = `❌ Erro: ${erro.message}`;
@@ -311,14 +311,19 @@
         });
 
         // --------------------------
-        // 🔑 RECUPERAR SENHA
+        // 🔑 RECUPERAR SENHA MELHORADA
         // --------------------------
         function recuperarSenha() {
             const email = prompt("Digite o e-mail cadastrado para receber o link de redefinição:");
             if (!email) return;
 
-            auth.sendPasswordResetEmail(email.trim())
-                .then(() => mostrarMensagem("📩 E-mail enviado! Verifique sua caixa de entrada ou spam.", "sucesso"))
+            // Configuração para funcionar no GitHub Pages
+            const acoes = {
+                url: "https://pablitonorte.github.io/pjj-jiu-jitsu/login.html"
+            };
+
+            auth.sendPasswordResetEmail(email.trim(), acoes)
+                .then(() => mostrarMensagem("📩 E-mail enviado! Verifique sua caixa de entrada ou pasta de SPAM.", "sucesso"))
                 .catch((erro) => {
                     if (erro.code === 'auth/invalid-email') {
                         mostrarMensagem("❌ Formato de e-mail inválido!", "erro");
