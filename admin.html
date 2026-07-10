@@ -9,7 +9,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: #f8f9fa; color: #333; }
 
-        /* Botão Menu Mobile */
         .btn-menu {
             display: none;
             position: fixed;
@@ -23,10 +22,8 @@
             border-radius: 6px;
             font-size: 1.2rem;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        /* Menu Lateral */
         .sidebar {
             width: 260px;
             height: 100vh;
@@ -62,9 +59,7 @@
             color: white;
             border-left: 4px solid white;
         }
-        .sidebar-menu li a i { width: 20px; text-align: center; }
 
-        /* Conteúdo Principal */
         .conteudo-principal {
             margin-left: 260px;
             padding: 30px;
@@ -79,8 +74,6 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        .data { color: #666; font-size: 0.95rem; }
-        .admin-info { display: flex; align-items: center; gap: 8px; font-weight: 500; }
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -92,12 +85,8 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             text-align: center;
-            transition: transform 0.2s;
         }
-        .card:hover { transform: translateY(-3px); }
-        .card h3 { font-size: 1rem; color: #555; margin-bottom: 15px; }
-        .card .numero { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; }
-        .card p { color: #888; font-size: 0.9rem; margin-bottom: 15px; }
+        .card .numero { font-size: 2.5rem; font-weight: bold; margin: 15px 0 10px; }
         .card button {
             background: #e9ecef;
             border: none;
@@ -105,13 +94,10 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
-            transition: background 0.2s;
+            margin-top: 10px;
         }
-        .card button:hover { background: #dee2e6; }
-        .card .btn-acao-vermelho { background: #D10000; color: white; }
-        .card .btn-acao-vermelho:hover { background: #ff1a1a; }
+        .card .btn-vermelho { background: #D10000; color: white; }
 
-        /* Responsivo Celular */
         @media (max-width: 768px) {
             .btn-menu { display: block; }
             .sidebar { transform: translateX(-100%); }
@@ -124,7 +110,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -135,27 +120,25 @@
             <img src="imagens/logopjj.png" alt="Logo PJJ">
         </div>
         <ul class="sidebar-menu">
-            <li><a href="#" class="ativo" onclick="abrirPagina('dashboard'); return false;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="#" onclick="abrirPagina('alunos'); return false;"><i class="fas fa-users"></i> Alunos</a></li>
-            <li><a href="#" onclick="abrirPagina('peso'); return false;"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
-            <li><a href="#" onclick="abrirPagina('financeiro'); return false;"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-            <li><a href="#" onclick="abrirPagina('graduacoes'); return false;"><i class="fas fa-medal"></i> Graduações</a></li>
-            <li><a href="#" onclick="abrirPagina('professores'); return false;"><i class="fas fa-chalkboard-teacher"></i> Professores</a></li>
-            <li><a href="#" onclick="abrirPagina('eventos'); return false;"><i class="fas fa-calendar-alt"></i> Eventos / Torneios</a></li>
-            <li><a href="#" onclick="abrirPagina('avisos'); return false;"><i class="fas fa-bell"></i> Avisos</a></li>
-            <li><a href="#" onclick="abrirPagina('relatorios'); return false;"><i class="fas fa-file-alt"></i> Relatórios</a></li>
-            <li><a href="#" onclick="abrirPagina('configuracoes'); return false;"><i class="fas fa-cog"></i> Configurações</a></li>
-            <li><a href="#" onclick="abrirPagina('aluno'); return false;"><i class="fas fa-user"></i> Área do Aluno</a></li>
-            <li><a href="#" onclick="sair(); return false;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            <li><a href="javascript:void(0)" class="ativo" onclick="marcarMenu(this); return false;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-users"></i> Alunos</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-medal"></i> Graduações</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-chalkboard-teacher"></i> Professores</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-calendar-alt"></i> Eventos / Torneios</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-bell"></i> Avisos</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-cog"></i> Configurações</a></li>
+            <li><a href="javascript:void(0)" onclick="marcarMenu(this); return false;"><i class="fas fa-user"></i> Área do Aluno</a></li>
+            <li><a href="javascript:void(0)" onclick="sair(); return false;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
         </ul>
     </nav>
 
     <main class="conteudo-principal">
         <div class="cabecalho">
             <div class="data">10 de Julho de 2026</div>
-            <div class="admin-info">
-                <i class="fas fa-user-circle"></i> Administrador
-            </div>
+            <div class="admin-info"><i class="fas fa-user-circle"></i> Administrador</div>
         </div>
 
         <div class="cards">
@@ -163,25 +146,25 @@
                 <h3>ALUNOS ATIVOS</h3>
                 <div class="numero">0</div>
                 <p>Nenhum aluno cadastrado ainda</p>
-                <button onclick="abrirPagina('alunos')">Ver todos</button>
+                <button onclick="alert('Abrindo lista de Alunos')">Ver todos</button>
             </div>
             <div class="card">
                 <h3>CONTROLE DE PESO</h3>
                 <div class="numero" style="color: #f39c12;">0</div>
                 <p>Sem registros de peso</p>
-                <button onclick="abrirPagina('peso')">Ver categorias</button>
+                <button onclick="alert('Abrindo Controle de Peso')">Ver categorias</button>
             </div>
             <div class="card">
                 <h3>MENSALIDADES PENDENTES</h3>
                 <div class="numero" style="color: #e74c3c;">0</div>
                 <p>R$ 0,00 em aberto</p>
-                <button class="btn-acao-vermelho" onclick="abrirPagina('financeiro')">Cobrar</button>
+                <button class="btn-vermelho" onclick="alert('Abrindo Financeiro')">Cobrar</button>
             </div>
             <div class="card">
                 <h3>GRADUAÇÕES PREVISTAS</h3>
                 <div class="numero" style="color: #9b59b6;">0</div>
                 <p>Nenhuma agendada</p>
-                <button onclick="abrirPagina('graduacoes')">Ver calendário</button>
+                <button onclick="alert('Abrindo Graduações')">Ver calendário</button>
             </div>
         </div>
     </main>
@@ -195,50 +178,26 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Abre/fecha menu no celular
         function alternarMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Fecha menu ao clicar fora (celular)
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('menuLateral');
-            const btn = document.querySelector('.btn-menu');
-            if (window.innerWidth <= 768 && !menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.classList.remove('aberto');
-            }
-        });
-
-        // Navegação entre páginas
-        function abrirPagina(pagina) {
-            // Marca item ativo no menu
-            document.querySelectorAll('.sidebar-menu li a').forEach(item => item.classList.remove('ativo'));
-            event.target.closest('a').classList.add('ativo');
-
-            // Aqui você pode redirecionar ou carregar conteúdo:
-            // if(pagina === 'alunos') window.location.href = 'alunos.html';
-
-            // Fecha menu automaticamente no celular
+        function marcarMenu(item) {
+            document.querySelectorAll('.sidebar-menu li a').forEach(a => a.classList.remove('ativo'));
+            item.classList.add('ativo');
             if (window.innerWidth <= 768) alternarMenu();
-            
-            alert(`Abrindo módulo: ${pagina.toUpperCase()}`);
         }
 
-        // Sair da conta
         function sair() {
-            if(confirm('Deseja realmente sair?')) {
-                auth.signOut().then(() => window.location.href = "login.html");
+            if(confirm('Deseja sair da conta?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
-        // Verifica se está logado
-        auth.onAuthStateChanged(usuario => {
-            if (!usuario) window.location.href = "login.html";
-        });
+        auth.onAuthStateChanged(u => { if(!u) window.location.href='login.html' });
     </script>
 
 </body>
