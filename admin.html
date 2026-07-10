@@ -6,24 +6,35 @@
     <title>Painel Administrativo - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: #f8f9fa; color: #333; }
+        /* ================================== */
+        /* ÁREA DE CONFIGURAÇÕES FÁCEIS DE EDITAR */
+        /* ================================== */
+        :root {
+            --cor-principal: #D10000;       /* Cor vermelha principal */
+            --cor-fundo: #f8f9fa;           /* Cor de fundo geral */
+            --cor-menu: #1a1a1a;            /* Cor do menu lateral */
+            --cor-texto-menu: #cccccc;      /* Cor do texto do menu */
+            --cor-branco: #ffffff;
+            --cor-cinza: #333333;
+        }
 
-        /* Botão abrir menu no celular */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI, sans-serif'; }
+        body { background-color: var(--cor-fundo); color: var(--cor-cinza); }
+
+        /* Botão do menu no celular */
         .btn-menu {
             display: none;
             position: fixed;
             top: 15px;
             left: 15px;
             z-index: 1000;
-            background: #D10000;
-            color: white;
+            background: var(--cor-principal);
+            color: var(--cor-branco);
             border: none;
-            padding: 12px 15px;
+            padding: 12px 16px;
             border-radius: 6px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         /* Menu Lateral */
@@ -33,8 +44,8 @@
             position: fixed;
             left: 0;
             top: 0;
-            background-color: #1a1a1a;
-            border-right: 3px solid #D10000;
+            background-color: var(--cor-menu);
+            border-right: 3px solid var(--cor-principal);
             overflow-y: auto;
             transition: transform 0.3s ease;
             z-index: 999;
@@ -42,25 +53,26 @@
         .sidebar-logo {
             text-align: center;
             padding: 25px 15px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #2d2d2d;
         }
-        .sidebar-logo img { height: 90px; }
+        .sidebar-logo img { height: 85px; }
         .sidebar-menu { list-style: none; padding: 15px 0; }
         .sidebar-menu li a {
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 14px 25px;
-            color: #ccc;
+            padding: 14px 20px;
+            color: var(--cor-texto-menu);
             text-decoration: none;
-            transition: all 0.2s;
             font-size: 0.95rem;
             cursor: pointer;
+            transition: all 0.2s;
         }
-        .sidebar-menu li a:hover, .sidebar-menu li a.ativo {
-            background-color: #D10000;
-            color: white;
-            border-left: 4px solid white;
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.ativo {
+            background-color: var(--cor-principal);
+            color: var(--cor-branco);
+            border-left: 4px solid var(--cor-branco);
         }
 
         /* Conteúdo Principal */
@@ -78,13 +90,14 @@
             flex-wrap: wrap;
             gap: 15px;
         }
-        .data { color: #666; font-size: 0.95rem; }
-        .admin-info { display: flex; align-items: center; gap: 8px; font-weight: 500; }
-
-        /* Áreas de conteúdo */
         .pagina { display: none; }
         .pagina.ativa { display: block; }
-        .pagina h2 { color: #D10000; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .pagina h2 {
+            color: var(--cor-principal);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
 
         /* Cards do Dashboard */
         .cards {
@@ -93,15 +106,13 @@
             gap: 20px;
         }
         .card {
-            background: white;
+            background: var(--cor-branco);
             padding: 25px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             text-align: center;
         }
-        .card h3 { font-size: 1rem; color: #555; margin-bottom: 15px; }
-        .card .numero { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; }
-        .card p { color: #888; font-size: 0.9rem; margin-bottom: 15px; }
+        .card .numero { font-size: 2.4rem; font-weight: bold; margin: 15px 0; }
         .card button {
             background: #e9ecef;
             border: none;
@@ -109,11 +120,11 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
-            transition: background 0.2s;
         }
-        .card button:hover { background: #dee2e6; }
-        .btn-vermelho { background: #D10000 !important; color: white !important; }
-        .btn-vermelho:hover { background: #ff1a1a !important; }
+        .btn-vermelho {
+            background: var(--cor-principal) !important;
+            color: var(--cor-branco) !important;
+        }
 
         /* Responsivo para celular */
         @media (max-width: 768px) {
@@ -121,8 +132,6 @@
             .sidebar { transform: translateX(-100%); }
             .sidebar.aberto { transform: translateX(0); }
             .conteudo-principal { margin-left: 0; padding: 20px 15px; padding-top: 70px; }
-            .cabecalho { flex-direction: column; text-align: center; }
-            .cards { grid-template-columns: 1fr; }
         }
     </style>
 
@@ -133,7 +142,7 @@
 </head>
 <body>
 
-    <!-- Botão abrir menu no celular -->
+    <!-- Botão abrir menu -->
     <button class="btn-menu" onclick="alternarMenu()">☰</button>
 
     <!-- Menu Lateral -->
@@ -142,119 +151,71 @@
             <img src="imagens/logopjj.png" alt="Logo PJJ">
         </div>
         <ul class="sidebar-menu">
-            <li><a href="#" class="ativo" onclick="abrirPagina('dashboard'); return false;"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="#" onclick="abrirPagina('alunos'); return false;"><i class="fas fa-users"></i> Alunos</a></li>
-            <li><a href="#" onclick="abrirPagina('peso'); return false;"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
-            <li><a href="#" onclick="abrirPagina('financeiro'); return false;"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-            <li><a href="#" onclick="abrirPagina('graduacoes'); return false;"><i class="fas fa-medal"></i> Graduações</a></li>
-            <li><a href="#" onclick="abrirPagina('professores'); return false;"><i class="fas fa-chalkboard-teacher"></i> Professores</a></li>
-            <li><a href="#" onclick="abrirPagina('eventos'); return false;"><i class="fas fa-calendar-alt"></i> Eventos / Torneios</a></li>
-            <li><a href="#" onclick="abrirPagina('avisos'); return false;"><i class="fas fa-bell"></i> Avisos</a></li>
-            <li><a href="#" onclick="abrirPagina('relatorios'); return false;"><i class="fas fa-file-alt"></i> Relatórios</a></li>
-            <li><a href="#" onclick="abrirPagina('configuracoes'); return false;"><i class="fas fa-cog"></i> Configurações</a></li>
-            <li><a href="#" onclick="abrirPagina('aluno'); return false;"><i class="fas fa-user"></i> Área do Aluno</a></li>
-            <li><a href="#" onclick="sair(); return false;"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            <li><a onclick="irPara('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a onclick="irPara('alunos', this)"><i class="fas fa-users"></i> Alunos</a></li>
+            <li><a onclick="irPara('peso', this)"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
+            <li><a onclick="irPara('financeiro', this)"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+            <li><a onclick="irPara('graduacoes', this)"><i class="fas fa-medal"></i> Graduações</a></li>
+            <li><a onclick="irPara('relatorios', this)"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+            <li><a onclick="irPara('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</a></li>
+            <li><a onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
         </ul>
     </nav>
 
     <!-- Conteúdo Principal -->
     <main class="conteudo-principal">
         <div class="cabecalho">
-            <div class="data" id="dataAtual"></div>
-            <div class="admin-info"><i class="fas fa-user-circle"></i> Administrador</div>
+            <div id="dataAtual"></div>
+            <div><i class="fas fa-user-circle"></i> Administrador</div>
         </div>
 
-        <!-- Página Dashboard -->
+        <!-- Páginas -->
         <div id="pagina-dashboard" class="pagina ativa">
             <h2>Dashboard</h2>
             <div class="cards">
                 <div class="card">
                     <h3>ALUNOS ATIVOS</h3>
-                    <div class="numero" id="qtdAlunos">0</div>
-                    <p>Nenhum aluno cadastrado ainda</p>
-                    <button onclick="abrirPagina('alunos')">Ver todos</button>
-                </div>
-                <div class="card">
-                    <h3>CONTROLE DE PESO</h3>
-                    <div class="numero" style="color: #f39c12;" id="qtdPeso">0</div>
-                    <p>Sem registros de peso</p>
-                    <button onclick="abrirPagina('peso')">Ver categorias</button>
+                    <div class="numero" style="color:#27ae60;">0</div>
+                    <button onclick="irPara('alunos')">Ver todos</button>
                 </div>
                 <div class="card">
                     <h3>MENSALIDADES PENDENTES</h3>
-                    <div class="numero" style="color: #e74c3c;" id="qtdPendentes">0</div>
-                    <p>R$ 0,00 em aberto</p>
-                    <button class="btn-vermelho" onclick="abrirPagina('financeiro')">Cobrar</button>
-                </div>
-                <div class="card">
-                    <h3>GRADUAÇÕES PREVISTAS</h3>
-                    <div class="numero" style="color: #9b59b6;" id="qtdGraduacoes">0</div>
-                    <p>Nenhuma agendada</p>
-                    <button onclick="abrirPagina('graduacoes')">Ver calendário</button>
+                    <div class="numero" style="color:#e74c3c;">0</div>
+                    <button class="btn-vermelho" onclick="irPara('financeiro')">Cobrar</button>
                 </div>
             </div>
         </div>
 
-        <!-- Página Alunos -->
         <div id="pagina-alunos" class="pagina">
-            <h2>Gerenciamento de Alunos</h2>
-            <p>Aqui você vai cadastrar, editar e excluir alunos. Os dados serão salvos diretamente no Firebase.</p>
+            <h2>Gerenciar Alunos</h2>
+            <p>Aqui você pode cadastrar, editar e excluir alunos.</p>
             <br>
-            <button class="btn-vermelho" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">+ Cadastrar Novo Aluno</button>
+            <button class="btn-vermelho" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">+ Novo Aluno</button>
         </div>
 
-        <!-- Página Controle de Peso -->
         <div id="pagina-peso" class="pagina">
             <h2>Controle de Peso</h2>
-            <p>Registro e acompanhamento do peso dos alunos por período.</p>
+            <p>Registros de peso e categorias dos alunos.</p>
         </div>
 
-        <!-- Página Financeiro -->
         <div id="pagina-financeiro" class="pagina">
             <h2>Controle Financeiro</h2>
-            <p>Gestão de mensalidades, pagamentos e valores pendentes.</p>
+            <p>Gestão de mensalidades, pagamentos e valores em aberto.</p>
         </div>
 
-        <!-- Página Graduações -->
         <div id="pagina-graduacoes" class="pagina">
             <h2>Graduações</h2>
-            <p>Agendamento e registro de faixas e avaliações.</p>
+            <p>Controle de faixas, avaliações e datas de promoção.</p>
         </div>
 
-        <!-- Página Professores -->
-        <div id="pagina-professores" class="pagina">
-            <h2>Professores e Instrutores</h2>
-            <p>Cadastro e gerenciamento da equipe.</p>
-        </div>
-
-        <!-- Página Eventos -->
-        <div id="pagina-eventos" class="pagina">
-            <h2>Eventos e Torneios</h2>
-            <p>Agenda e inscrições para competições e atividades.</p>
-        </div>
-
-        <!-- Página Avisos -->
-        <div id="pagina-avisos" class="pagina">
-            <h2>Avisos e Comunicados</h2>
-            <p>Envio de mensagens para alunos e responsáveis.</p>
-        </div>
-
-        <!-- Página Relatórios -->
         <div id="pagina-relatorios" class="pagina">
             <h2>Relatórios</h2>
             <p>Geração de relatórios de frequência, financeiro e graduações.</p>
         </div>
 
-        <!-- Página Configurações -->
         <div id="pagina-configuracoes" class="pagina">
-            <h2>Configurações do Sistema</h2>
-            <p>Ajustes gerais, dados da academia e permissões.</p>
-        </div>
-
-        <!-- Página Área do Aluno -->
-        <div id="pagina-aluno" class="pagina">
-            <h2>Área do Aluno</h2>
-            <p>Visualização da página de acesso dos alunos.</p>
+            <h2>Configurações</h2>
+            <p>Ajustes gerais da academia e preferências do sistema.</p>
         </div>
     </main>
 
@@ -268,78 +229,41 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.firestore();
 
         // Mostrar data atual
         const hoje = new Date();
-        const opcoes = { day: 'numeric', month: 'long', year: 'numeric' };
-        document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', opcoes);
+        document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', {
+            day: '2-digit', month: 'long', year: 'numeric'
+        });
 
         // Alternar menu no celular
         function alternarMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Abrir e trocar páginas
-        function abrirPagina(nomePagina) {
-            // Esconder todas as páginas
+        // Função principal de navegação
+        function irPara(nomePagina, elementoMenu) {
             document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativa'));
-            // Mostrar a página escolhida
             document.getElementById(`pagina-${nomePagina}`).classList.add('ativa');
 
-            // Marcar item ativo no menu
             document.querySelectorAll('.sidebar-menu li a').forEach(a => a.classList.remove('ativo'));
-            event.currentTarget.classList.add('ativo');
+            if (elementoMenu) elementoMenu.classList.add('ativo');
 
-            // Fechar menu no celular após escolher
             if (window.innerWidth <= 768) alternarMenu();
-
-            // Carregar dados do Firebase para o Dashboard
-            if(nomePagina === 'dashboard') carregarDadosDashboard();
         }
 
-        // Carregar números do Firebase
-        async function carregarDadosDashboard() {
-            try {
-                const contagemAlunos = await db.collection('alunos').get();
-                document.getElementById('qtdAlunos').textContent = contagemAlunos.size;
-
-                const contagemPendentes = await db.collection('mensalidades').where('pago', '==', false).get();
-                document.getElementById('qtdPendentes').textContent = contagemPendentes.size;
-
-            } catch (erro) {
-                console.log("Aguardando cadastro de dados:", erro);
-            }
-        }
-
-        // Função de sair
+        // Função sair
         function sair() {
-            if(confirm('Deseja realmente sair da sua conta?')) {
-                auth.signOut().then(() => {
-                    window.location.href = "login.html";
-                });
+            if (confirm('Deseja sair da conta?')) {
+                auth.signOut().then(() => window.location.href = "login.html");
             }
         }
-
-        // Fechar menu ao clicar fora
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('menuLateral');
-            const btn = document.querySelector('.btn-menu');
-            if (window.innerWidth <= 768 && !menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.classList.remove('aberto');
-            }
-        });
 
         // Verificar se está logado
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) {
-                window.location.href = "login.html";
-            } else {
-                carregarDadosDashboard();
-            }
+            if (!usuario) window.location.href = "login.html";
         });
     </script>
 
