@@ -295,21 +295,49 @@
         const db = firebase.firestore();
 
         // --------------------------
-        // 🛡️ PROTEÇÃO DA PÁGINA (não deixa entrar sem login)
+        // 🛡️ PROTEÇÃO REFORÇADA COM DIAGNÓSTICO
         // --------------------------
         auth.onAuthStateChanged(async (usuario) => {
-            if (!usuario) {
-                // Se não estiver logado, volta para a tela de login
-                window.location.href = "login.html";
-                return;
-            }
+            try {
+                if (!usuario) {
+                    console.log("Usuário não logado → redirecionando para login");
+                    window.location.replace("login.html");
+                    return;
+                }
 
-            // Verifica se é realmente administrador
-            const doc = await db.collection('usuarios').doc(usuario.uid).get();
-            if (!doc.exists || doc.data().tipo !== 'admin') {
-                alert("Acesso restrito! Apenas administradores podem acessar esta área.");
-                auth.signOut();
-                window.location.href = "login.html";
+                console.log("Usuário logado:", usuario.email);
+
+                // Busca dados com tratamento de erro
+                const docRef = db.collection('usuarios').doc(usuario.uid);
+                const doc = await docRef.get();
+
+                if (!doc.exists) {
+                    console.log("Documento não encontrado no Firestore");
+                    alert("❌ Dados do usuário não encontrados!");
+                    await auth.signOut();
+                    window.location.replace("login.html");
+                    return;
+                }
+
+                const dados = doc.data();
+                console.log("Dados do usuário:", dados);
+
+                if (dados.tipo !== 'admin') {
+                    console.log("Não é admin → tipo:", dados.tipo);
+                    alert("⛔ Acesso permitido apenas para Administradores!");
+                    await auth.signOut();
+                    window.location.replace("login.html");
+                    return;
+                }
+
+                // ✅ Se chegou aqui, acesso liberado
+                console.log("✅ Acesso de ADMIN confirmado! Página carregada.");
+                document.getElementById('data-atual-admin').textContent = obterDataAtual();
+
+            } catch (erro) {
+                console.error("❌ Erro ao verificar permissões:", erro);
+                alert("Erro ao carregar a página: " + erro.message);
+                window.location.replace("login.html");
             }
         });
 
@@ -318,7 +346,8 @@
         // --------------------------
         function mostrarAba(nomeAba, elemento) {
             document.querySelectorAll('.conteudo-aba').forEach(div => div.classList.add('esconder'));
-            document.getElementById('aba-' + nomeAba).classList.remove('esconder');
+            const aba = document.getElementById('aba-' + nomeAba);
+            if (aba) aba.classList.remove('esconder');
             document.getElementById('titulo-pagina').innerText = nomeAba.charAt(0).toUpperCase() + nomeAba.slice(1).replace('-', ' ');
             document.querySelectorAll('.menu-navegacao a').forEach(link => link.classList.remove('ativo'));
             if(elemento) elemento.classList.add('ativo');
@@ -328,7 +357,7 @@
 
         function sairDoSistema() { 
             if(confirm('Deseja realmente sair do sistema?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
+                auth.signOut().then(() => window.location.replace("login.html"));
             }
         }
 
@@ -337,10 +366,15 @@
             const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
             return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
         }
-        document.getElementById('data-atual-admin').textContent = obterDataAtual();
 
-        function abrirModal(nome) { document.getElementById('modal-' + nome).classList.remove('esconder'); }
-        function fecharModal(nome) { document.getElementById('modal-' + nome).classList.add('esconder'); }
+        function abrirModal(nome) { 
+            const modal = document.getElementById('modal-' + nome);
+            if (modal) modal.classList.remove('esconder'); 
+        }
+        function fecharModal(nome) { 
+            const modal = document.getElementById('modal-' + nome);
+            if (modal) modal.classList.add('esconder'); 
+        }
 
         // Funções de ações rápidas
         function abrirModalCadastroAluno() { abrirModal('cadastro-aluno'); }
@@ -350,5 +384,6 @@
         function filtrarAlunos() { /* lógica de busca */ }
         function limparFiltroAlunos() { /* limpa busca */ }
     </script>
+
 </body>
 </html>
