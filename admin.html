@@ -5,31 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Administrativo - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ================================== */
-        /* ÁREA DE CONFIGURAÇÕES FÁCEIS DE EDITAR */
-        /* ================================== */
-        :root {
-            --cor-principal: #D10000;       /* Cor vermelha principal */
-            --cor-fundo: #f8f9fa;           /* Cor de fundo geral */
-            --cor-menu: #1a1a1a;            /* Cor do menu lateral */
-            --cor-texto-menu: #cccccc;      /* Cor do texto do menu */
-            --cor-branco: #ffffff;
-            --cor-cinza: #333333;
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI, sans-serif'; }
-        body { background-color: var(--cor-fundo); color: var(--cor-cinza); }
+        :root {
+            --preto-principal: #0A0A0A;
+            --preto-card: #151515;
+            --vermelho-pjj: #D10000;
+            --vermelho-claro: #FF1A1A;
+            --branco: #FFFFFF;
+            --cinza-texto: #B0B0B0;
+            --verde-status: #00C853;
+            --amarelo-status: #FFC107;
+            --vermelho-status: #D10000;
+        }
 
-        /* Botão do menu no celular */
+        body {
+            background-color: var(--preto-principal);
+            color: var(--branco);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Menu Lateral */
+        .menu-lateral {
+            width: 220px;
+            background-color: var(--preto-principal);
+            border-right: 1px solid #222;
+            height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        .logo-pjj {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 0 15px;
+        }
+        .logo-pjj img {
+            width: 100px;
+            height: auto;
+        }
+        .menu-navegacao ul { list-style: none; }
+        .menu-navegacao li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--cinza-texto);
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover {
+            color: var(--branco);
+            background-color: #1A1A1A;
+            border-left-color: var(--vermelho-pjj);
+        }
+
+        /* Botão Menu Mobile */
         .btn-menu {
             display: none;
             position: fixed;
             top: 15px;
             left: 15px;
             z-index: 1000;
-            background: var(--cor-principal);
-            color: var(--cor-branco);
+            background: var(--vermelho-pjj);
+            color: white;
             border: none;
             padding: 12px 16px;
             border-radius: 6px;
@@ -37,100 +89,87 @@
             cursor: pointer;
         }
 
-        /* Menu Lateral */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background-color: var(--cor-menu);
-            border-right: 3px solid var(--cor-principal);
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 999;
-        }
-        .sidebar-logo {
-            text-align: center;
-            padding: 25px 15px;
-            border-bottom: 1px solid #2d2d2d;
-        }
-        .sidebar-logo img { height: 85px; }
-        .sidebar-menu { list-style: none; padding: 15px 0; }
-        .sidebar-menu li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 20px;
-            color: var(--cor-texto-menu);
-            text-decoration: none;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .sidebar-menu li a:hover,
-        .sidebar-menu li a.ativo {
-            background-color: var(--cor-principal);
-            color: var(--cor-branco);
-            border-left: 4px solid var(--cor-branco);
-        }
-
         /* Conteúdo Principal */
         .conteudo-principal {
-            margin-left: 260px;
-            padding: 30px;
-            min-height: 100vh;
+            margin-left: 220px;
+            padding: 25px 35px;
+            width: 100%;
             transition: margin-left 0.3s ease;
         }
-        .cabecalho {
+        .cabecalho-pagina {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #222;
         }
-        .pagina { display: none; }
-        .pagina.ativa { display: block; }
-        .pagina h2 {
-            color: var(--cor-principal);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e0e0e0;
+        .cabecalho-pagina h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--branco);
+            position: relative;
+        }
+        .cabecalho-pagina h1::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--vermelho-pjj);
         }
 
-        /* Cards do Dashboard */
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-        }
         .card {
-            background: var(--cor-branco);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            background-color: var(--preto-card);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #222;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-2px); }
+
+        .card-info { text-align: center; }
+        .card-info .titulo { font-size: 12px; color: var(--cinza-texto); font-weight: 600; margin-bottom: 8px; }
+        .card-info .valor { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+        .card-info .subvalor { font-size: 11px; color: var(--cinza-texto); }
+
+        .btn-acao {
+            background-color: var(--vermelho-pjj);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            display: inline-block;
             text-align: center;
         }
-        .card .numero { font-size: 2.4rem; font-weight: bold; margin: 15px 0; }
-        .card button {
-            background: #e9ecef;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+        .btn-acao:hover { background-color: var(--vermelho-claro); transform: scale(1.02); }
+        .btn-secundario {
+            background-color: #222;
+            color: white;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: 500;
+            transition: 0.3s;
         }
-        .btn-vermelho {
-            background: var(--cor-principal) !important;
-            color: var(--cor-branco) !important;
-        }
+        .btn-secundario:hover { background-color: #333; }
 
-        /* Responsivo para celular */
+        .esconder { display: none !important; }
+        .text-verde { color: var(--verde-status); }
+        .text-vermelho { color: var(--vermelho-status); }
+        .text-amarelo { color: var(--amarelo-status); }
+
+        /* Responsivo */
         @media (max-width: 768px) {
             .btn-menu { display: block; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.aberto { transform: translateX(0); }
+            .menu-lateral { transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
             .conteudo-principal { margin-left: 0; padding: 20px 15px; padding-top: 70px; }
         }
     </style>
@@ -142,80 +181,104 @@
 </head>
 <body>
 
-    <!-- Botão abrir menu -->
     <button class="btn-menu" onclick="alternarMenu()">☰</button>
 
-    <!-- Menu Lateral -->
-    <nav class="sidebar" id="menuLateral">
-        <div class="sidebar-logo">
-            <img src="imagens/logopjj.png" alt="Logo PJJ">
+    <aside class="menu-lateral" id="menuLateral">
+        <div class="logo-pjj">
+            <img src="imagens/logopjj.png" alt="Logo PJJ Pará Jiu-Jitsu">
         </div>
-        <ul class="sidebar-menu">
-            <li><a onclick="irPara('dashboard', this)"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a onclick="irPara('alunos', this)"><i class="fas fa-users"></i> Alunos</a></li>
-            <li><a onclick="irPara('peso', this)"><i class="fas fa-balance-scale"></i> Controle de Peso</a></li>
-            <li><a onclick="irPara('financeiro', this)"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-            <li><a onclick="irPara('graduacoes', this)"><i class="fas fa-medal"></i> Graduações</a></li>
-            <li><a onclick="irPara('relatorios', this)"><i class="fas fa-file-alt"></i> Relatórios</a></li>
-            <li><a onclick="irPara('configuracoes', this)"><i class="fas fa-cog"></i> Configurações</a></li>
-            <li><a onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
-        </ul>
-    </nav>
+        <nav class="menu-navegacao">
+            <ul>
+                <li><a href="#" class="ativo" onclick="mostrarAba('dashboard', this)"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+                <li><a href="#" onclick="mostrarAba('alunos', this)"><i class="fa-solid fa-users"></i> Alunos</a></li>
+                <li><a href="#" onclick="mostrarAba('controle-peso', this)"><i class="fa-solid fa-weight-scale"></i> Controle de Peso</a></li>
+                <li><a href="#" onclick="mostrarAba('financeiro', this)"><i class="fa-solid fa-sack-dollar"></i> Financeiro</a></li>
+                <li><a href="#" onclick="mostrarAba('graduacoes', this)"><i class="fa-solid fa-medal"></i> Graduações</a></li>
+                <li><a href="#" onclick="mostrarAba('relatorios', this)"><i class="fa-solid fa-file-report"></i> Relatórios</a></li>
+                <li><a href="#" onclick="mostrarAba('configuracoes', this)"><i class="fa-solid fa-gear"></i> Configurações</a></li>
+                <li><a href="#" class="mt-2 block text-center bg-red-800 py-2 rounded" onclick="sairDoSistema()"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
 
-    <!-- Conteúdo Principal -->
     <main class="conteudo-principal">
-        <div class="cabecalho">
-            <div id="dataAtual"></div>
-            <div><i class="fas fa-user-circle"></i> Administrador</div>
+        <div class="cabecalho-pagina">
+            <h1 id="titulo-pagina">DASHBOARD</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-400" id="data-atual-admin"></span>
+                <span class="text-sm flex items-center gap-2"><i class="fa-solid fa-user-circle"></i> Administrador</span>
+            </div>
         </div>
 
-        <!-- Páginas -->
-        <div id="pagina-dashboard" class="pagina ativa">
-            <h2>Dashboard</h2>
-            <div class="cards">
-                <div class="card">
-                    <h3>ALUNOS ATIVOS</h3>
-                    <div class="numero" style="color:#27ae60;">0</div>
-                    <button onclick="irPara('alunos')">Ver todos</button>
+        <div id="aba-dashboard" class="conteudo-aba">
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="card card-info">
+                    <div class="titulo">ALUNOS ATIVOS</div>
+                    <div class="valor text-verde" id="qtd-alunos">0</div>
+                    <div class="subvalor">Nenhum aluno cadastrado ainda</div>
+                    <button class="btn-secundario w-full text-xs mt-2" onclick="irParaAba('alunos')">Ver todos</button>
                 </div>
-                <div class="card">
-                    <h3>MENSALIDADES PENDENTES</h3>
-                    <div class="numero" style="color:#e74c3c;">0</div>
-                    <button class="btn-vermelho" onclick="irPara('financeiro')">Cobrar</button>
+                <div class="card card-info">
+                    <div class="titulo">CONTROLE DE PESO</div>
+                    <div class="valor text-amarelo" id="qtd-pesados">0</div>
+                    <div class="subvalor">Sem registros de peso</div>
+                    <button class="btn-secundario w-full text-xs mt-2" onclick="irParaAba('controle-peso')">Ver categorias</button>
+                </div>
+                <div class="card card-info">
+                    <div class="titulo">MENSALIDADES PENDENTES</div>
+                    <div class="valor text-vermelho" id="qtd-pendentes">0</div>
+                    <div class="subvalor" id="valor-pendente">R$ 0,00 em aberto</div>
+                    <button class="btn-acao w-full text-xs mt-2" onclick="irParaAba('financeiro')">Cobrar</button>
                 </div>
             </div>
         </div>
 
-        <div id="pagina-alunos" class="pagina">
-            <h2>Gerenciar Alunos</h2>
-            <p>Aqui você pode cadastrar, editar e excluir alunos.</p>
-            <br>
-            <button class="btn-vermelho" style="padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">+ Novo Aluno</button>
+        <div id="aba-alunos" class="conteudo-aba esconder">
+            <div class="card mb-6">
+                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-users"></i> Gerenciar Alunos</h2>
+                <p class="text-gray-400 mb-4">Cadastre, edite e visualize os dados dos alunos da academia.</p>
+                <button class="btn-acao" onclick="alert('Abrir cadastro de aluno')">+ Novo Aluno</button>
+            </div>
         </div>
 
-        <div id="pagina-peso" class="pagina">
-            <h2>Controle de Peso</h2>
-            <p>Registros de peso e categorias dos alunos.</p>
+        <div id="aba-controle-peso" class="conteudo-aba esconder">
+            <div class="card mb-6">
+                <h2 class="text-xl font-bold text-amarelo-500 flex items-center gap-2 mb-4"><i class="fa-solid fa-weight-scale"></i> Controle de Peso</h2>
+                <p class="text-gray-400 mb-4">Registre e acompanhe o peso e a categoria de cada aluno.</p>
+                <button class="btn-acao" onclick="alert('Abrir registro de peso')">+ Registrar Peso</button>
+            </div>
         </div>
 
-        <div id="pagina-financeiro" class="pagina">
-            <h2>Controle Financeiro</h2>
-            <p>Gestão de mensalidades, pagamentos e valores em aberto.</p>
+        <div id="aba-financeiro" class="conteudo-aba esconder">
+            <div class="card mb-6">
+                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-sack-dollar"></i> Financeiro</h2>
+                <p class="text-gray-400 mb-4">Controle de mensalidades, pagamentos e valores pendentes.</p>
+                <button class="btn-acao" onclick="alert('Lançar nova mensalidade')">+ Lançar Pagamento</button>
+            </div>
         </div>
 
-        <div id="pagina-graduacoes" class="pagina">
-            <h2>Graduações</h2>
-            <p>Controle de faixas, avaliações e datas de promoção.</p>
+        <div id="aba-graduacoes" class="conteudo-aba esconder">
+            <div class="card mb-6">
+                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-medal"></i> Graduações</h2>
+                <p class="text-gray-400 mb-4">Gerencie prazos e agende as trocas de faixa.</p>
+                <button class="btn-acao" onclick="alert('Agendar nova graduação')">+ Agendar</button>
+            </div>
         </div>
 
-        <div id="pagina-relatorios" class="pagina">
-            <h2>Relatórios</h2>
-            <p>Geração de relatórios de frequência, financeiro e graduações.</p>
+        <div id="aba-relatorios" class="conteudo-aba esconder">
+            <div class="card mb-6">
+                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-file-report"></i> Relatórios</h2>
+                <p class="text-gray-400 mb-4">Gere relatórios completos da academia.</p>
+                <button class="btn-acao" onclick="alert('Gerar relatório')">+ Gerar Relatório</button>
+            </div>
         </div>
 
-        <div id="pagina-configuracoes" class="pagina">
-            <h2>Configurações</h2>
-            <p>Ajustes gerais da academia e preferências do sistema.</p>
+        <div id="aba-configuracoes" class="conteudo-aba esconder">
+            <div class="card mb-6">
+                <h2 class="text-xl font-bold text-red-600 flex items-center gap-2 mb-4"><i class="fa-solid fa-gear"></i> Configurações</h2>
+                <p class="text-gray-400 mb-4">Ajustes gerais do sistema e da academia.</p>
+                <button class="btn-acao" onclick="alert('Salvar alterações')">Salvar Configurações</button>
+            </div>
         </div>
     </main>
 
@@ -232,32 +295,37 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Mostrar data atual
-        const hoje = new Date();
-        document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', {
-            day: '2-digit', month: 'long', year: 'numeric'
-        });
+        // Data atual
+        function obterDataAtual() {
+            const hoje = new Date();
+            const meses = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+            return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
+        }
+        document.getElementById('data-atual-admin').textContent = obterDataAtual();
 
         // Alternar menu no celular
         function alternarMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Função principal de navegação
-        function irPara(nomePagina, elementoMenu) {
-            document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativa'));
-            document.getElementById(`pagina-${nomePagina}`).classList.add('ativa');
-
-            document.querySelectorAll('.sidebar-menu li a').forEach(a => a.classList.remove('ativo'));
-            if (elementoMenu) elementoMenu.classList.add('ativo');
+        // Navegação entre páginas
+        function mostrarAba(nomeAba, elemento) {
+            document.querySelectorAll('.conteudo-aba').forEach(div => div.classList.add('esconder'));
+            document.getElementById('aba-' + nomeAba).classList.remove('esconder');
+            document.getElementById('titulo-pagina').innerText = nomeAba.charAt(0).toUpperCase() + nomeAba.slice(1).replace('-', ' ');
+            
+            document.querySelectorAll('.menu-navegacao a').forEach(link => link.classList.remove('ativo'));
+            if(elemento) elemento.classList.add('ativo');
 
             if (window.innerWidth <= 768) alternarMenu();
         }
 
+        function irParaAba(nome) { mostrarAba(nome); }
+
         // Função sair
-        function sair() {
-            if (confirm('Deseja sair da conta?')) {
-                auth.signOut().then(() => window.location.href = "login.html");
+        function sairDoSistema() { 
+            if(confirm('Deseja realmente sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
