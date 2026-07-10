@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Área - PJJ Pará Jiu-Jitsu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        :root {
+            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
+            --verde: #00C853; --amarelo: #FFC107;
+        }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; padding: 20px; }
+
+        .container { max-width: 900px; margin: 0 auto; }
+        .cabecalho { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid var(--borda); }
+        .titulo { font-size: 24px; font-weight: 800; color: var(--vermelho-principal); }
+        .btn-sair { background: var(--borda); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-sair:hover { background: var(--vermelho-principal); }
+
+        .card-perfil { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; margin-bottom: 25px; }
+        .card-perfil h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: var(--texto-branco); }
+        .info-linha { display: flex; gap: 10px; margin: 10px 0; font-size: 15px; }
+        .info-linha span:first-child { color: var(--texto-cinza); width: 120px; }
+
+        .card-financeiro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; }
+        .card-financeiro h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; color: var(--texto-branco); }
+
+        .tabela { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .tabela th { text-align: left; padding: 12px; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; border-bottom: 1px solid var(--borda); }
+        .tabela td { padding: 15px 12px; font-size: 14px; border-bottom: 1px solid var(--borda); }
+        .vazio { text-align: center; padding: 30px !important; color: var(--texto-cinza); }
+
+        .status-pago { color: var(--verde); font-weight: 600; }
+        .status-pendente { color: var(--amarelo); font-weight: 600; }
+        .status-atrasado { color: var(--vermelho-principal); font-weight: 600; }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="cabecalho">
+            <h1 class="titulo">Minha Área do Aluno</h1>
+            <button class="btn-sair" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </div>
+
+        <!-- Dados do Aluno -->
+        <div class="card-perfil">
+            <h2><i class="fas fa-user-circle"></i> Meus Dados</h2>
+            <div class="info-linha"><span>Matrícula:</span> <strong id="matricula"></strong></div>
+            <div class="info-linha"><span>Nome:</span> <strong id="nomeAluno"></strong></div>
+            <div class="info-linha"><span>CPF:</span> <strong id="cpfAluno"></strong></div>
+            <div class="info-linha"><span>E-mail:</span> <strong id="emailAluno"></strong></div>
+            <div class="info-linha"><span>Telefone:</span> <strong id="telefoneAluno"></strong></div>
+            <div class="info-linha"><span>Faixa:</span> <strong id="faixaAluno"></strong></div>
+            <div class="info-linha"><span>Status:</span> <strong id="statusAluno"></strong></div>
+        </div>
+
+        <!-- Situação Financeira -->
+        <div class="card-financeiro">
+            <h2><i class="fas fa-file-invoice-dollar"></i> Minhas Mensalidades</h2>
+            <table class="tabela">
+                <thead>
+                    <tr>
+                        <th>Referência</th>
+                        <th>Valor</th>
+                        <th>Vencimento</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="listaMensalidades">
+                    <tr><td colspan="4" class="vazio">Carregando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Verifica se o usuário está logado e carrega seus dados
+        auth.onAuthStateChanged(async (usuarioLogado) => {
+            if (!usuarioLogado) {
+                // Se não estiver logado, volta para a página de login
+                window.location.href = "login.html";
+                return;
+            }
+
+            try {
+                // Busca os dados do aluno pelo e-mail cadastrado
+                const alunoSnapshot = await db.collection("alunos")
+                    .where("email", "==", usuarioLogado.email)
+                    .limit(1)
+                    .get();
+
+                if (alunoSnapshot.empty) {
+                    alert("Dados não encontrados!");
+                    return;
+                }
+
+                const alunoDoc = alunoSnapshot.docs[0];
+                const dadosAluno = alunoDoc.data();
+                const idAluno = alunoDoc.id;
+
+                // Preenche os dados na tela
+                document.getElementById("matricula").textContent = idAluno.slice(0,6).toUpperCase();
+                document.getElementById("nomeAluno").textContent = dadosAluno.nome;
+                document.getElementById("cpfAluno").textContent = dadosAluno.cpf || "Não informado";
+                document.getElementById("emailAluno").textContent = dadosAluno.email;
+                document.getElementById("telefoneAluno").textContent = dadosAluno.telefone || "Não informado";
+                document.getElementById("faixaAluno").textContent = dadosAluno.faixa;
+                document.getElementById("statusAluno").textContent = dadosAluno.status || "Ativo";
+
+                // Carrega só as mensalidades desse aluno
+                carregarMensalidades(idAluno);
+
+            } catch (erro) {
+                console.error("Erro ao carregar dados:", erro);
+                alert("Não foi possível carregar suas informações.");
+            }
+        });
+
+        async function carregarMensalidades(idAluno) {
+            const lista = document.getElementById("listaMensalidades");
+            lista.innerHTML = "";
+
+            const hoje = new Date();
+            const mensalidadesSnapshot = await db.collection("mensalidades")
+                .where("alunoId", "==", idAluno)
+                .orderBy("vencimento", "desc")
+                .get();
+
+            if (mensalidadesSnapshot.empty) {
+                lista.innerHTML = `<tr><td colspan="4" class="vazio">Nenhuma mensalidade cadastrada.</td></tr>`;
+                return;
+            }
+
+            mensalidadesSnapshot.forEach(doc => {
+                const m = doc.data();
+                const dataVenc = new Date(m.vencimento);
+
+                let classeStatus = "";
+                let textoStatus = m.status;
+
+                if (m.status === "Pago") {
+                    classeStatus = "status-pago";
+                } else {
+                    if (dataVenc < hoje) {
+                        classeStatus = "status-atrasado";
+                        textoStatus = "Atrasado";
+                    } else {
+                        classeStatus = "status-pendente";
+                    }
+                }
+
+                lista.innerHTML += `
+                <tr>
+                    <td>${m.referencia}</td>
+                    <td>R$ ${m.valor.toFixed(2).replace(".", ",")}</td>
+                    <td>${dataVenc.toLocaleDateString("pt-BR")}</td>
+                    <td class="${classeStatus}">${textoStatus}</td>
+                </tr>`;
+            });
+        }
+
+        function sair() {
+            if (confirm("Deseja realmente sair?")) {
+                auth.signOut().then(() => {
+                    window.location.href = "login.html";
+                });
+            }
+        }
+    </script>
+</body>
+</html>
