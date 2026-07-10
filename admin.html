@@ -28,8 +28,8 @@
         body {
             background-color: var(--fundo-escuro);
             color: var(--texto-branco);
-            display: flex;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* MENU LATERAL */
@@ -40,6 +40,10 @@
             padding: 30px 0;
             position: fixed;
             height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .logo {
@@ -83,11 +87,30 @@
             color: var(--vermelho-principal);
         }
 
+        /* BOTÃO DE MENU PARA CELULAR */
+        .btn-menu {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            color: var(--texto-branco);
+            width: 45px;
+            height: 45px;
+            border-radius: 6px;
+            font-size: 20px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* CONTEÚDO PRINCIPAL */
         .conteudo {
-            flex: 1;
             margin-left: 240px;
             padding: 35px 45px;
+            min-height: 100vh;
         }
 
         .cabecalho {
@@ -95,6 +118,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 35px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .titulo-pagina {
@@ -119,6 +144,7 @@
             gap: 20px;
             color: var(--texto-cinza);
             font-size: 14px;
+            margin-left: auto;
         }
 
         /* CARDS DO TOPO */
@@ -142,32 +168,36 @@
         }
 
         .card .titulo-card {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 700;
             text-transform: uppercase;
             color: var(--texto-cinza);
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .card .numero {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
+        .verde { color: #00C853; }
+        .vermelho { color: #D10000; }
+
         .card .subtexto {
-            font-size: 12px;
+            font-size: 14px;
             color: var(--texto-cinza);
-            margin-bottom: 18px;
+            margin-bottom: 20px;
+            line-height: 1.4;
         }
 
         .card .btn-card {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: none;
             border-radius: 6px;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -205,28 +235,30 @@
         }
 
         .card-bloco h3 {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 800;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: var(--texto-cinza);
         }
 
         .cabecalho-tabela {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 0.8fr 0.8fr 0.7fr;
             font-size: 12px;
             font-weight: 700;
             color: var(--texto-cinza);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--borda);
+            text-transform: uppercase;
         }
 
         .vazio {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--texto-cinza);
-            margin-bottom: 20px;
+            margin: 30px 0;
+            text-align: center;
         }
 
         .btn-largo {
@@ -235,7 +267,7 @@
             border: none;
             border-radius: 6px;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -258,14 +290,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .btn-largo.cinza:hover {
             background-color: #3A3A40;
         }
 
-        /* MODAL (JANELA DE FORMULÁRIO) */
+        /* MODAL */
         .fundo-modal {
             display: none;
             position: fixed;
@@ -273,10 +305,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 9999;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .modal {
@@ -284,27 +317,27 @@
             border: 1px solid var(--borda);
             border-radius: 10px;
             padding: 30px;
-            width: 90%;
+            width: 100%;
             max-width: 450px;
             position: relative;
-            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            box-shadow: 0 0 30px rgba(0,0,0,0.6);
         }
 
         .modal h2 {
             color: var(--vermelho-principal);
             margin-bottom: 25px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 800;
         }
 
         .fechar-modal {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: none;
             border: none;
             color: var(--texto-cinza);
-            font-size: 24px;
+            font-size: 26px;
             cursor: pointer;
             transition: 0.2s;
         }
@@ -314,12 +347,12 @@
         }
 
         .grupo-form {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .grupo-form label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 14px;
             font-weight: 600;
         }
@@ -327,7 +360,7 @@
         .grupo-form input,
         .grupo-form select {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             background: var(--fundo-escuro);
             border: 1px solid var(--vermelho-principal);
             border-radius: 4px;
@@ -343,7 +376,7 @@
 
         .arquivo-foto {
             border: 2px dashed var(--borda);
-            padding: 15px;
+            padding: 18px;
             text-align: center;
             border-radius: 6px;
             font-size: 13px;
@@ -358,13 +391,13 @@
 
         .btn-salvar {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
             border: none;
             border-radius: 6px;
             color: white;
             font-weight: 800;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             margin-top: 10px;
             transition: 0.2s;
@@ -375,15 +408,45 @@
             transform: translateY(-1px);
         }
 
-        /* CORES DOS NÚMEROS */
-        .verde { color: #00C853; }
-        .vermelho { color: #D10000; }
-
-        /* RESPONSIVO */
+        /* RESPONSIVO - CORREÇÃO PARA CELULAR */
         @media (max-width: 768px) {
-            .menu-lateral { transform: translateX(-100%); }
-            .conteudo { margin-left: 0; padding: 20px; }
-            .grid-cards, .grid-inferior { grid-template-columns: 1fr; }
+            .btn-menu {
+                display: flex;
+            }
+
+            .menu-lateral {
+                transform: translateX(-100%);
+            }
+
+            .menu-lateral.aberto {
+                transform: translateX(0);
+            }
+
+            .conteudo {
+                margin-left: 0;
+                padding: 20px;
+                padding-top: 70px;
+            }
+
+            .titulo-pagina {
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+
+            .info-topo {
+                width: 100%;
+                justify-content: space-between;
+                margin-left: 0;
+            }
+
+            .grid-cards, .grid-inferior {
+                grid-template-columns: 1fr;
+            }
+
+            .cabecalho-tabela {
+                grid-template-columns: 1fr 0.7fr 0.7fr 0.7fr 0.6fr;
+                font-size: 10px;
+            }
         }
     </style>
 
@@ -394,8 +457,13 @@
 </head>
 <body>
 
+    <!-- BOTÃO DO MENU CELULAR -->
+    <button class="btn-menu" onclick="abrirMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- MENU LATERAL -->
-    <aside class="menu-lateral">
+    <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
             <h1>PJJ<br>Pará Jiu-Jitsu</h1>
@@ -403,8 +471,8 @@
         <nav class="menu-navegacao">
             <ul>
                 <li><a href="#" class="ativo"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#"><i class="fas fa-users"></i> Alunos</a></li>
-                <li><a href="#"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
                 <li><a href="#"><i class="fas fa-medal"></i> Graduações</a></li>
                 <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
@@ -429,14 +497,14 @@
                 <div class="titulo-card">Alunos Ativos</div>
                 <div class="numero verde" id="qtdAlunos">0</div>
                 <div class="subtexto">Nenhum aluno cadastrado ainda</div>
-                <button class="btn-card cinza">Ver todos</button>
+                <button class="btn-card cinza" onclick="window.location.href='alunos.html'">Ver todos</button>
             </div>
 
             <div class="card">
                 <div class="titulo-card">Mensalidades Pendentes</div>
                 <div class="numero vermelho" id="qtdPendentes">0</div>
                 <div class="subtexto">R$ 0,00 em aberto</div>
-                <button class="btn-card vermelho">Cobrar</button>
+                <button class="btn-card vermelho" onclick="window.location.href='financeiro.html'">Cobrar</button>
             </div>
         </div>
 
@@ -452,7 +520,7 @@
                     <span>AÇÃO</span>
                 </div>
                 <div class="vazio">Nenhuma mensalidade lançada até o momento</div>
-                <button class="btn-largo vermelho">Ver Todas</button>
+                <button class="btn-largo vermelho" onclick="window.location.href='financeiro.html'">Ver Todas</button>
             </div>
 
             <div class="card-bloco">
@@ -570,15 +638,20 @@
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
 
-        // Inicializa Firebase corretamente
+        // Inicializa Firebase
         let app, auth, db;
         try {
             app = firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
-            console.log("✅ Firebase conectado com sucesso");
         } catch (erro) {
-            console.error("❌ Erro no Firebase:", erro);
+            console.error("Erro no Firebase:", erro);
+        }
+
+        // Menu responsivo
+        function abrirMenu() {
+            const menu = document.getElementById('menuLateral');
+            menu.classList.toggle('aberto');
         }
 
         // Data atual
@@ -587,7 +660,7 @@
             day: '2-digit', month: 'long', year: 'numeric'
         });
 
-        // ------------------- FUNÇÕES DO MODAL ALUNO -------------------
+        // ------------------- FUNÇÕES MODAL -------------------
         function abrirModalAluno() {
             document.getElementById('modalAluno').style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -599,7 +672,19 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Salvar aluno no Firestore
+        function abrirModalPagamento() {
+            carregarAlunosSelect();
+            document.getElementById('modalPagamento').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharModalPagamento() {
+            document.getElementById('modalPagamento').style.display = 'none';
+            document.getElementById('formPagamento').reset();
+            document.body.style.overflow = 'auto';
+        }
+
+        // Salvar aluno
         document.getElementById('formAluno').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
@@ -622,20 +707,7 @@
             }
         });
 
-        // ------------------- FUNÇÕES DO MODAL PAGAMENTO -------------------
-        function abrirModalPagamento() {
-            carregarAlunosSelect();
-            document.getElementById('modalPagamento').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function fecharModalPagamento() {
-            document.getElementById('modalPagamento').style.display = 'none';
-            document.getElementById('formPagamento').reset();
-            document.body.style.overflow = 'auto';
-        }
-
-        // Carregar lista de alunos no select
+        // Carregar alunos no select
         async function carregarAlunosSelect() {
             const select = document.getElementById('alunoPagamento');
             select.innerHTML = '<option value="">Selecione um aluno</option>';
@@ -654,7 +726,7 @@
             }
         }
 
-        // Salvar pagamento no Firestore
+        // Salvar pagamento
         document.getElementById('formPagamento').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
@@ -677,7 +749,7 @@
             }
         });
 
-        // ------------------- ATUALIZAR CONTADORES -------------------
+        // Atualizar contadores
         async function atualizarContadores() {
             try {
                 const alunos = await db.collection('alunos').get();
@@ -690,7 +762,7 @@
             }
         }
 
-        // ------------------- SEGURANÇA E INICIALIZAÇÃO -------------------
+        // Sair
         function sair() {
             if (confirm('Deseja realmente sair?')) {
                 auth.signOut().then(() => {
@@ -699,6 +771,7 @@
             }
         }
 
+        // Segurança
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = "login.html";
@@ -707,7 +780,7 @@
             }
         });
 
-        // Fechar modal clicando fora da janela
+        // Fechar modal clicando fora
         window.addEventListener('click', (e) => {
             if (e.target.classList.contains('fundo-modal')) {
                 e.target.style.display = 'none';
