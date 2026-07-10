@@ -32,7 +32,7 @@
             min-height: 100vh;
         }
 
-        /* MENU LATERAL — IGUAL A FOTO */
+        /* MENU LATERAL */
         .menu-lateral {
             width: 240px;
             background-color: var(--fundo-escuro);
@@ -121,7 +121,7 @@
             font-size: 14px;
         }
 
-        /* CARDS DO DASHBOARD — IGUAL A FOTO */
+        /* CARDS DO TOPO */
         .grid-cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -190,26 +190,37 @@
             background-color: #3A3A40;
         }
 
-        /* GRID INFERIOR — TABELAS E AÇÕES RÁPIDAS */
+        /* GRID INFERIOR COMPLETO */
         .grid-inferior {
             display: grid;
             grid-template-columns: 1fr 1fr 280px;
             gap: 20px;
         }
 
-        .card-tabela {
+        .card-bloco {
             background-color: var(--fundo-card);
             border: 1px solid var(--borda);
             border-radius: 10px;
             padding: 25px;
         }
 
-        .card-tabela h3 {
+        .card-bloco h3 {
             font-size: 14px;
             font-weight: 800;
             text-transform: uppercase;
             margin-bottom: 15px;
             color: var(--texto-cinza);
+        }
+
+        .cabecalho-tabela {
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--texto-cinza);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--borda);
         }
 
         .vazio {
@@ -247,6 +258,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-bottom: 8px;
         }
 
         .btn-largo.cinza:hover {
@@ -259,7 +271,7 @@
         .amarelo { color: #FFC107; }
         .roxo { color: #9C27B0; }
 
-        /* RESPONSIVO CELULAR */
+        /* RESPONSIVO */
         @media (max-width: 768px) {
             .menu-lateral { transform: translateX(-100%); }
             .conteudo { margin-left: 0; padding: 20px; }
@@ -303,7 +315,7 @@
             </div>
         </div>
 
-        <!-- CARDS DO TOPO → Sem os que não quer -->
+        <!-- CARDS DO TOPO -->
         <div class="grid-cards">
             <div class="card">
                 <div class="titulo-card">Alunos Ativos</div>
@@ -320,25 +332,38 @@
             </div>
         </div>
 
-        <!-- PARTE INFERIOR → Igual visual, sem o que não precisa -->
+        <!-- PARTE INFERIOR COMPLETA -->
         <div class="grid-inferior">
-            <div class="card-tabela">
+            <div class="card-bloco">
                 <h3>Últimas Mensalidades</h3>
+                <div class="cabecalho-tabela">
+                    <span>ALUNO</span>
+                    <span>VENCIMENTO</span>
+                    <span>VALOR</span>
+                    <span>STATUS</span>
+                </div>
                 <div class="vazio">Nenhuma mensalidade lançada até o momento</div>
                 <button class="btn-largo vermelho">Ver Todas</button>
             </div>
 
-            <div class="card-tabela">
-                <h3>Últimas Graduações</h3>
-                <div class="vazio">Nenhuma graduação cadastrada</div>
+            <div class="card-bloco">
+                <h3>Últimos Registros de Peso</h3>
+                <div class="cabecalho-tabela">
+                    <span>ALUNO</span>
+                    <span>PESO</span>
+                    <span>CATEGORIA</span>
+                    <span>DATA</span>
+                </div>
+                <div class="vazio">Nenhum registro de peso cadastrado</div>
                 <button class="btn-largo vermelho">Ver Histórico Completo</button>
             </div>
 
-            <div class="card-tabela">
+            <div class="card-bloco">
                 <h3>Ações Rápidas</h3>
-                <button class="btn-largo vermelho">➕ Novo Aluno</button>
-                <button class="btn-largo cinza">💸 Lançar Pagamento</button>
-                <button class="btn-largo cinza">📄 Gerar Relatório</button>
+                <button class="btn-largo vermelho"><i class="fas fa-user-plus"></i> Novo Aluno</button>
+                <button class="btn-largo cinza"><i class="fas fa-dollar-sign"></i> Lançar Pagamento</button>
+                <button class="btn-largo cinza"><i class="fas fa-weight"></i> Registrar Peso</button>
+                <button class="btn-largo cinza"><i class="fas fa-bell"></i> Cadastrar Aviso</button>
             </div>
         </div>
     </main>
@@ -356,7 +381,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Data atual igual da foto
+        // Data atual
         const hoje = new Date();
         document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', {
             day: '2-digit', month: 'long', year: 'numeric'
@@ -366,12 +391,11 @@
         function irPara(pagina, link) {
             document.querySelectorAll('.menu-navegacao a').forEach(a => a.classList.remove('ativo'));
             if(link) link.classList.add('ativo');
-            // Aqui depois ligamos as páginas
         }
 
         // Sair
         function sair() {
-            if(confirm('Deseja sair?')) {
+            if(confirm('Deseja sair da conta?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
