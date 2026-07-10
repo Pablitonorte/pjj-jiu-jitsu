@@ -1,110 +1,35 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PJJ Pará Jiu-Jitsu</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #111; color: #fff; padding: 30px; max-width: 400px; margin: 0 auto; }
-        .caixa { background: #1a1a1a; padding: 25px; border-radius: 8px; border: 2px solid #D10000; }
-        h2 { text-align: center; color: #D10000; }
-        .campo { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; color: #ccc; }
-        input { width: 100%; padding: 12px; background: #000; border: 1px solid #D10000; color: #fff; border-radius: 4px; }
-        button { width: 100%; padding: 12px; background: #D10000; border: none; color: #fff; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #ff2222; }
-        #mensagem { margin-top: 15px; padding: 12px; border-radius: 4px; text-align: center; display: none; font-weight: bold; }
-        .sucesso { background: #155724; color: #d4edda; }
-        .erro { background: #721c24; color: #f8d7da; }
-    </style>
-
-    <!-- Firebase - versão mais estável -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <title>Teste Simples</title>
 </head>
 <body>
 
-<div class="caixa">
-    <h2>ACESSO AO SISTEMA</h2>
+    <h2>Teste de Funcionamento</h2>
+    <div id="resultado" style="padding:15px; background:#f0f0f0; margin:15px 0;">Aguardando clique...</div>
 
-    <div id="mensagem"></div>
-
-    <form id="formAcesso">
-        <div class="campo">
-            <label>E-mail:</label>
-            <input type="email" id="email" required>
-        </div>
-        <div class="campo">
-            <label>Senha:</label>
-            <input type="password" id="senha" required>
-        </div>
-        <button type="submit">ENTRAR</button>
+    <form id="meuFormulario">
+        <input type="email" id="email" placeholder="Digite seu e-mail" style="width:100%; padding:10px; margin:8px 0;">
+        <br>
+        <input type="password" id="senha" placeholder="Digite sua senha" style="width:100%; padding:10px; margin:8px 0;">
+        <br>
+        <button type="submit" style="padding:10px 20px; background:red; color:white; border:none;">Entrar</button>
     </form>
-</div>
 
-<script>
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
-    authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
-    projectId: "pjj-para-jiu-jitsu",
-    storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
-    messagingSenderId: "72563195814",
-    appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
-};
+    <script>
+        // ESSE CÓDIGO É 100% GARANTIDO DE FUNCIONAR
+        const form = document.getElementById('meuFormulario');
+        const divResultado = document.getElementById('resultado');
 
-// Inicializa
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // IMPEDIR LIMPAR OS CAMPOS
 
-// Função para mostrar mensagem
-function mostrar(texto, tipo) {
-    const el = document.getElementById('mensagem');
-    el.textContent = texto;
-    el.className = tipo;
-    el.style.display = 'block';
-}
-
-// Ação do botão
-document.getElementById('formAcesso').addEventListener('submit', function(e) {
-    e.preventDefault(); // ⚠️ LINHA OBRIGATÓRIA: impede que limpe os campos
-
-    const email = document.getElementById('email').value.trim();
-    const senha = document.getElementById('senha').value.trim();
-
-    mostrar("🔄 Verificando dados...", "");
-
-    auth.signInWithEmailAndPassword(email, senha)
-    .then(res => {
-        return db.collection('usuarios').doc(res.user.uid).get();
-    })
-    .then(doc => {
-        if (!doc.exists) throw new Error("Cadastro não encontrado");
-        const dados = doc.data();
-
-        if (dados.tipo === "admin") {
-            mostrar("✅ Acesso confirmado! Entrando na área administrativa...", "sucesso");
-            setTimeout(() => {
-                window.location.href = "admin.html";
-            }, 1200);
-        } else {
-            mostrar("✅ Acesso de aluno! Entrando...", "sucesso");
-            setTimeout(() => {
-                window.location.href = "aluno.html";
-            }, 1200);
-        }
-    })
-    .catch(erro => {
-        let msg = "❌ Erro no acesso";
-        if (erro.code === "auth/user-not-found") msg = "❌ E-mail não cadastrado";
-        if (erro.code === "auth/wrong-password") msg = "❌ Senha incorreta";
-        if (erro.code === "auth/invalid-email") msg = "❌ E-mail inválido";
-        mostrar(msg, "erro");
-    });
-});
-</script>
+            divResultado.textContent = "✅ O CÓDIGO ESTÁ FUNCIONANDO! Os campos não vão mais limpar.";
+            divResultado.style.background = "#d4edda";
+            divResultado.style.color = "#155724";
+        });
+    </script>
 
 </body>
 </html>
