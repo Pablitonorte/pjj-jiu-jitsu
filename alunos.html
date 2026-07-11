@@ -68,7 +68,7 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        .faixa-brada { background: #FFFFFF; color: #121214; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-branca { background: #FFFFFF; color: #121214; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
         .faixa-cinza { background: #888888; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
         .faixa-amarela { background: #FFD700; color: #121214; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
         .faixa-laranja { background: #FF8C00; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
@@ -305,26 +305,32 @@
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '';
 
-            const snapshot = await db.collection('alunos').orderBy('nome').get();
-            if (snapshot.empty) {
-                lista.innerHTML = `<tr><td colspan="5" class="vazio">Nenhum aluno cadastrado ainda.</td></tr>`;
-                return;
-            }
+            try {
+                const snapshot = await db.collection('alunos').orderBy('nome').get();
+                
+                if (snapshot.empty) {
+                    lista.innerHTML = `<tr><td colspan="5" class="vazio">Nenhum aluno cadastrado ainda.</td></tr>`;
+                    return;
+                }
 
-            snapshot.forEach(doc => {
-                const aluno = doc.data();
-                lista.innerHTML += `
-                <tr>
-                    <td><strong>${aluno.nome}</strong></td>
-                    <td>${aluno.plano}</td>
-                    <td><span class="faixa-${aluno.faixa.toLowerCase()}">${aluno.faixa}</span></td>
-                    <td>R$ ${aluno.valorMensalidade.toFixed(2).replace('.', ',')}</td>
-                    <td>
-                        <button class="btn-acao btn-editar" onclick="abrirModalEditar('${doc.id}')">Editar</button>
-                        <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
-                    </td>
-                </tr>`;
-            });
+                snapshot.forEach(doc => {
+                    const aluno = doc.data();
+                    lista.innerHTML += `
+                    <tr>
+                        <td><strong>${aluno.nome || 'Sem nome'}</strong></td>
+                        <td>${aluno.plano || '-'}</td>
+                        <td><span class="faixa-${(aluno.faixa || 'branca').toLowerCase()}">${aluno.faixa || '-'}</span></td>
+                        <td>R$ ${(aluno.valorMensalidade || 0).toFixed(2).replace('.', ',')}</td>
+                        <td>
+                            <button class="btn-acao btn-editar" onclick="abrirModalEditar('${doc.id}')">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
+                        </td>
+                    </tr>`;
+                });
+            } catch (erro) {
+                console.error('Erro ao carregar alunos:', erro);
+                lista.innerHTML = `<tr><td colspan="5" class="vazio">Erro ao carregar os alunos.</td></tr>`;
+            }
         }
 
         function abrirModalCadastro() {
@@ -338,21 +344,28 @@
         }
 
         async function abrirModalEditar(id) {
-            const doc = await db.collection('alunos').doc(id).get();
-            const aluno = doc.data();
+            try {
+                const doc = await db.collection('alunos').doc(id).get();
+                if (!doc.exists) return;
+                
+                const aluno = doc.data();
 
-            document.getElementById('tituloModalAluno').textContent = 'Editar Aluno';
-            document.getElementById('idAlunoEditar').value = id;
-            document.getElementById('nomeAluno').value = aluno.nome;
-            document.getElementById('planoAluno').value = aluno.plano;
-            document.getElementById('valorBase').value = aluno.valorBase.toFixed(2);
-            document.getElementById('descontoAluno').value = aluno.desconto || 0;
-            calcularValorFinal();
-            document.getElementById('faixaAluno').value = aluno.faixa;
-            document.getElementById('dataCadastroAluno').value = aluno.dataCadastro.toDate().toISOString().split('T')[0];
+                document.getElementById('tituloModalAluno').textContent = 'Editar Aluno';
+                document.getElementById('idAlunoEditar').value = id;
+                document.getElementById('nomeAluno').value = aluno.nome || '';
+                document.getElementById('planoAluno').value = aluno.plano || '';
+                document.getElementById('valorBase').value = (aluno.valorBase || 0).toFixed(2);
+                document.getElementById('descontoAluno').value = aluno.desconto || 0;
+                calcularValorFinal();
+                document.getElementById('faixaAluno').value = aluno.faixa || 'Branca';
+                document.getElementById('dataCadastroAluno').value = aluno.dataCadastro ? aluno.dataCadastro.toDate().toISOString().split('T')[0] : '';
 
-            document.getElementById('modalAluno').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+                document.getElementById('modalAluno').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } catch (erro) {
+                console.error('Erro ao carregar dados do aluno:', erro);
+                alert('Erro ao carregar dados para edição.');
+            }
         }
 
         function fecharModalAluno() {
@@ -386,14 +399,18 @@
                 fecharModalAluno();
                 carregarAlunos();
             } catch (erro) {
-                alert('❌ Erro: ' + erro.message);
+                alert('❌ Erro ao salvar: ' + erro.message);
             }
         });
 
         async function excluirAluno(id) {
             if (confirm('Tem certeza que deseja excluir este aluno? Essa ação não pode ser desfeita.')) {
-                await db.collection('alunos').doc(id).delete();
-                carregarAlunos();
+                try {
+                    await db.collection('alunos').doc(id).delete();
+                    carregarAlunos();
+                } catch (erro) {
+                    alert('❌ Erro ao excluir: ' + erro.message);
+                }
             }
         }
 
@@ -419,8 +436,11 @@
             const filtroFaixa = document.getElementById('filtroFaixa').value.toLowerCase();
 
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                const celulas = linha.querySelectorAll('td');
+                if (celulas.length < 5) return;
+
                 const textoLinha = linha.textContent.toLowerCase();
-                const faixaLinha = linha.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                const faixaLinha = celulas[2].textContent.toLowerCase();
 
                 const combinaBusca = textoLinha.includes(termoBusca);
                 const combinaFaixa = !filtroFaixa || faixaLinha.includes(filtroFaixa);
