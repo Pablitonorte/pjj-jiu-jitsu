@@ -47,24 +47,10 @@
         }
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
-        
-        .btn-novo { 
-            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; 
-            border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
-            transition: 0.2s;
-        }
-        .btn-novo:hover { background: var(--vermelho-claro); }
-
-        .abas { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
-        .aba {
-            padding: 10px 18px; background: var(--fundo-card); border: 1px solid var(--borda);
-            border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s;
-        }
-        .aba.ativa { background: var(--vermelho-principal); border-color: var(--vermelho-principal); }
 
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
-            flex: 1; min-width: 200px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
             border-radius: 6px; color: white; font-size: 14px; outline: none;
         }
         .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); }
@@ -75,15 +61,14 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        .status-pago { color: var(--verde); font-weight: 600; }
-        .status-pendente { color: var(--amarelo); font-weight: 600; }
-        .status-atrasado { color: var(--vermelho-principal); font-weight: 600; }
-        .destaque-atraso { background: rgba(209, 0, 0, 0.1); }
+        .status { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .status-pago { background: rgba(0, 150, 0, 0.15); color: var(--verde); border: 1px solid rgba(0, 150, 0, 0.3); }
+        .status-pendente { background: rgba(255, 200, 0, 0.15); color: var(--amarelo); border: 1px solid rgba(255, 200, 0, 0.3); }
+        .status-atrasado { background: rgba(220, 0, 0, 0.15); color: var(--vermelho-principal); border: 1px solid rgba(220, 0, 0, 0.3); }
+        .status-gratis { background: rgba(76, 175, 80, 0.15); color: #4CAF50; border: 1px solid rgba(76, 175, 80, 0.3); }
 
         .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-pagar { background: var(--verde); color: white; }
-        .btn-editar { background: var(--azul); color: white; }
-        .btn-excluir { background: var(--vermelho-principal); color: white; }
 
         .fundo-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -91,7 +76,7 @@
         }
         .modal {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
-            padding: 30px; width: 100%; max-width: 480px; position: relative;
+            padding: 30px; width: 100%; max-width: 450px; position: relative;
             box-shadow: 0 0 30px rgba(0,0,0,0.6);
         }
         .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
@@ -101,27 +86,22 @@
         }
         .fechar-modal:hover { color: var(--vermelho-principal); }
 
-        .grupo-form { margin-bottom: 20px; }
+        .grupo-form { margin-bottom: 18px; }
         .grupo-form label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
-        .grupo-form input, .grupo-form select {
-            width: 100%; padding: 13px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+        .grupo-form input {
+            width: 100%; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
             border-radius: 4px; color: white; font-size: 14px;
         }
-        .grupo-form input:focus, .grupo-form select:focus {
-            outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2);
-        }
-
         .btn-salvar {
-            width: 100%; padding: 15px; background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
+            width: 100%; padding: 14px; background: linear-gradient(90deg, var(--verde), #00b341);
             border: none; border-radius: 6px; color: white; font-weight: 800; font-size: 16px;
-            cursor: pointer; margin-top: 10px; transition: 0.2s;
+            cursor: pointer; transition: 0.2s;
         }
         .btn-salvar:hover { opacity: 0.9; transform: translateY(-1px); }
 
         @media (max-width: 768px) {
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
-            .cabecalho { flex-direction: column; align-items: flex-start; }
             .tabela { display: block; overflow-x: auto; }
         }
     </style>
@@ -146,9 +126,9 @@
                 <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="#" class="ativo"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                <li><a href="#"><i class="fas fa-medal"></i> Graduações</a></li>
-                <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="historico-financeiro.html"><i class="fas fa-history"></i> Histórico Financeiro</a></li>
+                <li><a href="relatorios.html"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
@@ -159,70 +139,54 @@
             <h1 class="titulo-pagina">Controle Financeiro</h1>
         </div>
 
-        <div class="abas">
-            <div class="aba ativa" onclick="mudarAba('todas')">Todas as Mensalidades</div>
-            <div class="aba" onclick="mudarAba('pendentes')">Alunos Pendentes</div>
-        </div>
-
         <div class="card-filtro">
-            <input type="text" id="buscaFin" placeholder="🔍 Buscar por aluno ou mês...">
+            <input type="text" id="busca" placeholder="🔍 Buscar por aluno ou mês...">
             <select id="filtroStatus">
-                <option value="">Todos os status</option>
+                <option value="">Todos os Status</option>
                 <option value="Pendente">Pendentes</option>
-                <option value="Pago">Pagas</option>
-                <option value="Atrasado">Atrasadas</option>
+                <option value="Pago">Pagos</option>
+                <option value="Atrasado">Atrasados</option>
+                <option value="Gratuito">Gratuitos</option>
             </select>
         </div>
 
-        <table class="tabela" id="tabelaPrincipal">
+        <table class="tabela">
             <thead>
                 <tr>
                     <th>Aluno</th>
-                    <th>Plano</th>
+                    <th>Tipo</th>
                     <th>Mês/Ano</th>
-                    <th>Valor</th>
                     <th>Vencimento</th>
+                    <th>Valor</th>
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
-            <tbody id="listaDados">
-                <tr><td colspan="7" class="vazio">Carregando...</td></tr>
+            <tbody id="listaFinanceiro">
+                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
 
-    <div id="modalEditar" class="fundo-modal">
+    <div id="modalPagamento" class="fundo-modal">
         <div class="modal">
-            <button class="fechar-modal" onclick="fecharModalEditar()">&times;</button>
-            <h2>Editar Mensalidade</h2>
-            <form id="formEditar">
-                <input type="hidden" id="idMensalidadeEditar">
+            <button class="fechar-modal" onclick="fecharModal()">&times;</button>
+            <h2>Registrar Pagamento</h2>
+            <form id="formPagamento">
+                <input type="hidden" id="idMensalidade">
                 <div class="grupo-form">
                     <label>Aluno</label>
-                    <input type="text" id="alunoEditar" readonly style="background: #2a2a30; cursor: not-allowed;">
+                    <input type="text" id="alunoPagamento" disabled>
                 </div>
                 <div class="grupo-form">
-                    <label>Mês/Ano</label>
-                    <input type="text" id="mesEditar" readonly style="background: #2a2a30; cursor: not-allowed;">
+                    <label>Valor</label>
+                    <input type="text" id="valorPagamento" disabled>
                 </div>
                 <div class="grupo-form">
-                    <label>Novo Valor R$ *</label>
-                    <input type="number" step="0.01" id="valorEditar" required>
+                    <label>Data do Pagamento *</label>
+                    <input type="date" id="dataPagamento" required>
                 </div>
-                <div class="grupo-form">
-                    <label>Nova Data de Vencimento *</label>
-                    <input type="date" id="vencEditar" required>
-                </div>
-                <div class="grupo-form">
-                    <label>Status</label>
-                    <select id="statusEditar">
-                        <option value="Pendente">Pendente</option>
-                        <option value="Pago">Pago</option>
-                        <option value="Atrasado">Atrasado</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-salvar">Salvar Alterações</button>
+                <button type="submit" class="btn-salvar">Confirmar Pagamento</button>
             </form>
         </div>
     </div>
@@ -241,104 +205,168 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let abaAtiva = 'todas';
-
         function toggleMenu() {
             document.getElementById('menuLateral').classList.toggle('fechado');
         }
 
-        function mudarAba(nome) {
-            abaAtiva = nome;
-            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
-            event.target.classList.add('ativa');
-            carregarDados();
-        }
-
-        function formatarMesAno(data) {
-            const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-            return `${meses[data.getMonth()]}/${data.getFullYear()}`;
-        }
-
         async function gerarMensalidadesAutomaticas() {
-            const hoje = new Date();
-            const mesAtual = hoje.getMonth();
-            const anoAtual = hoje.getFullYear();
+            try {
+                const alunosSnapshot = await db.collection('alunos').get();
+                const hoje = new Date();
 
-            const alunosSnapshot = await db.collection('alunos').get();
-            for (const alunoDoc of alunosSnapshot.docs) {
-                const aluno = alunoDoc.data();
-                const valorMensal = aluno.valorMensalidade || 0;
+                for (const alunoDoc of alunosSnapshot.docs) {
+                    const a = alunoDoc.data();
+                    if (!a.dataPrimeiraAula || !a.periodo) continue;
 
-                // Usa a DATA DA PRIMEIRA AULA como referência
-                const dataInicio = aluno.dataPrimeiraAula ? aluno.dataPrimeiraAula.toDate() : new Date();
-                let mesRef = dataInicio.getMonth();
-                let anoRef = dataInicio.getFullYear();
-                const diaVencimento = dataInicio.getDate();
+                    const dataInicio = a.dataPrimeiraAula.toDate();
+                    const diaVencimento = dataInicio.getDate();
+                    const valor = a.valorPlano || 0;
+                    const tipo = a.tipo || 'Comercial';
 
-                while (anoRef < anoAtual || (anoRef === anoAtual && mesRef <= mesAtual)) {
-                    const dataVenc = new Date(anoRef, mesRef, diaVencimento);
-                    const refMes = formatarMesAno(new Date(anoRef, mesRef, 1));
-
-                    const existe = await db.collection('mensalidades')
-                        .where('alunoId', '==', alunoDoc.id)
-                        .where('referencia', '==', refMes)
-                        .get();
-
-                    if (existe.empty && valorMensal > 0) {
-                        await db.collection('mensalidades').add({
-                            alunoId: alunoDoc.id,
-                            referencia: refMes,
-                            valor: valorMensal,
-                            vencimento: firebase.firestore.Timestamp.fromDate(dataVenc),
-                            status: 'Pendente',
-                            dataGeracao: firebase.firestore.Timestamp.fromDate(new Date())
-                        });
+                    let intervaloMeses;
+                    switch(a.periodo) {
+                        case 'Mensal': intervaloMeses = 1; break;
+                        case 'Trimestral': intervaloMeses = 3; break;
+                        case 'Semestral': intervaloMeses = 6; break;
+                        case 'Anual': intervaloMeses = 12; break;
+                        default: intervaloMeses = 1;
                     }
 
-                    mesRef++;
-                    if (mesRef > 11) { mesRef = 0; anoRef++; }
+                    let dataAtual = new Date(dataInicio);
+                    while (dataAtual <= hoje) {
+                        const mesAno = `${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}/${dataAtual.getFullYear()}`;
+                        const dataVencimento = new Date(dataAtual);
+                        dataVencimento.setDate(diaVencimento);
+
+                        const existe = await db.collection('mensalidades')
+                            .where('alunoId', '==', alunoDoc.id)
+                            .where('mesAno', '==', mesAno)
+                            .limit(1).get();
+
+                        if (existe.empty) {
+                            await db.collection('mensalidades').add({
+                                alunoId: alunoDoc.id,
+                                alunoNome: a.nome,
+                                tipoAluno: tipo,
+                                mesAno: mesAno,
+                                dataVencimento: firebase.firestore.Timestamp.fromDate(dataVencimento),
+                                valor: valor,
+                                status: valor === 0 ? 'Gratuito' : (dataVencimento < hoje ? 'Atrasado' : 'Pendente'),
+                                dataPagamento: null
+                            });
+                        }
+
+                        dataAtual.setMonth(dataAtual.getMonth() + intervaloMeses);
+                    }
                 }
+            } catch (erro) {
+                console.error('Erro ao gerar mensalidades:', erro);
             }
         }
 
-        async function carregarDados() {
-            const lista = document.getElementById('listaDados');
-            lista.innerHTML = '';
-            const hoje = new Date();
+        async function carregarFinanceiro() {
+            const lista = document.getElementById('listaFinanceiro');
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
 
             try {
-                await gerarMensalidadesAutomaticas();
+                const snapshot = await db.collection('mensalidades').orderBy('dataVencimento', 'desc').get();
+                const hoje = new Date();
 
-                let query = db.collection('mensalidades').orderBy('vencimento', 'desc');
-                if (abaAtiva === 'pendentes') {
-                    query = query.where('status', 'in', ['Pendente', 'Atrasado']);
-                }
-
-                const snapshot = await query.get();
                 if (snapshot.empty) {
-                    lista.innerHTML = `<tr><td colspan="7" class="vazio">Nenhuma mensalidade encontrada.</td></tr>`;
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhuma mensalidade encontrada</td></tr>';
                     return;
                 }
 
-                const alunosMap = new Map();
-                const alunosSnapshot = await db.collection('alunos').get();
-                alunosSnapshot.forEach(doc => {
-                    const a = doc.data();
-                    alunosMap.set(doc.id, { nome: a.nome, plano: a.plano });
+                lista.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const m = doc.data();
+                    const vencimento = m.dataVencimento.toDate();
+                    let status = m.status;
+
+                    if (status === 'Pendente' && vencimento < hoje) status = 'Atrasado';
+
+                    const valorTexto = m.valor === 0 ? 'GRÁTIS' : `R$ ${m.valor.toFixed(2).replace('.', ',')}`;
+                    const classeStatus = status === 'Pago' ? 'status-pago' : status === 'Atrasado' ? 'status-atrasado' : status === 'Gratuito' ? 'status-gratis' : 'status-pendente';
+
+                    const acao = status === 'Pendente' ? `<button class="btn-acao btn-pagar" onclick="abrirModalPagamento('${doc.id}', '${m.alunoNome}', ${m.valor})">Pagar</button>` : '-';
+
+                    const linha = `
+                    <tr>
+                        <td><strong>${m.alunoNome}</strong></td>
+                        <td>${m.tipoAluno}</td>
+                        <td>${m.mesAno}</td>
+                        <td>${vencimento.toLocaleDateString('pt-BR')}</td>
+                        <td>${valorTexto}</td>
+                        <td><span class="status ${classeStatus}">${status}</span></td>
+                        <td>${acao}</td>
+                    </tr>`;
+                    lista.innerHTML += linha;
                 });
 
-                for (const doc of snapshot.docs) {
-                    const m = doc.data();
-                    const dadosAluno = alunosMap.get(m.alunoId) || { nome: 'Aluno não encontrado', plano: '-' };
-                    const dataVenc = m.vencimento.toDate();
-                    let status = m.status;
-                    let classeStatus = '';
-                    let linhaClasse = '';
+            } catch (erro) {
+                console.error('Erro ao carregar financeiro:', erro);
+                lista.innerHTML = '<tr><td colspan="7" class="vazio">Erro ao carregar dados</td></tr>';
+            }
+        }
 
-                    if (status === 'Pago') {
-                        classeStatus = 'status-pago';
-                    } else {
-                        if (dataVenc < hoje) {
-                            status = 'Atrasado';
-                            classeStatus = 'status-atrasado';
-                            linhaClasse = 'destaque-at
+        function abrirModalPagamento(id, nome, valor) {
+            document.getElementById('idMensalidade').value = id;
+            document.getElementById('alunoPagamento').value = nome;
+            document.getElementById('valorPagamento').value = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
+            document.getElementById('dataPagamento').valueAsDate = new Date();
+            document.getElementById('modalPagamento').style.display = 'flex';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalPagamento').style.display = 'none';
+        }
+
+        document.getElementById('formPagamento').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('idMensalidade').value;
+            const dataPagamento = document.getElementById('dataPagamento').value;
+
+            try {
+                await db.collection('mensalidades').doc(id).update({
+                    status: 'Pago',
+                    dataPagamento: firebase.firestore.Timestamp.fromDate(new Date(dataPagamento))
+                });
+                alert('Pagamento registrado com sucesso!');
+                fecharModal();
+                carregarFinanceiro();
+            } catch (erro) {
+                console.error('Erro:', erro);
+                alert('Erro ao registrar pagamento');
+            }
+        });
+
+        function sair() {
+            if (confirm('Deseja sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
+            }
+        }
+
+        document.getElementById('busca').addEventListener('input', () => {
+            const termo = document.getElementById('busca').value.toLowerCase();
+            document.querySelectorAll('#listaFinanceiro tr').forEach(linha => {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('filtroStatus').addEventListener('change', () => {
+            const status = document.getElementById('filtroStatus').value.toLowerCase();
+            document.querySelectorAll('#listaFinanceiro tr').forEach(linha => {
+                linha.style.display = !status || linha.textContent.toLowerCase().includes(status) ? '' : 'none';
+            });
+        });
+
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) {
+                window.location.href = 'login.html';
+            } else {
+                gerarMensalidadesAutomaticas().then(() => carregarFinanceiro());
+            }
+        });
+    </script>
+</body>
+</html>
