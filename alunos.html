@@ -1,39 +1,376 @@
-<!-- ... todo o código anterior continua igual ... -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunos - PJJ Pará Jiu-Jitsu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        :root {
+            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
+            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb;
+        }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; overflow-x: hidden; }
+
+        .btn-menu {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .menu-lateral {
+            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            transition: transform 0.3s ease;
+        }
+        .menu-lateral.fechado { transform: translateX(-100%); }
+
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo img { width: 90px; margin-bottom: 10px; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+
+        .menu-navegacao ul { list-style: none; padding: 0 15px; }
+        .menu-navegacao li a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
+        }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+
+        .conteudo { margin-left: 240px; padding: 35px 45px; padding-top: 30px; min-height: 100vh; }
+        .cabecalho {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
+        }
+        .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
+        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
+        
+        .btn-novo { 
+            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; 
+            border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
+        }
+        .btn-novo:hover { background: var(--vermelho-claro); }
+
+        .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .card-filtro input, .card-filtro select {
+            flex: 1; min-width: 200px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            border-radius: 6px; color: white; font-size: 14px; outline: none;
+        }
+        .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); }
+
+        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+        .tabela th { background: #1f1f25; padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
+        .tabela tr:hover { background: rgba(255,255,255,0.03); }
+        .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
+
+        .faixa-branca { background: #FFFFFF; color: #121214; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-cinza { background: #888888; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-amarela { background: #FFD700; color: #121214; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-laranja { background: #FF8C00; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-verde { background: #228B22; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-azul { background: #0066CC; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-roxa { background: #800080; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-marrom { background: #8B4513; color: white; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+        .faixa-preta { background: #000000; color: white; border: 1px solid #555; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 13px; }
+
+        .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
+        .btn-editar { background: var(--azul); color: white; }
+        .btn-excluir { background: var(--vermelho-principal); color: white; }
+
+        .fundo-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
+            padding: 30px; width: 100%; max-width: 520px; position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.6); max-height: 90vh; overflow-y: auto;
+        }
+        .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
+        .fechar-modal {
+            position: absolute; top: 15px; right: 15px; background: none; border: none;
+            color: var(--texto-cinza); font-size: 28px; cursor: pointer; transition: 0.2s;
+        }
+        .fechar-modal:hover { color: var(--vermelho-principal); }
+
+        .grupo-form { margin-bottom: 18px; }
+        .grupo-form label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+        .grupo-form input, .grupo-form select {
+            width: 100%; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            border-radius: 4px; color: white; font-size: 14px;
+        }
+        .grupo-form input:focus, .grupo-form select:focus {
+            outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2);
+        }
+        .valor-final { margin-top: -10px; margin-bottom: 15px; font-size: 15px; }
+        .valor-final span { font-weight: 700; color: var(--verde); }
+
+        .btn-salvar {
+            width: 100%; padding: 14px; background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
+            border: none; border-radius: 6px; color: white; font-weight: 800; font-size: 16px;
+            cursor: pointer; margin-top: 10px; transition: 0.2s;
+        }
+        .btn-salvar:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        @media (max-width: 768px) {
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
+            .cabecalho { flex-direction: column; align-items: flex-start; }
+            .tabela { display: block; overflow-x: auto; }
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <button class="btn-menu" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="menu-lateral" id="menuLateral">
+        <div class="logo">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
+            <h1>PJJ<br>Pará Jiu-Jitsu</h1>
+        </div>
+        <nav class="menu-navegacao">
+            <ul>
+                <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="#"><i class="fas fa-medal"></i> Graduações</a></li>
+                <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="conteudo">
+        <div class="cabecalho">
+            <h1 class="titulo-pagina">Cadastro de Alunos</h1>
+            <button class="btn-novo" onclick="abrirModalCadastro()">
+                <i class="fas fa-plus"></i> Novo Aluno
+            </button>
+        </div>
+
+        <div class="card-filtro">
+            <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome ou plano...">
+            <select id="filtroFaixa">
+                <option value="">Todas as Faixas</option>
+                <option value="Branca">Branca</option>
+                <option value="Cinza">Cinza</option>
+                <option value="Amarela">Amarela</option>
+                <option value="Laranja">Laranja</option>
+                <option value="Verde">Verde</option>
+                <option value="Azul">Azul</option>
+                <option value="Roxa">Roxa</option>
+                <option value="Marrom">Marrom</option>
+                <option value="Preta">Preta</option>
+            </select>
+        </div>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Nome Completo</th>
+                    <th>Plano</th>
+                    <th>Faixa</th>
+                    <th>Valor Mensal</th>
+                    <th>Primeira Aula</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaAlunos">
+                <tr><td colspan="6" class="vazio">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <div id="modalAluno" class="fundo-modal">
+        <div class="modal">
+            <button class="fechar-modal" onclick="fecharModalAluno()">&times;</button>
+            <h2 id="tituloModalAluno">Cadastrar Novo Aluno</h2>
+            <form id="formAluno">
+                <input type="hidden" id="idAlunoEditar">
+
+                <div class="grupo-form">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="nomeAluno" required>
+                </div>
+                <div class="grupo-form">
+                    <label>Plano *</label>
+                    <select id="planoAluno" onchange="atualizarValor()" required>
+                        <option value="">Selecione</option>
+                        <option value="Kids">Kids - R$ 90,00</option>
+                        <option value="Competidor">Competidor - R$ 90,00</option>
+                        <option value="Bolsista">Bolsista - R$ 0,00</option>
+                        <option value="Comercial">Comercial - R$ 90,00</option>
+                        <option value="Baby Class">Baby Class - R$ 120,00</option>
+                    </select>
+                </div>
+                <div class="grupo-form">
+                    <label>Valor Base</label>
+                    <input type="number" step="0.01" id="valorBase" readonly>
+                </div>
+                <div class="grupo-form">
+                    <label>Desconto (%)</label>
+                    <input type="number" min="0" max="100" value="0" id="desconto" oninput="calcularFinal()">
+                </div>
+                <div class="valor-final">Valor Final: <span id="valorFinal">R$ 0,00</span></div>
+                <input type="hidden" id="valorMensal">
+                <div class="grupo-form">
+                    <label>Faixa *</label>
+                    <select id="faixaAluno" required>
+                        <option value="">Selecione</option>
+                        <option value="Branca">Branca</option>
+                        <option value="Cinza">Cinza</option>
+                        <option value="Amarela">Amarela</option>
+                        <option value="Laranja">Laranja</option>
+                        <option value="Verde">Verde</option>
+                        <option value="Azul">Azul</option>
+                        <option value="Roxa">Roxa</option>
+                        <option value="Marrom">Marrom</option>
+                        <option value="Preta">Preta</option>
+                    </select>
+                </div>
                 <div class="grupo-form">
                     <label>Data da Primeira Aula *</label>
                     <input type="date" id="dataPrimeiraAula" required>
                 </div>
+                <button type="submit" class="btn-salvar">Salvar</button>
+            </form>
+        </div>
+    </div>
 
-<!-- ... resto do código ... -->
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
 
-        document.getElementById('formAluno').addEventListener('submit', async (e) => {
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const valoresPlanos = { Kids:90, Competidor:90, Bolsista:0, Comercial:90, 'Baby Class':120 };
+
+        function toggleMenu() {
+            document.getElementById('menuLateral').classList.toggle('fechado');
+        }
+        function atualizarValor() {
+            const base = valoresPlanos[document.getElementById('planoAluno').value] || 0;
+            document.getElementById('valorBase').value = base.toFixed(2);
+            calcularFinal();
+        }
+        function calcularFinal() {
+            const base = parseFloat(document.getElementById('valorBase').value) || 0;
+            const desc = parseInt(document.getElementById('desconto').value) || 0;
+            const final = base - (base * desc / 100);
+            document.getElementById('valorFinal').textContent = `R$ ${final.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valorMensal').value = final.toFixed(2);
+        }
+
+        async function carregarAlunos() {
+            const lista = document.getElementById('listaAlunos');
+            lista.innerHTML = '';
+            try {
+                const snapshot = await db.collection('alunos').orderBy('nome').get();
+                if (snapshot.empty) { lista.innerHTML = `<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado</td></tr>`; return; }
+                snapshot.forEach(doc => {
+                    const a = doc.data();
+                    const data = a.dataPrimeiraAula ? a.dataPrimeiraAula.toDate().toLocaleDateString('pt-BR') : '-';
+                    lista.innerHTML += `
+                    <tr>
+                        <td><strong>${a.nome}</strong></td>
+                        <td>${a.plano}</td>
+                        <td><span class="faixa-${a.faixa.toLowerCase()}">${a.faixa}</span></td>
+                        <td>R$ ${a.valorMensalidade.toFixed(2).replace('.', ',')}</td>
+                        <td>${data}</td>
+                        <td>
+                            <button class="btn-acao btn-editar" onclick="editarAluno('${doc.id}')">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
+                        </td>
+                    </tr>`;
+                });
+            } catch (erro) { console.error('Erro:', erro); lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro ao carregar</td></tr>`; }
+        }
+
+        function abrirModalCadastro() {
+            document.getElementById('formAluno').reset();
+            document.getElementById('idAlunoEditar').value = '';
+            document.getElementById('tituloModalAluno').textContent = 'Cadastrar Aluno';
+            document.getElementById('modalAluno').style.display = 'flex';
+            document.getElementById('dataPrimeiraAula').valueAsDate = new Date();
+        }
+
+        async function editarAluno(id) {
+            const doc = await db.collection('alunos').doc(id).get();
+            if (!doc.exists) return;
+            const a = doc.data();
+            document.getElementById('idAlunoEditar').value = id;
+            document.getElementById('nomeAluno').value = a.nome;
+            document.getElementById('planoAluno').value = a.plano;
+            atualizarValor();
+            document.getElementById('desconto').value = a.desconto || 0;
+            calcularFinal();
+            document.getElementById('faixaAluno').value = a.faixa;
+            document.getElementById('dataPrimeiraAula').value = a.dataPrimeiraAula.toDate().toISOString().split('T')[0];
+            document.getElementById('tituloModalAluno').textContent = 'Editar Aluno';
+            document.getElementById('modalAluno').style.display = 'flex';
+        }
+
+        function fecharModalAluno() {
+            document.getElementById('modalAluno').style.display = 'none';
+        }
+
+        document.getElementById('formAluno').addEventListener('submit', async e => {
             e.preventDefault();
-            const idEditar = document.getElementById('idAlunoEditar').value;
-
-            const dadosAluno = {
+            const id = document.getElementById('idAlunoEditar').value;
+            const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
                 plano: document.getElementById('planoAluno').value,
                 valorBase: parseFloat(document.getElementById('valorBase').value),
-                desconto: parseInt(document.getElementById('descontoAluno').value) || 0,
-                valorMensalidade: parseFloat(document.getElementById('valorMensalidade').value),
+                desconto: parseInt(document.getElementById('desconto').value) || 0,
+                valorMensalidade: parseFloat(document.getElementById('valorMensal').value),
                 faixa: document.getElementById('faixaAluno').value,
                 dataPrimeiraAula: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataPrimeiraAula').value))
             };
-
             try {
-                if (idEditar) {
-                    await db.collection('alunos').doc(idEditar).update(dadosAluno);
-                    alert('✅ Aluno atualizado com sucesso!');
-                } else {
-                    await db.collection('alunos').add(dadosAluno);
-                    alert('✅ Aluno cadastrado com sucesso!');
-                }
+                if (id) await db.collection('alunos').doc(id).update(dados);
+                else await db.collection('alunos').add(dados);
                 fecharModalAluno();
                 carregarAlunos();
-            } catch (erro) {
-                alert('❌ Erro ao salvar: ' + erro.message);
-            }
+            } catch (erro) { alert('Erro: ' + erro.message); }
         });
 
-<!-- ... resto do código ... -->
+        async function excluirAluno(id) {
+            if (confirm('Excluir este aluno?')) await db.collection('alunos').doc(id).delete(), carregarAlunos();
+        }
+
+        function sair() {
+            if (confirm('Sair do sistema?')) auth.signOut().then(() => window.location.href = 'login.html');
+        }
+
+        auth.onAuthStateChanged(u => u ? carregarAlunos() : window.location.href = 'login.html');
+
+        document.getElementById('buscaAluno').addEventListener('input', () => {
+            const termo = document.getElementById('buscaAluno').value.toLowerCase();
+            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

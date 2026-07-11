@@ -192,7 +192,6 @@
         </table>
     </main>
 
-    <!-- Modal de Edição da Mensalidade -->
     <div id="modalEditar" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalEditar()">&times;</button>
@@ -243,7 +242,6 @@
         const db = firebase.firestore();
 
         let abaAtiva = 'todas';
-        const DIA_VENCIMENTO_PADRAO = 10; // Você pode alterar o dia de vencimento aqui
 
         function toggleMenu() {
             document.getElementById('menuLateral').classList.toggle('fechado');
@@ -270,13 +268,16 @@
             for (const alunoDoc of alunosSnapshot.docs) {
                 const aluno = alunoDoc.data();
                 const valorMensal = aluno.valorMensalidade || 0;
-                const dataCadastro = aluno.dataCadastro ? aluno.dataCadastro.toDate() : new Date();
-                let mesInicio = dataCadastro.getMonth();
-                let anoInicio = dataCadastro.getFullYear();
 
-                while (anoInicio < anoAtual || (anoInicio === anoAtual && mesInicio <= mesAtual)) {
-                    const dataVenc = new Date(anoInicio, mesInicio, DIA_VENCIMENTO_PADRAO);
-                    const refMes = formatarMesAno(new Date(anoInicio, mesInicio, 1));
+                // Usa a DATA DA PRIMEIRA AULA como referência
+                const dataInicio = aluno.dataPrimeiraAula ? aluno.dataPrimeiraAula.toDate() : new Date();
+                let mesRef = dataInicio.getMonth();
+                let anoRef = dataInicio.getFullYear();
+                const diaVencimento = dataInicio.getDate();
+
+                while (anoRef < anoAtual || (anoRef === anoAtual && mesRef <= mesAtual)) {
+                    const dataVenc = new Date(anoRef, mesRef, diaVencimento);
+                    const refMes = formatarMesAno(new Date(anoRef, mesRef, 1));
 
                     const existe = await db.collection('mensalidades')
                         .where('alunoId', '==', alunoDoc.id)
@@ -294,8 +295,8 @@
                         });
                     }
 
-                    mesInicio++;
-                    if (mesInicio > 11) { mesInicio = 0; anoInicio++; }
+                    mesRef++;
+                    if (mesRef > 11) { mesRef = 0; anoRef++; }
                 }
             }
         }
@@ -305,132 +306,39 @@
             lista.innerHTML = '';
             const hoje = new Date();
 
-            await gerarMensalidadesAutomaticas();
+            try {
+                await gerarMensalidadesAutomaticas();
 
-            let query = db.collection('mensalidades').orderBy('vencimento', 'desc');
-            if (abaAtiva === 'pendentes') {
-                query = query.where('status', 'in', ['Pendente', 'Atrasado']);
-            }
-
-            const snapshot = await query.get();
-            if (snapshot.empty) {
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Nenhuma mensalidade encontrada.</td></tr>`;
-                return;
-            }
-
-            const alunosMap = new Map();
-            const alunosSnapshot = await db.collection('alunos').get();
-            alunosSnapshot.forEach(doc => {
-                const a = doc.data();
-                alunosMap.set(doc.id, { nome: a.nome, plano: a.plano });
-            });
-
-            for (const doc of snapshot.docs) {
-                const m = doc.data();
-                const dadosAluno = alunosMap.get(m.alunoId) || { nome: 'Aluno não encontrado', plano: '-' };
-                const dataVenc = m.vencimento.toDate();
-                let status = m.status;
-                let classeStatus = '';
-                let linhaClasse = '';
-
-                if (status === 'Pago') {
-                    classeStatus = 'status-pago';
-                } else {
-                    if (dataVenc < hoje) {
-                        status = 'Atrasado';
-                        classeStatus = 'status-atrasado';
-                        linhaClasse = 'destaque-atraso';
-                    } else {
-                        classeStatus = 'status-pendente';
-                    }
+                let query = db.collection('mensalidades').orderBy('vencimento', 'desc');
+                if (abaAtiva === 'pendentes') {
+                    query = query.where('status', 'in', ['Pendente', 'Atrasado']);
                 }
 
-                lista.innerHTML += `
-                <tr class="${linhaClasse}">
-                    <td><strong>${dadosAluno.nome}</strong></td>
-                    <td>${dadosAluno.plano}</td>
-                    <td>${m.referencia}</td>
-                    <td>R$ ${m.valor.toFixed(2).replace('.', ',')}</td>
-                    <td>${dataVenc.toLocaleDateString('pt-BR')}</td>
-                    <td class="${classeStatus}">${status}</td>
-                    <td>
-                        ${status !== 'Pago' ? `<button class="btn-acao btn-pagar" onclick="marcarPago('${doc.id}')">Pagar</button>` : ''}
-                        <button class="btn-acao btn-editar" onclick="abrirModalEditar('${doc.id}', '${dadosAluno.nome}', '${m.referencia}', ${m.valor}, '${dataVenc.toISOString().split('T')[0]}', '${m.status}')">Editar</button>
-                        <button class="btn-acao btn-excluir" onclick="excluirLancamento('${doc.id}')">Excluir</button>
-                    </td>
-                </tr>`;
-            }
-        }
+                const snapshot = await query.get();
+                if (snapshot.empty) {
+                    lista.innerHTML = `<tr><td colspan="7" class="vazio">Nenhuma mensalidade encontrada.</td></tr>`;
+                    return;
+                }
 
-        async function marcarPago(id) {
-            if (confirm('Confirmar pagamento desta mensalidade?')) {
-                await db.collection('mensalidades').doc(id).update({ status: 'Pago' });
-                carregarDados();
-            }
-        }
+                const alunosMap = new Map();
+                const alunosSnapshot = await db.collection('alunos').get();
+                alunosSnapshot.forEach(doc => {
+                    const a = doc.data();
+                    alunosMap.set(doc.id, { nome: a.nome, plano: a.plano });
+                });
 
-        async function excluirLancamento(id) {
-            if (confirm('Excluir este lançamento?')) {
-                await db.collection('mensalidades').doc(id).delete();
-                carregarDados();
-            }
-        }
+                for (const doc of snapshot.docs) {
+                    const m = doc.data();
+                    const dadosAluno = alunosMap.get(m.alunoId) || { nome: 'Aluno não encontrado', plano: '-' };
+                    const dataVenc = m.vencimento.toDate();
+                    let status = m.status;
+                    let classeStatus = '';
+                    let linhaClasse = '';
 
-        function abrirModalEditar(id, nomeAluno, mes, valor, vencimento, status) {
-            document.getElementById('idMensalidadeEditar').value = id;
-            document.getElementById('alunoEditar').value = nomeAluno;
-            document.getElementById('mesEditar').value = mes;
-            document.getElementById('valorEditar').value = valor;
-            document.getElementById('vencEditar').value = vencimento;
-            document.getElementById('statusEditar').value = status;
-
-            document.getElementById('modalEditar').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function fecharModalEditar() {
-            document.getElementById('modalEditar').style.display = 'none';
-            document.getElementById('formEditar').reset();
-            document.body.style.overflow = 'auto';
-        }
-
-        document.getElementById('formEditar').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('idMensalidadeEditar').value;
-            const novoValor = parseFloat(document.getElementById('valorEditar').value);
-            const novaData = new Date(document.getElementById('vencEditar').value);
-            const novoStatus = document.getElementById('statusEditar').value;
-
-            await db.collection('mensalidades').doc(id).update({
-                valor: novoValor,
-                vencimento: firebase.firestore.Timestamp.fromDate(novaData),
-                status: novoStatus
-            });
-
-            alert('✅ Mensalidade atualizada com sucesso!');
-            fecharModalEditar();
-            carregarDados();
-        });
-
-        function sair() {
-            if(confirm('Deseja realmente sair?')) auth.signOut().then(()=>window.location.href='login.html');
-        }
-
-        auth.onAuthStateChanged(usuario => {
-            if (!usuario) window.location.href='login.html';
-            else carregarDados();
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('fundo-modal')) fecharModalEditar();
-        });
-
-        document.getElementById('buscaFin').addEventListener('input', () => {
-            const termo = document.getElementById('buscaFin').value.toLowerCase();
-            document.querySelectorAll('#listaDados tr').forEach(linha => {
-                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
-            });
-        });
-    </script>
-</body>
-</html>
+                    if (status === 'Pago') {
+                        classeStatus = 'status-pago';
+                    } else {
+                        if (dataVenc < hoje) {
+                            status = 'Atrasado';
+                            classeStatus = 'status-atrasado';
+                            linhaClasse = 'destaque-at
