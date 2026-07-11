@@ -12,7 +12,7 @@
         :root {
             --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
-            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb;
+            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --cinza-claro: #333338;
         }
         body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; overflow-x: hidden; }
 
@@ -57,7 +57,7 @@
 
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
-            flex: 1; min-width: 200px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
             border-radius: 6px; color: white; font-size: 14px; outline: none;
         }
         .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); }
@@ -67,6 +67,13 @@
         .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
+
+        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
+        .tipo-baby { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
+        .tipo-comercial { background: #FF980020; color: #FF9800; border: 1px solid #FF980040; }
+        .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
+        .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
 
         .faixa { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
         .faixa-branca { background: #FFFFFF; color: #121214; border: 1px solid #ddd; }
@@ -89,7 +96,7 @@
         }
         .modal {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
-            padding: 30px; width: 100%; max-width: 600px; position: relative;
+            padding: 30px; width: 100%; max-width: 650px; position: relative;
             box-shadow: 0 0 30px rgba(0,0,0,0.6);
         }
         .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
@@ -112,8 +119,8 @@
             outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2);
         }
         .campo-opcional { font-size: 12px; color: var(--texto-cinza); font-weight: normal; }
-
         .valor-final { margin-top: 5px; font-size: 18px; font-weight: 800; color: var(--verde); }
+        .valor-gratis { color: #4CAF50; }
 
         .btn-salvar {
             width: 100%; padding: 14px; background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
@@ -168,6 +175,14 @@
 
         <div class="card-filtro">
             <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome ou responsável...">
+            <select id="filtroTipo">
+                <option value="">Todos os Tipos</option>
+                <option value="Kids">Kids</option>
+                <option value="Baby Class">Baby Class</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Competidor">Competidor</option>
+                <option value="Bolsista">Bolsista</option>
+            </select>
             <select id="filtroPeriodo">
                 <option value="">Todos os Períodos</option>
                 <option value="Mensal">Mensal</option>
@@ -181,16 +196,17 @@
             <thead>
                 <tr>
                     <th>Nome</th>
+                    <th>Tipo</th>
                     <th>Responsável</th>
                     <th>Nascimento</th>
-                    <th>Período</th>
-                    <th>Valor</th>
+                    <th>Plano</th>
+                    <th>Valor Final</th>
                     <th>Faixa</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">Carregando alunos...</td></tr>
+                <tr><td colspan="8" class="vazio">Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -210,18 +226,35 @@
                             <input type="text" id="nomeAluno" required>
                         </div>
                         <div class="grupo-form">
-                            <label>Data de Nascimento *</label>
-                            <input type="date" id="nascimentoAluno" required>
+                            <label>Tipo de Aluno *</label>
+                            <select id="tipoAluno" onchange="atualizarValorPlano()" required>
+                                <option value="">Selecione</option>
+                                <option value="Kids">Kids</option>
+                                <option value="Baby Class">Baby Class</option>
+                                <option value="Comercial">Comercial</option>
+                                <option value="Competidor">Competidor</option>
+                                <option value="Bolsista">Bolsista (Gratuito)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="linha">
                         <div class="grupo-form">
+                            <label>Data de Nascimento *</label>
+                            <input type="date" id="nascimentoAluno" required>
+                        </div>
+                        <div class="grupo-form">
                             <label>Nome do Responsável <span class="campo-opcional">(opcional)</span></label>
                             <input type="text" id="responsavelAluno">
                         </div>
+                    </div>
+                    <div class="linha">
                         <div class="grupo-form">
                             <label>E-mail <span class="campo-opcional">(opcional)</span></label>
                             <input type="email" id="emailAluno">
+                        </div>
+                        <div class="grupo-form">
+                            <label>Data da Primeira Aula *</label>
+                            <input type="date" id="dataPrimeiraAula" required>
                         </div>
                     </div>
                 </div>
@@ -240,11 +273,15 @@
                             </select>
                         </div>
                         <div class="grupo-form">
-                            <label>Valor Total</label>
-                            <input type="text" id="valorPlano" readonly class="valor-final">
+                            <label>Desconto (%) <span class="campo-opcional">(opcional)</span></label>
+                            <input type="number" id="descontoAluno" min="0" max="100" step="0.1" value="0" oninput="atualizarValorPlano()">
                         </div>
                     </div>
                     <div class="linha">
+                        <div class="grupo-form">
+                            <label>Valor Final</label>
+                            <input type="text" id="valorPlano" readonly class="valor-final">
+                        </div>
                         <div class="grupo-form">
                             <label>Faixa Inicial *</label>
                             <select id="faixaAluno" required>
@@ -258,10 +295,6 @@
                                 <option value="Marrom">Marrom</option>
                                 <option value="Preta">Preta</option>
                             </select>
-                        </div>
-                        <div class="grupo-form">
-                            <label>Data da Primeira Aula *</label>
-                            <input type="date" id="dataPrimeiraAula" required>
                         </div>
                     </div>
                 </div>
@@ -285,7 +318,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Valores fixos por período
+        // Valores base dos planos
         const valoresPlanos = {
             'Mensal': 90.00,
             'Trimestral': 240.00,
@@ -298,42 +331,55 @@
         }
 
         function atualizarValorPlano() {
+            const tipo = document.getElementById('tipoAluno').value;
             const periodo = document.getElementById('periodoAluno').value;
-            const valor = valoresPlanos[periodo] || 0;
-            document.getElementById('valorPlano').value = `R$ ${valor.toFixed(2).replace('.', ',')}`;
-            // Guarda o valor em número para salvar no banco
-            document.getElementById('valorPlano').dataset.valor = valor;
+            const desconto = parseFloat(document.getElementById('descontoAluno').value) || 0;
+            let valorBase = 0;
+
+            // Bolsista = sempre grátis
+            if (tipo === 'Bolsista') {
+                valorBase = 0;
+                document.getElementById('valorPlano').classList.add('valor-gratis');
+            } else {
+                valorBase = valoresPlanos[periodo] || 0;
+                document.getElementById('valorPlano').classList.remove('valor-gratis');
+            }
+
+            // Aplica desconto
+            const valorFinal = valorBase - (valorBase * desconto / 100);
+            
+            document.getElementById('valorPlano').value = valorFinal === 0 ? 'GRÁTIS' : `R$ ${valorFinal.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valorPlano').dataset.valor = valorFinal;
         }
 
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     return;
                 }
 
                 lista.innerHTML = '';
                 snapshot.forEach(doc => {
-                    const aluno = doc.data();
-                    
-                    const nascimento = aluno.dataNascimento ? aluno.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
-                    const responsavel = aluno.responsavel || '-';
-                    const periodo = aluno.periodo || '-';
-                    const valor = aluno.valorPlano ? `R$ ${aluno.valorPlano.toFixed(2).replace('.', ',')}` : '-';
-                    const faixa = aluno.faixa || 'Branca';
+                    const a = doc.data();
+                    const nascimento = a.dataNascimento ? a.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
+                    const responsavel = a.responsavel || '-';
+                    const valorFinal = a.valorPlano === 0 ? 'GRÁTIS' : `R$ ${a.valorPlano.toFixed(2).replace('.', ',')}`;
+                    const faixa = a.faixa || 'Branca';
 
                     const linha = `
                     <tr>
-                        <td><strong>${aluno.nome}</strong></td>
+                        <td><strong>${a.nome}</strong></td>
+                        <td><span class="tipo-aluno tipo-${a.tipo?.toLowerCase().replace(' ', '-') || 'comercial'}">${a.tipo || '-'}</span></td>
                         <td>${responsavel}</td>
                         <td>${nascimento}</td>
-                        <td>${periodo}</td>
-                        <td>${valor}</td>
+                        <td>${a.periodo || '-'}</td>
+                        <td>${valorFinal}</td>
                         <td><span class="faixa faixa-${faixa.toLowerCase()}">${faixa}</span></td>
                         <td>
                             <button class="btn-acao btn-editar" onclick="editarAluno('${doc.id}')">Editar</button>
@@ -345,7 +391,7 @@
 
             } catch (erro) {
                 console.error('Erro ao carregar alunos:', erro);
-                lista.innerHTML = '<tr><td colspan="7" class="vazio">Erro ao carregar lista de alunos</td></tr>';
+                lista.innerHTML = '<tr><td colspan="8" class="vazio">Erro ao carregar lista</td></tr>';
             }
         }
 
@@ -354,6 +400,7 @@
             document.getElementById('idAlunoEditar').value = '';
             document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
             document.getElementById('dataPrimeiraAula').valueAsDate = new Date();
+            atualizarValorPlano();
             document.getElementById('modalAluno').style.display = 'flex';
         }
 
@@ -361,22 +408,24 @@
             try {
                 const doc = await db.collection('alunos').doc(id).get();
                 if (!doc.exists) return;
-                
-                const aluno = doc.data();
-                document.getElementById('idAlunoEditar').value = id;
-                document.getElementById('nomeAluno').value = aluno.nome || '';
-                document.getElementById('responsavelAluno').value = aluno.responsavel || '';
-                document.getElementById('emailAluno').value = aluno.email || '';
-                document.getElementById('nascimentoAluno').value = aluno.dataNascimento ? aluno.dataNascimento.toDate().toISOString().split('T')[0] : '';
-                document.getElementById('periodoAluno').value = aluno.periodo || '';
-                atualizarValorPlano();
-                document.getElementById('faixaAluno').value = aluno.faixa || 'Branca';
-                document.getElementById('dataPrimeiraAula').value = aluno.dataPrimeiraAula ? aluno.dataPrimeiraAula.toDate().toISOString().split('T')[0] : '';
+                const a = doc.data();
 
+                document.getElementById('idAlunoEditar').value = id;
+                document.getElementById('nomeAluno').value = a.nome || '';
+                document.getElementById('tipoAluno').value = a.tipo || '';
+                document.getElementById('responsavelAluno').value = a.responsavel || '';
+                document.getElementById('emailAluno').value = a.email || '';
+                document.getElementById('nascimentoAluno').value = a.dataNascimento ? a.dataNascimento.toDate().toISOString().split('T')[0] : '';
+                document.getElementById('periodoAluno').value = a.periodo || '';
+                document.getElementById('descontoAluno').value = a.desconto || 0;
+                document.getElementById('faixaAluno').value = a.faixa || 'Branca';
+                document.getElementById('dataPrimeiraAula').value = a.dataPrimeiraAula ? a.dataPrimeiraAula.toDate().toISOString().split('T')[0] : '';
+                
+                atualizarValorPlano();
                 document.getElementById('tituloModal').textContent = 'Editar Aluno';
                 document.getElementById('modalAluno').style.display = 'flex';
             } catch (erro) {
-                console.error('Erro ao carregar aluno:', erro);
+                console.error('Erro:', erro);
                 alert('Erro ao abrir dados do aluno');
             }
         }
@@ -391,10 +440,12 @@
             
             const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
+                tipo: document.getElementById('tipoAluno').value,
                 responsavel: document.getElementById('responsavelAluno').value.trim(),
                 email: document.getElementById('emailAluno').value.trim(),
                 dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
                 periodo: document.getElementById('periodoAluno').value,
+                desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
                 valorPlano: parseFloat(document.getElementById('valorPlano').dataset.valor) || 0,
                 faixa: document.getElementById('faixaAluno').value,
                 dataPrimeiraAula: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataPrimeiraAula').value))
@@ -412,35 +463,37 @@
                 carregarAlunos();
             } catch (erro) {
                 console.error('Erro ao salvar:', erro);
-                alert('Erro ao salvar: ' + erro.message);
+                alert('Erro: ' + erro.message);
             }
         });
 
         async function excluirAluno(id) {
-            if (confirm('Tem certeza que deseja excluir este aluno? Essa ação não pode ser desfeita.')) {
+            if (confirm('Tem certeza que deseja excluir?')) {
                 try {
                     await db.collection('alunos').doc(id).delete();
-                    alert('Aluno excluído com sucesso!');
                     carregarAlunos();
                 } catch (erro) {
-                    console.error('Erro ao excluir:', erro);
-                    alert('Erro ao excluir aluno');
+                    alert('Erro ao excluir');
                 }
             }
         }
 
         function sair() {
-            if (confirm('Deseja sair do sistema?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
-            }
+            if (confirm('Deseja sair?')) auth.signOut().then(() => window.location.href = 'login.html');
         }
 
         // Filtros
         document.getElementById('buscaAluno').addEventListener('input', () => {
-            const termo = document.getElementById('buscaAluno').value.toLowerCase().trim();
+            const termo = document.getElementById('buscaAluno').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                const texto = linha.textContent.toLowerCase();
-                linha.style.display = texto.includes(termo) ? '' : 'none';
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('filtroTipo').addEventListener('change', () => {
+            const tipo = document.getElementById('filtroTipo').value.toLowerCase();
+            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                linha.style.display = !tipo || linha.textContent.toLowerCase().includes(tipo) ? '' : 'none';
             });
         });
 
@@ -451,13 +504,7 @@
             });
         });
 
-        auth.onAuthStateChanged(usuario => {
-            if (!usuario) {
-                window.location.href = 'login.html';
-            } else {
-                carregarAlunos();
-            }
-        });
+        auth.onAuthStateChanged(u => u ? carregarAlunos() : window.location.href = 'login.html');
     </script>
 </body>
 </html>
