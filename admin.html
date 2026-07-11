@@ -75,21 +75,73 @@
         .card-recebido { border-left: 4px solid var(--verde); }
         .card-atrasado { border-left: 4px solid var(--vermelho-principal); }
 
-        .secao-planos {
+        .grid-dupla {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .secao {
             background: var(--fundo-card);
             border: 1px solid var(--borda);
             border-radius: 10px;
             padding: 25px;
         }
-        .secao-planos h2 { font-size: 18px; margin-bottom: 20px; font-weight: 700; }
+
+        .secao h2 { font-size: 18px; margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+        /* Ações Rápidas */
+        .acoes-rapidas { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .btn-acao-rapida {
+            background: var(--fundo-escuro);
+            border: 1px solid var(--borda);
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--texto-branco);
+            transition: all 0.2s;
+        }
+        .btn-acao-rapida:hover {
+            border-color: var(--vermelho-principal);
+            background: rgba(209,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        .btn-acao-rapida i { font-size: 24px; margin-bottom: 8px; color: var(--vermelho-principal); }
+        .btn-acao-rapida span { font-size: 14px; font-weight: 600; }
+
+        /* Últimas Mensalidades */
+        .lista-mensalidades { list-style: none; }
+        .item-mensalidade {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--borda);
+        }
+        .item-mensalidade:last-child { border-bottom: none; }
+        .info-mensalidade h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .info-mensalidade p { font-size: 12px; color: var(--texto-cinza); }
+        .valor-mensalidade { font-weight: 700; font-size: 15px; }
+        .status-pago { color: var(--verde); }
+        .status-pendente { color: var(--amarelo); }
+        .status-atrasado { color: var(--vermelho-principal); }
+
+        /* Alunos por Plano */
         .lista-planos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .item-plano { background: var(--fundo-escuro); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--borda); }
         .item-plano h4 { font-size: 14px; margin-bottom: 8px; color: var(--texto-cinza); }
         .item-plano .qtd { font-size: 22px; font-weight: 800; color: var(--vermelho-principal); }
 
+        @media (max-width: 900px) {
+            .grid-dupla { grid-template-columns: 1fr; }
+        }
+
         @media (max-width: 768px) {
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
+            .acoes-rapidas { grid-template-columns: 1fr; }
         }
     </style>
 
@@ -160,8 +212,42 @@
             </div>
         </div>
 
-        <div class="secao-planos">
-            <h2>Alunos por Plano</h2>
+        <div class="grid-dupla">
+            <!-- Ações Rápidas -->
+            <div class="secao">
+                <h2><i class="fas fa-bolt"></i> Ações Rápidas</h2>
+                <div class="acoes-rapidas">
+                    <a href="alunos.html" class="btn-acao-rapida">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Cadastrar Aluno</span>
+                    </a>
+                    <a href="financeiro.html" class="btn-acao-rapida">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Lançar Pagamento</span>
+                    </a>
+                    <a href="#" class="btn-acao-rapida">
+                        <i class="fas fa-medal"></i>
+                        <span>Registrar Graduação</span>
+                    </a>
+                    <a href="#" class="btn-acao-rapida">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Ver Relatórios</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Últimas Mensalidades -->
+            <div class="secao">
+                <h2><i class="fas fa-history"></i> Últimas Mensalidades</h2>
+                <ul class="lista-mensalidades" id="ultimasMensalidades">
+                    <li class="item-mensalidade vazio">Carregando...</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Alunos por Plano -->
+        <div class="secao">
+            <h2><i class="fas fa-list-alt"></i> Alunos por Plano</h2>
             <div class="lista-planos" id="listaPlanos"></div>
         </div>
     </main>
@@ -211,29 +297,83 @@
                 `;
             }
 
-            // Valores financeiros
+            // Valores financeiros do mês
             const mensalidadesSnap = await db.collection('mensalidades')
                 .where('vencimento', '>=', new Date(anoAtual, mesAtual, 1))
                 .where('vencimento', '<=', new Date(anoAtual, mesAtual + 1, 0))
+                .orderBy('vencimento', 'desc')
                 .get();
 
             let receber = 0, recebido = 0, atrasado = 0;
+            const ultimasMensalidades = [];
 
             mensalidadesSnap.forEach(doc => {
                 const m = doc.data();
                 const venc = m.vencimento.toDate();
+                const valor = m.valor || 0;
+
                 if (m.status === 'Pago') {
-                    recebido += m.valor;
+                    recebido += valor;
                 } else if (venc < hoje) {
-                    atrasado += m.valor;
+                    atrasado += valor;
                 } else {
-                    receber += m.valor;
+                    receber += valor;
+                }
+
+                // Guarda as últimas 5 para exibir
+                if (ultimasMensalidades.length < 5) {
+                    ultimasMensalidades.push({
+                        ...m,
+                        id: doc.id,
+                        vencimento: venc
+                    });
                 }
             });
 
             document.getElementById('valorReceber').textContent = `R$ ${receber.toFixed(2).replace('.', ',')}`;
             document.getElementById('valorRecebido').textContent = `R$ ${recebido.toFixed(2).replace('.', ',')}`;
             document.getElementById('valorAtrasado').textContent = `R$ ${atrasado.toFixed(2).replace('.', ',')}`;
+
+            // Exibe últimas mensalidades com nome do aluno
+            const listaMensalEl = document.getElementById('ultimasMensalidades');
+            if (ultimasMensalidades.length === 0) {
+                listaMensalEl.innerHTML = `<li class="item-mensalidade vazio">Nenhuma mensalidade encontrada.</li>`;
+                return;
+            }
+
+            // Busca nomes dos alunos
+            const alunosMap = new Map();
+            const alunosSnapMap = await db.collection('alunos').get();
+            alunosSnapMap.forEach(doc => alunosMap.set(doc.id, doc.data().nome));
+
+            listaMensalEl.innerHTML = '';
+            ultimasMensalidades.forEach(m => {
+                const nomeAluno = alunosMap.get(m.alunoId) || 'Aluno não encontrado';
+                let status = m.status;
+                let classeStatus = '';
+
+                if (status === 'Pago') {
+                    classeStatus = 'status-pago';
+                } else if (m.vencimento < hoje) {
+                    status = 'Atrasado';
+                    classeStatus = 'status-atrasado';
+                } else {
+                    classeStatus = 'status-pendente';
+                }
+
+                listaMensalEl.innerHTML += `
+                    <li class="item-mensalidade">
+                        <div class="info-mensalidade">
+                            <h4>${nomeAluno}</h4>
+                            <p>${m.referencia} • Venc: ${m.vencimento.toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <div class="valor-mensalidade ${classeStatus}">
+                            R$ ${(m.valor || 0).toFixed(2).replace('.', ',')}
+                            <br><small>${status}</small>
+                        </div>
+                    </li>
+                `;
+            });
         }
 
         function sair() {
