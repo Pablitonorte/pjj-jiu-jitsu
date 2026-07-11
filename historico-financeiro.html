@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico Financeiro - PJJ Pará Jiu-Jitsu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        :root {
+            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
+            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --cinza-claro: #333338;
+        }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; overflow-x: hidden; }
+
+        .btn-menu {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .menu-lateral {
+            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            transition: transform 0.3s ease;
+        }
+        .menu-lateral.fechado { transform: translateX(-100%); }
+
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo img { width: 90px; margin-bottom: 10px; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+
+        .menu-navegacao ul { list-style: none; padding: 0 15px; }
+        .menu-navegacao li a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
+        }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+
+        .conteudo { margin-left: 240px; padding: 35px 45px; padding-top: 30px; min-height: 100vh; }
+        .cabecalho {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
+        }
+        .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
+        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
+
+        .resumo-valores {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px; margin-bottom: 25px;
+        }
+        .card-resumo {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
+            padding: 20px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-resumo .icone { font-size: 28px; opacity: 0.8; }
+        .card-resumo .dados h3 { font-size: 14px; font-weight: 500; color: var(--texto-cinza); margin-bottom: 5px; }
+        .card-resumo .dados p { font-size: 22px; font-weight: 800; }
+        .card-recebido { border-left: 4px solid var(--verde); }
+        .card-pendente { border-left: 4px solid var(--amarelo); }
+        .card-atrasado { border-left: 4px solid var(--vermelho-principal); }
+
+        .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .card-filtro input, .card-filtro select {
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
+            border-radius: 6px; color: white; font-size: 14px; outline: none;
+        }
+        .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); }
+
+        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+        .tabela th { background: #1f1f25; padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
+        .tabela tr:hover { background: rgba(255,255,255,0.03); }
+        .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
+
+        .status { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .status-pago { background: rgba(0, 150, 0, 0.15); color: var(--verde); border: 1px solid rgba(0, 150, 0, 0.3); }
+        .status-pendente { background: rgba(255, 200, 0, 0.15); color: var(--amarelo); border: 1px solid rgba(255, 200, 0, 0.3); }
+        .status-atrasado { background: rgba(220, 0, 0, 0.15); color: var(--vermelho-principal); border: 1px solid rgba(220, 0, 0, 0.3); }
+
+        @media (max-width: 768px) {
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
+            .tabela { display: block; overflow-x: auto; }
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <button class="btn-menu" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="menu-lateral" id="menuLateral">
+        <div class="logo">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
+            <h1>PJJ<br>Pará Jiu-Jitsu</h1>
+        </div>
+        <nav class="menu-navegacao">
+            <ul>
+                <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-history"></i> Histórico Financeiro</a></li>
+                <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="conteudo">
+        <div class="cabecalho">
+            <h1 class="titulo-pagina">Histórico Financeiro</h1>
+        </div>
+
+        <div class="resumo-valores">
+            <div class="card-resumo card-recebido">
+                <div class="icone"><i class="fas fa-check-circle"></i></div>
+                <div class="dados">
+                    <h3>Total Recebido</h3>
+                    <p id="valorRecebido">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card-resumo card-pendente">
+                <div class="icone"><i class="fas fa-clock"></i></div>
+                <div class="dados">
+                    <h3>Total Pendente</h3>
+                    <p id="valorPendente">R$ 0,00</p>
+                </div>
+            </div>
+            <div class="card-resumo card-atrasado">
+                <div class="icone"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="dados">
+                    <h3>Total Atrasado</h3>
+                    <p id="valorAtrasado">R$ 0,00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-filtro">
+            <input type="text" id="busca" placeholder="🔍 Buscar por aluno ou mês...">
+            <select id="filtroStatus">
+                <option value="">Todos os Status</option>
+                <option value="Pago">Apenas Pagos</option>
+                <option value="Pendente">Apenas Pendentes</option>
+                <option value="Atrasado">Apenas Atrasados</option>
+            </select>
+            <input type="month" id="filtroMes" placeholder="Filtrar por mês">
+        </div>
+
+        <table class="tabela">
+            <thead>
+                <tr>
+                    <th>Aluno</th>
+                    <th>Mês/Ano</th>
+                    <th>Vencimento</th>
+                    <th>Data Pagamento</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="listaHistorico">
+                <tr><td colspan="6" class="vazio">Carregando dados...</td></tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        function toggleMenu() {
+            document.getElementById('menuLateral').classList.toggle('fechado');
+        }
+
+        async function carregarHistorico() {
+            const lista = document.getElementById('listaHistorico');
+            lista.innerHTML = '<tr><td colspan="6" class="vazio">Carregando...</td></tr>';
+
+            let totalRecebido = 0;
+            let totalPendente = 0;
+            let totalAtrasado = 0;
+            const hoje = new Date();
+
+            try {
+                const mensalidadesSnapshot = await db.collection('mensalidades')
+                    .orderBy('dataVencimento', 'desc')
+                    .get();
+
+                if (mensalidadesSnapshot.empty) {
+                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum registro encontrado</td></tr>';
+                    return;
+                }
+
+                lista.innerHTML = '';
+
+                mensalidadesSnapshot.forEach(doc => {
+                    const m = doc.data();
+                    const vencimento = m.dataVencimento.toDate();
+                    let status = m.status;
+
+                    if (status !== 'Pago' && vencimento < hoje) status = 'Atrasado';
+
+                    if (status === 'Pago') totalRecebido += m.valor;
+                    else if (status === 'Pendente') totalPendente += m.valor;
+                    else if (status === 'Atrasado') totalAtrasado += m.valor;
+
+                    const dataPagamento = m.dataPagamento ? m.dataPagamento.toDate().toLocaleDateString('pt-BR') : '-';
+                    const classeStatus = status === 'Pago' ? 'status-pago' : status === 'Atrasado' ? 'status-atrasado' : 'status-pendente';
+
+                    const linha = `
+                    <tr>
+                        <td><strong>${m.alunoNome || '-'}</strong></td>
+                        <td>${m.mesAno || '-'}</td>
+                        <td>${vencimento.toLocaleDateString('pt-BR')}</td>
+                        <td>${dataPagamento}</td>
+                        <td>R$ ${m.valor.toFixed(2).replace('.', ',')}</td>
+                        <td><span class="status ${classeStatus}">${status}</span></td>
+                    </tr>`;
+                    lista.innerHTML += linha;
+                });
+
+                document.getElementById('valorRecebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
+                document.getElementById('valorPendente').textContent = `R$ ${totalPendente.toFixed(2).replace('.', ',')}`;
+                document.getElementById('valorAtrasado').textContent = `R$ ${totalAtrasado.toFixed(2).replace('.', ',')}`;
+
+            } catch (erro) {
+                console.error('Erro ao carregar histórico:', erro);
+                lista.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar dados</td></tr>';
+            }
+        }
+
+        function sair() {
+            if (confirm('Deseja sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
+            }
+        }
+
+        // Filtros
+        document.getElementById('busca').addEventListener('input', () => {
+            const termo = document.getElementById('busca').value.toLowerCase();
+            document.querySelectorAll('#listaHistorico tr').forEach(linha => {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('filtroStatus').addEventListener('change', () => {
+            const status = document.getElementById('filtroStatus').value.toLowerCase();
+            document.querySelectorAll('#listaHistorico tr').forEach(linha => {
+                linha.style.display = !status || linha.textContent.toLowerCase().includes(status) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('filtroMes').addEventListener('change', () => {
+            const mesEscolhido = document.getElementById('filtroMes').value;
+            if (!mesEscolhido) {
+                carregarHistorico();
+                return;
+            }
+            const [ano, mes] = mesEscolhido.split('-');
+            const mesAnoFormatado = `${parseInt(mes)}/${ano}`;
+            document.querySelectorAll('#listaHistorico tr').forEach(linha => {
+                linha.style.display = linha.textContent.includes(mesAnoFormatado) ? '' : 'none';
+            });
+        });
+
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) window.location.href = 'login.html';
+            else carregarHistorico();
+        });
+    </script>
+</body>
+</html>
