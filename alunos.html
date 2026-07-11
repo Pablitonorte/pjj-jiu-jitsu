@@ -140,13 +140,6 @@
         .valor-final { margin-top: 5px; font-size: 18px; font-weight: 800; color: var(--verde); }
         .valor-gratis { color: #4CAF50; }
 
-        .btn-salvar {
-            width: 100%; padding: 14px; background: linear-gradient(90deg, var(--verde), #00b348);
-            border: none; border-radius: 6px; color: white; font-weight: 800; font-size: 16px;
-            cursor: pointer; transition: 0.2s;
-        }
-        .btn-salvar:hover { opacity: 0.9; transform: translateY(-1px); }
-
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
@@ -388,7 +381,9 @@
                 lista.innerHTML = '';
                 snapshot.forEach(doc => {
                     const dados = doc.data();
-                    const valorTexto = dados.valorPlano === 0 ? 'GRÁTIS' : `R$ ${dados.valorPlano.toFixed(2).replace('.', ',')}`;
+                    // Correção: define valor padrão 0 se não existir
+                    const valorPlano = dados.valorPlano || 0;
+                    const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
                     const classeTipo = `tipo-${(dados.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const classeFaixa = `faixa-${(dados.faixa || 'branca').toLowerCase()}`;
                     const nascimento = dados.dataNascimento ? dados.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
