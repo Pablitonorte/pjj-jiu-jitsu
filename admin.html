@@ -3,466 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área do Administrador - PJJ Pará Jiu-Jitsu</title>
+    <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         :root {
-            --fundo-escuro: #121214;
-            --fundo-card: #1A1A1F;
-            --vermelho-principal: #D10000;
-            --vermelho-claro: #FF3B3B;
-            --texto-branco: #FFFFFF;
-            --texto-cinza: #B0B0B8;
-            --borda: #29292E;
+            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
+            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --roxo: #9C27B0;
+        }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; overflow-x: hidden; }
+
+        .btn-menu {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
-        body {
-            background-color: var(--fundo-escuro);
-            color: var(--texto-branco);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* MENU LATERAL */
         .menu-lateral {
-            width: 240px;
-            background-color: var(--fundo-escuro);
-            border-right: 1px solid var(--borda);
-            padding: 30px 0;
-            position: fixed;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: 1000;
+            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
             transition: transform 0.3s ease;
         }
+        .menu-lateral.fechado { transform: translateX(-100%); }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo img { width: 90px; margin-bottom: 10px; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
 
-        .logo img {
-            width: 90px;
-            margin-bottom: 10px;
-        }
-
-        .logo h1 {
-            font-size: 14px;
-            font-weight: 700;
-            line-height: 1.3;
-        }
-
-        .menu-navegacao ul {
-            list-style: none;
-            padding: 0 15px;
-        }
-
+        .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            margin-bottom: 5px;
-            color: var(--texto-cinza);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px;
-            transition: all 0.2s;
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
         }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
 
-        .menu-navegacao li a.ativo,
-        .menu-navegacao li a:hover {
-            background-color: rgba(209, 0, 0, 0.15);
-            color: var(--vermelho-principal);
-        }
-
-        /* BOTÃO DE MENU PARA CELULAR */
-        .btn-menu {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1100;
-            background: var(--fundo-card);
-            border: 1px solid var(--borda);
-            color: var(--texto-branco);
-            width: 45px;
-            height: 45px;
-            border-radius: 6px;
-            font-size: 20px;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* CONTEÚDO PRINCIPAL */
-        .conteudo {
-            margin-left: 240px;
-            padding: 35px 45px;
-            min-height: 100vh;
-        }
-
+        .conteudo { margin-left: 240px; padding: 35px 45px; padding-top: 30px; min-height: 100vh; }
         .cabecalho {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-            gap: 15px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 35px;
         }
+        .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
+        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
 
-        .titulo-pagina {
-            font-size: 26px;
-            font-weight: 800;
-            position: relative;
-        }
-
-        .titulo-pagina::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 70px;
-            height: 3px;
-            background-color: var(--vermelho-principal);
-        }
-
-        .info-topo {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            color: var(--texto-cinza);
-            font-size: 14px;
-            margin-left: auto;
-        }
-
-        /* CARDS DO TOPO */
         .grid-cards {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
         }
 
         .card {
-            background-color: var(--fundo-card);
-            border: 1px solid var(--borda);
-            border-radius: 10px;
-            padding: 25px;
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-        }
-
-        .card .titulo-card {
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: var(--texto-cinza);
-            margin-bottom: 15px;
-        }
-
-        .card .numero {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .verde { color: #00C853; }
-        .vermelho { color: #D10000; }
-
-        .card .subtexto {
-            font-size: 14px;
-            color: var(--texto-cinza);
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-
-        .card .btn-card {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-card.vermelho {
-            background-color: var(--vermelho-principal);
-            color: white;
-        }
-
-        .btn-card.vermelho:hover {
-            background-color: var(--vermelho-claro);
-        }
-
-        .btn-card.cinza {
-            background-color: #29292E;
-            color: white;
-        }
-
-        .btn-card.cinza:hover {
-            background-color: #3A3A40;
-        }
-
-        /* GRID INFERIOR */
-        .grid-inferior {
-            display: grid;
-            grid-template-columns: 1fr 1fr 280px;
-            gap: 20px;
-        }
-
-        .card-bloco {
-            background-color: var(--fundo-card);
-            border: 1px solid var(--borda);
-            border-radius: 10px;
-            padding: 25px;
-        }
-
-        .card-bloco h3 {
-            font-size: 16px;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            color: var(--texto-cinza);
-        }
-
-        .cabecalho-tabela {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 0.8fr 0.8fr 0.7fr;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--texto-cinza);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--borda);
-            text-transform: uppercase;
-        }
-
-        .vazio {
-            font-size: 14px;
-            color: var(--texto-cinza);
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .btn-largo {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-largo.vermelho {
-            background-color: var(--vermelho-principal);
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .btn-largo.vermelho:hover {
-            background-color: var(--vermelho-claro);
-        }
-
-        .btn-largo.cinza {
-            background-color: #29292E;
-            color: white;
-            text-align: left;
-            padding-left: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .btn-largo.cinza:hover {
-            background-color: #3A3A40;
-        }
-
-        /* MODAL */
-        .fundo-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal {
             background: var(--fundo-card);
             border: 1px solid var(--borda);
             border-radius: 10px;
-            padding: 30px;
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        .modal h2 {
-            color: var(--vermelho-principal);
-            margin-bottom: 25px;
-            font-size: 22px;
-            font-weight: 800;
-        }
+        .card-info h3 { font-size: 15px; font-weight: 600; color: var(--texto-cinza); margin-bottom: 8px; }
+        .card-info .valor { font-size: 28px; font-weight: 800; }
+        .card-icone { font-size: 32px; opacity: 0.8; }
 
-        .fechar-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: var(--texto-cinza);
-            font-size: 26px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .card-alunos { border-left: 4px solid var(--azul); }
+        .card-receber { border-left: 4px solid var(--amarelo); }
+        .card-recebido { border-left: 4px solid var(--verde); }
+        .card-atrasado { border-left: 4px solid var(--vermelho-principal); }
 
-        .fechar-modal:hover {
-            color: var(--vermelho-principal);
+        .secao-planos {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 25px;
         }
+        .secao-planos h2 { font-size: 18px; margin-bottom: 20px; font-weight: 700; }
+        .lista-planos { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .item-plano { background: var(--fundo-escuro); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--borda); }
+        .item-plano h4 { font-size: 14px; margin-bottom: 8px; color: var(--texto-cinza); }
+        .item-plano .qtd { font-size: 22px; font-weight: 800; color: var(--vermelho-principal); }
 
-        .grupo-form {
-            margin-bottom: 20px;
-        }
-
-        .grupo-form label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .grupo-form input,
-        .grupo-form select {
-            width: 100%;
-            padding: 13px;
-            background: var(--fundo-escuro);
-            border: 1px solid var(--vermelho-principal);
-            border-radius: 4px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .grupo-form input:focus,
-        .grupo-form select:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(209,0,0,0.3);
-        }
-
-        .arquivo-foto {
-            border: 2px dashed var(--borda);
-            padding: 18px;
-            text-align: center;
-            border-radius: 6px;
-            font-size: 13px;
-            color: var(--texto-cinza);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .arquivo-foto:hover {
-            border-color: var(--vermelho-principal);
-        }
-
-        .btn-salvar {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(90deg, var(--vermelho-principal), #ff4d4d);
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-weight: 800;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.2s;
-        }
-
-        .btn-salvar:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        /* RESPONSIVO - CORREÇÃO PARA CELULAR */
         @media (max-width: 768px) {
-            .btn-menu {
-                display: flex;
-            }
-
-            .menu-lateral {
-                transform: translateX(-100%);
-            }
-
-            .menu-lateral.aberto {
-                transform: translateX(0);
-            }
-
-            .conteudo {
-                margin-left: 0;
-                padding: 20px;
-                padding-top: 70px;
-            }
-
-            .titulo-pagina {
-                font-size: 22px;
-                margin-bottom: 10px;
-            }
-
-            .info-topo {
-                width: 100%;
-                justify-content: space-between;
-                margin-left: 0;
-            }
-
-            .grid-cards, .grid-inferior {
-                grid-template-columns: 1fr;
-            }
-
-            .cabecalho-tabela {
-                grid-template-columns: 1fr 0.7fr 0.7fr 0.7fr 0.6fr;
-                font-size: 10px;
-            }
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .conteudo { margin-left: 0; padding: 80px 20px 20px 20px; }
         }
     </style>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- BOTÃO DO MENU CELULAR -->
-    <button class="btn-menu" onclick="abrirMenu()">
+    <button class="btn-menu" onclick="toggleMenu()">
         <i class="fas fa-bars"></i>
     </button>
 
-    <!-- MENU LATERAL -->
     <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
@@ -476,159 +116,57 @@
                 <li><a href="#"><i class="fas fa-medal"></i> Graduações</a></li>
                 <li><a href="#"><i class="fas fa-file-alt"></i> Relatórios</a></li>
                 <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
-                <li><a href="#" style="margin-top: 20px; color: #FF4D4D;" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
     </aside>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <main class="conteudo">
         <div class="cabecalho">
-            <h1 class="titulo-pagina">Dashboard</h1>
-            <div class="info-topo">
-                <span id="dataAtual"></span>
-                <span><i class="fas fa-user-circle"></i> Administrador</span>
-            </div>
+            <h1 class="titulo-pagina">Painel de Controle</h1>
         </div>
 
-        <!-- CARDS DO TOPO -->
         <div class="grid-cards">
-            <div class="card">
-                <div class="titulo-card">Alunos Ativos</div>
-                <div class="numero verde" id="qtdAlunos">0</div>
-                <div class="subtexto">Nenhum aluno cadastrado ainda</div>
-                <button class="btn-card cinza" onclick="window.location.href='alunos.html'">Ver todos</button>
+            <div class="card card-alunos">
+                <div class="card-info">
+                    <h3>Total de Alunos</h3>
+                    <div class="valor" id="totalAlunos">0</div>
+                </div>
+                <div class="card-icone"><i class="fas fa-users"></i></div>
             </div>
 
-            <div class="card">
-                <div class="titulo-card">Mensalidades Pendentes</div>
-                <div class="numero vermelho" id="qtdPendentes">0</div>
-                <div class="subtexto">R$ 0,00 em aberto</div>
-                <button class="btn-card vermelho" onclick="window.location.href='financeiro.html'">Cobrar</button>
+            <div class="card card-receber">
+                <div class="card-info">
+                    <h3>A Receber</h3>
+                    <div class="valor" id="valorReceber">R$ 0,00</div>
+                </div>
+                <div class="card-icone"><i class="fas fa-hand-holding-usd"></i></div>
+            </div>
+
+            <div class="card card-recebido">
+                <div class="card-info">
+                    <h3>Recebido no Mês</h3>
+                    <div class="valor" id="valorRecebido">R$ 0,00</div>
+                </div>
+                <div class="card-icone"><i class="fas fa-check-circle"></i></div>
+            </div>
+
+            <div class="card card-atrasado">
+                <div class="card-info">
+                    <h3>Em Atraso</h3>
+                    <div class="valor" id="valorAtrasado">R$ 0,00</div>
+                </div>
+                <div class="card-icone"><i class="fas fa-exclamation-triangle"></i></div>
             </div>
         </div>
 
-        <!-- PARTE INFERIOR -->
-        <div class="grid-inferior">
-            <div class="card-bloco">
-                <h3>Últimas Mensalidades</h3>
-                <div class="cabecalho-tabela">
-                    <span>ALUNO</span>
-                    <span>VENCIMENTO</span>
-                    <span>VALOR</span>
-                    <span>STATUS</span>
-                    <span>AÇÃO</span>
-                </div>
-                <div class="vazio">Nenhuma mensalidade lançada até o momento</div>
-                <button class="btn-largo vermelho" onclick="window.location.href='financeiro.html'">Ver Todas</button>
-            </div>
-
-            <div class="card-bloco">
-                <h3>Últimos Registros de Peso</h3>
-                <div class="cabecalho-tabela">
-                    <span>ALUNO</span>
-                    <span>PESO</span>
-                    <span>CATEGORIA</span>
-                    <span>DATA</span>
-                </div>
-                <div class="vazio">Nenhum registro de peso cadastrado</div>
-                <button class="btn-largo vermelho">Ver Histórico Completo</button>
-            </div>
-
-            <div class="card-bloco">
-                <h3>Ações Rápidas</h3>
-                <button class="btn-largo vermelho" onclick="abrirModalAluno()">
-                    <i class="fas fa-user-plus"></i> Novo Aluno
-                </button>
-                <button class="btn-largo cinza" onclick="abrirModalPagamento()">
-                    <i class="fas fa-dollar-sign"></i> Lançar Pagamento
-                </button>
-                <button class="btn-largo cinza">
-                    <i class="fas fa-weight"></i> Registrar Peso
-                </button>
-                <button class="btn-largo cinza">
-                    <i class="fas fa-bell"></i> Cadastrar Aviso
-                </button>
-            </div>
+        <div class="secao-planos">
+            <h2>Alunos por Plano</h2>
+            <div class="lista-planos" id="listaPlanos"></div>
         </div>
     </main>
 
-    <!-- MODAL CADASTRAR ALUNO -->
-    <div id="modalAluno" class="fundo-modal">
-        <div class="modal">
-            <button class="fechar-modal" onclick="fecharModalAluno()">×</button>
-            <h2>Cadastrar Novo Aluno</h2>
-            <form id="formAluno">
-                <div class="grupo-form">
-                    <label>Nome Completo *</label>
-                    <input type="text" id="nomeAluno" required>
-                </div>
-                <div class="grupo-form">
-                    <label>CPF *</label>
-                    <input type="text" id="cpfAluno" required placeholder="000.000.000-00">
-                </div>
-                <div class="grupo-form">
-                    <label>E-mail</label>
-                    <input type="email" id="emailAluno">
-                </div>
-                <div class="grupo-form">
-                    <label>Telefone</label>
-                    <input type="text" id="telAluno" placeholder="(00) 00000-0000">
-                </div>
-                <div class="grupo-form">
-                    <label>📸 Foto do Aluno (OPCIONAL)</label>
-                    <input type="file" id="fotoAluno" accept="image/*" style="display:none">
-                    <div class="arquivo-foto" onclick="document.getElementById('fotoAluno').click()">
-                        Nenhum arquivo escolhido<br>
-                        <small>Não é obrigatório, pode adicionar depois</small>
-                    </div>
-                </div>
-                <div class="grupo-form">
-                    <label>Faixa Inicial *</label>
-                    <select id="faixaAluno" required>
-                        <option value="Branca">Branca</option>
-                        <option value="Azul">Azul</option>
-                        <option value="Roxa">Roxa</option>
-                        <option value="Marrom">Marrom</option>
-                        <option value="Preta">Preta</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-salvar">Salvar Aluno</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL LANÇAR PAGAMENTO -->
-    <div id="modalPagamento" class="fundo-modal">
-        <div class="modal">
-            <button class="fechar-modal" onclick="fecharModalPagamento()">×</button>
-            <h2>Lançar Pagamento</h2>
-            <form id="formPagamento">
-                <div class="grupo-form">
-                    <label>Aluno *</label>
-                    <select id="alunoPagamento" required>
-                        <option value="">Selecione um aluno</option>
-                    </select>
-                </div>
-                <div class="grupo-form">
-                    <label>Referência (Mês/Ano) *</label>
-                    <input type="text" id="refPagamento" required placeholder="Ex: Julho/2026">
-                </div>
-                <div class="grupo-form">
-                    <label>Valor R$ *</label>
-                    <input type="number" step="0.01" id="valorPagamento" required placeholder="150.00">
-                </div>
-                <div class="grupo-form">
-                    <label>Data de Vencimento *</label>
-                    <input type="date" id="vencPagamento" required>
-                </div>
-                <button type="submit" class="btn-salvar">Lançar Mensalidade</button>
-            </form>
-        </div>
-    </div>
-
     <script>
-        // Configuração Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -638,156 +176,74 @@
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
 
-        // Inicializa Firebase
-        let app, auth, db;
-        try {
-            app = firebase.initializeApp(firebaseConfig);
-            auth = firebase.auth();
-            db = firebase.firestore();
-        } catch (erro) {
-            console.error("Erro no Firebase:", erro);
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        function toggleMenu() {
+            document.getElementById('menuLateral').classList.toggle('fechado');
         }
 
-        // Menu responsivo
-        function abrirMenu() {
-            const menu = document.getElementById('menuLateral');
-            menu.classList.toggle('aberto');
-        }
+        async function carregarDadosDashboard() {
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth();
+            const anoAtual = hoje.getFullYear();
 
-        // Data atual
-        const hoje = new Date();
-        document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', {
-            day: '2-digit', month: 'long', year: 'numeric'
-        });
+            // Total de alunos e contagem por plano
+            const alunosSnap = await db.collection('alunos').get();
+            const totalAlunos = alunosSnap.size;
+            document.getElementById('totalAlunos').textContent = totalAlunos;
 
-        // ------------------- FUNÇÕES MODAL -------------------
-        function abrirModalAluno() {
-            document.getElementById('modalAluno').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+            const contagemPlanos = { 'Kids':0, 'Competidor':0, 'Bolsista':0, 'Comercial':0, 'Baby Class':0 };
+            alunosSnap.forEach(doc => {
+                const plano = doc.data().plano;
+                if (contagemPlanos.hasOwnProperty(plano)) contagemPlanos[plano]++;
+            });
 
-        function fecharModalAluno() {
-            document.getElementById('modalAluno').style.display = 'none';
-            document.getElementById('formAluno').reset();
-            document.body.style.overflow = 'auto';
-        }
-
-        function abrirModalPagamento() {
-            carregarAlunosSelect();
-            document.getElementById('modalPagamento').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function fecharModalPagamento() {
-            document.getElementById('modalPagamento').style.display = 'none';
-            document.getElementById('formPagamento').reset();
-            document.body.style.overflow = 'auto';
-        }
-
-        // Salvar aluno
-        document.getElementById('formAluno').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const dadosAluno = {
-                    nome: document.getElementById('nomeAluno').value.trim(),
-                    cpf: document.getElementById('cpfAluno').value.trim(),
-                    email: document.getElementById('emailAluno').value.trim(),
-                    telefone: document.getElementById('telAluno').value.trim(),
-                    faixa: document.getElementById('faixaAluno').value,
-                    dataCadastro: firebase.firestore.Timestamp.fromDate(new Date())
-                };
-
-                await db.collection('alunos').add(dadosAluno);
-                alert('✅ Aluno cadastrado com sucesso!');
-                fecharModalAluno();
-                atualizarContadores();
-            } catch (erro) {
-                console.error(erro);
-                alert('❌ Erro ao cadastrar: ' + erro.message);
+            const listaPlanosEl = document.getElementById('listaPlanos');
+            listaPlanosEl.innerHTML = '';
+            for (const [plano, qtd] of Object.entries(contagemPlanos)) {
+                listaPlanosEl.innerHTML += `
+                    <div class="item-plano">
+                        <h4>${plano}</h4>
+                        <div class="qtd">${qtd}</div>
+                    </div>
+                `;
             }
-        });
 
-        // Carregar alunos no select
-        async function carregarAlunosSelect() {
-            const select = document.getElementById('alunoPagamento');
-            select.innerHTML = '<option value="">Selecione um aluno</option>';
-            try {
-                const snapshot = await db.collection('alunos').orderBy('nome').get();
-                snapshot.forEach(doc => {
-                    const aluno = doc.data();
-                    const opcao = document.createElement('option');
-                    opcao.value = doc.id;
-                    opcao.textContent = aluno.nome;
-                    select.appendChild(opcao);
-                });
-            } catch (erro) {
-                console.error(erro);
-                alert('❌ Erro ao carregar alunos: ' + erro.message);
-            }
+            // Valores financeiros
+            const mensalidadesSnap = await db.collection('mensalidades')
+                .where('vencimento', '>=', new Date(anoAtual, mesAtual, 1))
+                .where('vencimento', '<=', new Date(anoAtual, mesAtual + 1, 0))
+                .get();
+
+            let receber = 0, recebido = 0, atrasado = 0;
+
+            mensalidadesSnap.forEach(doc => {
+                const m = doc.data();
+                const venc = m.vencimento.toDate();
+                if (m.status === 'Pago') {
+                    recebido += m.valor;
+                } else if (venc < hoje) {
+                    atrasado += m.valor;
+                } else {
+                    receber += m.valor;
+                }
+            });
+
+            document.getElementById('valorReceber').textContent = `R$ ${receber.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valorRecebido').textContent = `R$ ${recebido.toFixed(2).replace('.', ',')}`;
+            document.getElementById('valorAtrasado').textContent = `R$ ${atrasado.toFixed(2).replace('.', ',')}`;
         }
 
-        // Salvar pagamento
-        document.getElementById('formPagamento').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                const dadosPagamento = {
-                    alunoId: document.getElementById('alunoPagamento').value,
-                    referencia: document.getElementById('refPagamento').value.trim(),
-                    valor: parseFloat(document.getElementById('valorPagamento').value),
-                    vencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('vencPagamento').value)),
-                    status: 'Pendente',
-                    dataLancamento: firebase.firestore.Timestamp.fromDate(new Date())
-                };
-
-                await db.collection('mensalidades').add(dadosPagamento);
-                alert('✅ Pagamento lançado com sucesso!');
-                fecharModalPagamento();
-                atualizarContadores();
-            } catch (erro) {
-                console.error(erro);
-                alert('❌ Erro ao lançar pagamento: ' + erro.message);
-            }
-        });
-
-        // Atualizar contadores
-        async function atualizarContadores() {
-            try {
-                const alunos = await db.collection('alunos').get();
-                document.getElementById('qtdAlunos').textContent = alunos.size;
-
-                const pendentes = await db.collection('mensalidades').where('status', '==', 'Pendente').get();
-                document.getElementById('qtdPendentes').textContent = pendentes.size;
-            } catch (erro) {
-                console.error(erro);
-            }
-        }
-
-        // Sair
         function sair() {
-            if (confirm('Deseja realmente sair?')) {
-                auth.signOut().then(() => {
-                    window.location.href = "login.html";
-                });
-            }
+            if(confirm('Deseja realmente sair?')) auth.signOut().then(()=>window.location.href='login.html');
         }
 
-        // Segurança
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) {
-                window.location.href = "login.html";
-            } else {
-                atualizarContadores();
-            }
-        });
-
-        // Fechar modal clicando fora
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('fundo-modal')) {
-                e.target.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
+            if (!usuario) window.location.href='login.html';
+            else carregarDadosDashboard();
         });
     </script>
-
 </body>
 </html>
