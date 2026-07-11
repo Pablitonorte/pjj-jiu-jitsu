@@ -55,7 +55,6 @@
         }
         .btn-novo:hover { background: var(--vermelho-claro); }
 
-        /* Abas de navegação */
         .abas { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
         .aba {
             padding: 10px 18px; background: var(--fundo-card); border: 1px solid var(--borda);
@@ -163,7 +162,6 @@
             </button>
         </div>
 
-        <!-- Abas -->
         <div class="abas">
             <div class="aba ativa" onclick="mudarAba('todas')">Todas as Mensalidades</div>
             <div class="aba" onclick="mudarAba('pendentes')">Alunos Pendentes</div>
@@ -196,11 +194,11 @@
         </table>
     </main>
 
-    <!-- Modal de Configuração da Mensalidade -->
+    <!-- Modal de Configuração -->
     <div id="modalConfig" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalConfig()">&times;</button>
-            <h2>Configurar Valor da Mensalidade</h2>
+            <h2>Configurar Valor Padrão</h2>
             <form id="formConfig">
                 <div class="grupo-form">
                     <label>Valor padrão da mensalidade R$ *</label>
@@ -211,6 +209,42 @@
                     <input type="number" min="1" max="31" id="diaVencimento" required placeholder="Ex: 10">
                 </div>
                 <button type="submit" class="btn-salvar">Salvar Configuração</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Edição da Mensalidade -->
+    <div id="modalEditar" class="fundo-modal">
+        <div class="modal">
+            <button class="fechar-modal" onclick="fecharModalEditar()">&times;</button>
+            <h2>Editar Mensalidade</h2>
+            <form id="formEditar">
+                <input type="hidden" id="idMensalidadeEditar">
+                <div class="grupo-form">
+                    <label>Aluno</label>
+                    <input type="text" id="alunoEditar" readonly style="background: #2a2a30; cursor: not-allowed;">
+                </div>
+                <div class="grupo-form">
+                    <label>Mês/Ano</label>
+                    <input type="text" id="mesEditar" readonly style="background: #2a2a30; cursor: not-allowed;">
+                </div>
+                <div class="grupo-form">
+                    <label>Novo Valor R$ *</label>
+                    <input type="number" step="0.01" id="valorEditar" required>
+                </div>
+                <div class="grupo-form">
+                    <label>Nova Data de Vencimento *</label>
+                    <input type="date" id="vencEditar" required>
+                </div>
+                <div class="grupo-form">
+                    <label>Status</label>
+                    <select id="statusEditar">
+                        <option value="Pendente">Pendente</option>
+                        <option value="Pago">Pago</option>
+                        <option value="Atrasado">Atrasado</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-salvar">Salvar Alterações</button>
             </form>
         </div>
     </div>
@@ -242,13 +276,11 @@
             carregarDados();
         }
 
-        // Formatar data para "Mês/Ano"
         function formatarMesAno(data) {
             const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
             return `${meses[data.getMonth()]}/${data.getFullYear()}`;
         }
 
-        // Gerar mensalidades automaticamente até o mês atual
         async function gerarMensalidadesAutomaticas() {
             const configDoc = await db.collection('configuracoes').doc('financeiro').get();
             if (!configDoc.exists) return;
@@ -265,12 +297,10 @@
                 let mesInicio = dataCadastro.getMonth();
                 let anoInicio = dataCadastro.getFullYear();
 
-                // Percorre todos os meses desde o cadastro até o mês atual
                 while (anoInicio < anoAtual || (anoInicio === anoAtual && mesInicio <= mesAtual)) {
                     const dataVenc = new Date(anoInicio, mesInicio, diaVencimento);
                     const refMes = formatarMesAno(new Date(anoInicio, mesInicio, 1));
 
-                    // Verifica se já existe mensalidade para esse mês
                     const existe = await db.collection('mensalidades')
                         .where('alunoId', '==', alunoDoc.id)
                         .where('referencia', '==', refMes)
@@ -344,7 +374,8 @@
                     <td>${dataVenc.toLocaleDateString('pt-BR')}</td>
                     <td class="${classeStatus}">${status}</td>
                     <td>
-                        ${status !== 'Pago' ? `<button class="btn-acao btn-pagar" onclick="marcarPago('${doc.id}')">Marcar como Pago</button>` : ''}
+                        ${status !== 'Pago' ? `<button class="btn-acao btn-pagar" onclick="marcarPago('${doc.id}')">Pagar</button>` : ''}
+                        <button class="btn-acao btn-editar" onclick="abrirModalEditar('${doc.id}', '${nomeAluno}', '${m.referencia}', ${m.valor}, '${dataVenc.toISOString().split('T')[0]}', '${m.status}')">Editar</button>
                         <button class="btn-acao btn-excluir" onclick="excluirLancamento('${doc.id}')">Excluir</button>
                     </td>
                 </tr>`;
@@ -364,6 +395,42 @@
                 carregarDados();
             }
         }
+
+        function abrirModalEditar(id, nomeAluno, mes, valor, vencimento, status) {
+            document.getElementById('idMensalidadeEditar').value = id;
+            document.getElementById('alunoEditar').value = nomeAluno;
+            document.getElementById('mesEditar').value = mes;
+            document.getElementById('valorEditar').value = valor;
+            document.getElementById('vencEditar').value = vencimento;
+            document.getElementById('statusEditar').value = status;
+
+            document.getElementById('modalEditar').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharModalEditar() {
+            document.getElementById('modalEditar').style.display = 'none';
+            document.getElementById('formEditar').reset();
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('formEditar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('idMensalidadeEditar').value;
+            const novoValor = parseFloat(document.getElementById('valorEditar').value);
+            const novaData = new Date(document.getElementById('vencEditar').value);
+            const novoStatus = document.getElementById('statusEditar').value;
+
+            await db.collection('mensalidades').doc(id).update({
+                valor: novoValor,
+                vencimento: firebase.firestore.Timestamp.fromDate(novaData),
+                status: novoStatus
+            });
+
+            alert('✅ Mensalidade atualizada com sucesso!');
+            fecharModalEditar();
+            carregarDados();
+        });
 
         function abrirModalConfig() {
             document.getElementById('modalConfig').style.display = 'flex';
@@ -395,7 +462,7 @@
                 diaVencimento: dia
             });
 
-            alert('✅ Configurações salvas! As mensalidades serão geradas automaticamente.');
+            alert('✅ Configurações salvas!');
             fecharModalConfig();
             carregarDados();
         });
@@ -410,10 +477,12 @@
         });
 
         window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('fundo-modal')) fecharModalConfig();
+            if (e.target.classList.contains('fundo-modal')) {
+                fecharModalConfig();
+                fecharModalEditar();
+            }
         });
 
-        // Filtro por texto
         document.getElementById('buscaFin').addEventListener('input', () => {
             const termo = document.getElementById('buscaFin').value.toLowerCase();
             document.querySelectorAll('#listaDados tr').forEach(linha => {
