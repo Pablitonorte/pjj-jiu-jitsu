@@ -189,7 +189,7 @@
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="6" class="vazio">Carregando...</td></tr>
+                <tr><td colspan="6" class="vazio">Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -208,7 +208,7 @@
                 <div class="grupo-form">
                     <label>Plano *</label>
                     <select id="planoAluno" onchange="atualizarValor()" required>
-                        <option value="">Selecione</option>
+                        <option value="">Selecione um plano</option>
                         <option value="Kids">Kids - R$ 90,00</option>
                         <option value="Competidor">Competidor - R$ 90,00</option>
                         <option value="Bolsista">Bolsista - R$ 0,00</option>
@@ -229,7 +229,7 @@
                 <div class="grupo-form">
                     <label>Faixa *</label>
                     <select id="faixaAluno" required>
-                        <option value="">Selecione</option>
+                        <option value="">Selecione a faixa</option>
                         <option value="Branca">Branca</option>
                         <option value="Cinza">Cinza</option>
                         <option value="Amarela">Amarela</option>
@@ -264,16 +264,24 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const valoresPlanos = { Kids:90, Competidor:90, Bolsista:0, Comercial:90, 'Baby Class':120 };
+        const valoresPlanos = { 
+            'Kids': 90, 
+            'Competidor': 90, 
+            'Bolsista': 0, 
+            'Comercial': 90, 
+            'Baby Class': 120 
+        };
 
         function toggleMenu() {
             document.getElementById('menuLateral').classList.toggle('fechado');
         }
+
         function atualizarValor() {
             const base = valoresPlanos[document.getElementById('planoAluno').value] || 0;
             document.getElementById('valorBase').value = base.toFixed(2);
             calcularFinal();
         }
+
         function calcularFinal() {
             const base = parseFloat(document.getElementById('valorBase').value) || 0;
             const desc = parseInt(document.getElementById('desconto').value) || 0;
@@ -282,94 +290,168 @@
             document.getElementById('valorMensal').value = final.toFixed(2);
         }
 
+        // Função principal corrigida para carregar alunos
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '';
+            lista.innerHTML = '<tr><td colspan="6" class="vazio">Carregando...</td></tr>';
+
             try {
-                const snapshot = await db.collection('alunos').orderBy('nome').get();
-                if (snapshot.empty) { lista.innerHTML = `<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado</td></tr>`; return; }
+                // Consulta todos os alunos ordenados por nome
+                const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
+
+                if (snapshot.empty) {
+                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    return;
+                }
+
+                // Limpa e preenche a tabela
+                lista.innerHTML = '';
                 snapshot.forEach(doc => {
-                    const a = doc.data();
-                    const data = a.dataPrimeiraAula ? a.dataPrimeiraAula.toDate().toLocaleDateString('pt-BR') : '-';
-                    lista.innerHTML += `
+                    const aluno = doc.data();
+                    
+                    // Formata a data da primeira aula
+                    let dataAula = '-';
+                    if (aluno.dataPrimeiraAula) {
+                        dataAula = aluno.dataPrimeiraAula.toDate().toLocaleDateString('pt-BR');
+                    }
+
+                    // Monta a linha da tabela
+                    const linha = `
                     <tr>
-                        <td><strong>${a.nome}</strong></td>
-                        <td>${a.plano}</td>
-                        <td><span class="faixa-${a.faixa.toLowerCase()}">${a.faixa}</span></td>
-                        <td>R$ ${a.valorMensalidade.toFixed(2).replace('.', ',')}</td>
-                        <td>${data}</td>
+                        <td><strong>${aluno.nome || '-'}</strong></td>
+                        <td>${aluno.plano || '-'}</td>
+                        <td><span class="faixa-${(aluno.faixa || 'branca').toLowerCase()}">${aluno.faixa || '-'}</span></td>
+                        <td>R$ ${(aluno.valorMensalidade || 0).toFixed(2).replace('.', ',')}</td>
+                        <td>${dataAula}</td>
                         <td>
                             <button class="btn-acao btn-editar" onclick="editarAluno('${doc.id}')">Editar</button>
                             <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
                         </td>
                     </tr>`;
+                    lista.innerHTML += linha;
                 });
-            } catch (erro) { console.error('Erro:', erro); lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro ao carregar</td></tr>`; }
+
+            } catch (erro) {
+                console.error('Erro ao carregar alunos:', erro);
+                lista.innerHTML = '<tr><td colspan="6" class="vazio">Erro ao carregar lista de alunos</td></tr>';
+            }
         }
 
         function abrirModalCadastro() {
             document.getElementById('formAluno').reset();
             document.getElementById('idAlunoEditar').value = '';
-            document.getElementById('tituloModalAluno').textContent = 'Cadastrar Aluno';
-            document.getElementById('modalAluno').style.display = 'flex';
+            document.getElementById('tituloModalAluno').textContent = 'Cadastrar Novo Aluno';
             document.getElementById('dataPrimeiraAula').valueAsDate = new Date();
+            document.getElementById('modalAluno').style.display = 'flex';
         }
 
         async function editarAluno(id) {
-            const doc = await db.collection('alunos').doc(id).get();
-            if (!doc.exists) return;
-            const a = doc.data();
-            document.getElementById('idAlunoEditar').value = id;
-            document.getElementById('nomeAluno').value = a.nome;
-            document.getElementById('planoAluno').value = a.plano;
-            atualizarValor();
-            document.getElementById('desconto').value = a.desconto || 0;
-            calcularFinal();
-            document.getElementById('faixaAluno').value = a.faixa;
-            document.getElementById('dataPrimeiraAula').value = a.dataPrimeiraAula.toDate().toISOString().split('T')[0];
-            document.getElementById('tituloModalAluno').textContent = 'Editar Aluno';
-            document.getElementById('modalAluno').style.display = 'flex';
+            try {
+                const doc = await db.collection('alunos').doc(id).get();
+                if (!doc.exists) return;
+                
+                const aluno = doc.data();
+                document.getElementById('idAlunoEditar').value = id;
+                document.getElementById('nomeAluno').value = aluno.nome || '';
+                document.getElementById('planoAluno').value = aluno.plano || '';
+                atualizarValor();
+                document.getElementById('desconto').value = aluno.desconto || 0;
+                calcularFinal();
+                document.getElementById('faixaAluno').value = aluno.faixa || 'Branca';
+                
+                if (aluno.dataPrimeiraAula) {
+                    document.getElementById('dataPrimeiraAula').value = aluno.dataPrimeiraAula.toDate().toISOString().split('T')[0];
+                }
+
+                document.getElementById('tituloModalAluno').textContent = 'Editar Aluno';
+                document.getElementById('modalAluno').style.display = 'flex';
+            } catch (erro) {
+                console.error('Erro ao carregar aluno para edição:', erro);
+                alert('Erro ao abrir dados do aluno');
+            }
         }
 
         function fecharModalAluno() {
             document.getElementById('modalAluno').style.display = 'none';
         }
 
-        document.getElementById('formAluno').addEventListener('submit', async e => {
+        document.getElementById('formAluno').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('idAlunoEditar').value;
+            
             const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
                 plano: document.getElementById('planoAluno').value,
-                valorBase: parseFloat(document.getElementById('valorBase').value),
+                valorBase: parseFloat(document.getElementById('valorBase').value) || 0,
                 desconto: parseInt(document.getElementById('desconto').value) || 0,
-                valorMensalidade: parseFloat(document.getElementById('valorMensal').value),
+                valorMensalidade: parseFloat(document.getElementById('valorMensal').value) || 0,
                 faixa: document.getElementById('faixaAluno').value,
                 dataPrimeiraAula: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataPrimeiraAula').value))
             };
+
             try {
-                if (id) await db.collection('alunos').doc(id).update(dados);
-                else await db.collection('alunos').add(dados);
+                if (id) {
+                    await db.collection('alunos').doc(id).update(dados);
+                    alert('Aluno atualizado com sucesso!');
+                } else {
+                    await db.collection('alunos').add(dados);
+                    alert('Aluno cadastrado com sucesso!');
+                }
                 fecharModalAluno();
                 carregarAlunos();
-            } catch (erro) { alert('Erro: ' + erro.message); }
+            } catch (erro) {
+                console.error('Erro ao salvar:', erro);
+                alert('Erro ao salvar: ' + erro.message);
+            }
         });
 
         async function excluirAluno(id) {
-            if (confirm('Excluir este aluno?')) await db.collection('alunos').doc(id).delete(), carregarAlunos();
+            if (confirm('Tem certeza que deseja excluir este aluno? Essa ação não pode ser desfeita.')) {
+                try {
+                    await db.collection('alunos').doc(id).delete();
+                    alert('Aluno excluído com sucesso!');
+                    carregarAlunos();
+                } catch (erro) {
+                    console.error('Erro ao excluir:', erro);
+                    alert('Erro ao excluir aluno');
+                }
+            }
         }
 
         function sair() {
-            if (confirm('Sair do sistema?')) auth.signOut().then(() => window.location.href = 'login.html');
+            if (confirm('Deseja sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
+            }
         }
 
-        auth.onAuthStateChanged(u => u ? carregarAlunos() : window.location.href = 'login.html');
-
+        // Filtro de busca
         document.getElementById('buscaAluno').addEventListener('input', () => {
-            const termo = document.getElementById('buscaAluno').value.toLowerCase();
+            const termo = document.getElementById('buscaAluno').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(termo) ? '' : 'none';
             });
+        });
+
+        document.getElementById('filtroFaixa').addEventListener('change', () => {
+            const faixa = document.getElementById('filtroFaixa').value.toLowerCase();
+            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (!faixa) {
+                    linha.style.display = '';
+                    return;
+                }
+                const texto = linha.textContent.toLowerCase();
+                linha.style.display = texto.includes(faixa) ? '' : 'none';
+            });
+        });
+
+        // Inicia o carregamento quando o usuário estiver logado
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) {
+                window.location.href = 'login.html';
+            } else {
+                carregarAlunos();
+            }
         });
     </script>
 </body>
