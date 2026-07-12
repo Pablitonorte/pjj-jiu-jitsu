@@ -94,7 +94,6 @@
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-pendente { color: var(--amarelo); font-weight: 600; }
         .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; }
-        .btn-pago { background: var(--verde); color: white; }
         .btn-editar { background: var(--azul); color: white; }
         .btn-excluir { background: var(--vermelho-principal); color: white; }
 
@@ -165,14 +164,9 @@
                     <div class="campo">
                         <label>Status *</label>
                         <select id="statusLancamento" required>
-                            <option value="Pendente">Pendente</option>
                             <option value="Pago">Pago</option>
+                            <option value="Pendente">Pendente</option>
                         </select>
-                    </div>
-                    <!-- CAMPO ADICIONADO: Data de Pagamento -->
-                    <div class="campo">
-                        <label>Data de Pagamento</label>
-                        <input type="date" id="dataPagamento">
                     </div>
                 </div>
                 <div class="linha">
@@ -205,14 +199,12 @@
                     <th>Aluno</th>
                     <th>Valor</th>
                     <th>Status</th>
-                    <!-- COLUNA ADICIONADA: Data de Pagamento -->
-                    <th>Pagamento</th>
                     <th>Observação</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaHistorico">
-                <tr><td colspan="7" class="vazio">Carregando lançamentos...</td></tr>
+                <tr><td colspan="6" class="vazio">Carregando lançamentos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -251,29 +243,14 @@
             }
         }
 
-        // ✅ FUNÇÃO ADICIONADA: Marcar / Desmarcar como Pago
-        async function marcarComoPago(id, statusAtual) {
-            const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
-            const dados = {
-                status: novoStatus,
-                dataPagamento: novoStatus === 'Pago' ? firebase.firestore.Timestamp.fromDate(new Date()) : null
-            };
-            try {
-                await db.collection('lancamentos').doc(id).update(dados);
-                carregarHistorico();
-            } catch (erro) {
-                alert('Erro ao alterar status: ' + erro.message);
-            }
-        }
-
         // Carregar histórico de lançamentos
         async function carregarHistorico() {
             const lista = document.getElementById('listaHistorico');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando lançamentos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="6" class="vazio">Carregando lançamentos...</td></tr>';
             try {
                 const snapshot = await db.collection('lancamentos').orderBy('data', 'desc').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum lançamento cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum lançamento cadastrado</td></tr>';
                     return;
                 }
                 lista.innerHTML = '';
@@ -282,8 +259,6 @@
                     const alunoRef = dados.alunoId ? await db.collection('alunos').doc(dados.alunoId).get() : null;
                     const nomeAluno = alunoRef?.exists ? alunoRef.data().nome : 'Aluno não encontrado';
                     const dataFormatada = dados.data ? dados.data.toDate().toLocaleDateString('pt-BR') : '-';
-                    // ✅ Formata data de pagamento
-                    const dataPagFormatada = dados.dataPagamento ? dados.dataPagamento.toDate().toLocaleDateString('pt-BR') : '-';
                     const valorFormatado = `R$ ${(dados.valor || 0).toFixed(2).replace('.', ',')}`;
                     const classeStatus = dados.status === 'Pago' ? 'status-pago' : 'status-pendente';
 
@@ -293,14 +268,8 @@
                         <td>${nomeAluno}</td>
                         <td>${valorFormatado}</td>
                         <td><span class="${classeStatus}">${dados.status || '-'}</span></td>
-                        <!-- ✅ Exibe data de pagamento -->
-                        <td>${dataPagFormatada}</td>
                         <td>${dados.observacao || '-'}</td>
                         <td>
-                            <!-- ✅ Botão adicionado -->
-                            <button class="btn-acao btn-pago" onclick="marcarComoPago('${doc.id}', '${dados.status}')">
-                                ${dados.status === 'Pago' ? 'Desmarcar' : 'Marcar Pago'}
-                            </button>
                             <button class="btn-acao btn-editar" onclick="editarLancamento('${doc.id}')">Editar</button>
                             <button class="btn-acao btn-excluir" onclick="excluirLancamento('${doc.id}')">Excluir</button>
                         </td>
@@ -309,7 +278,7 @@
                 }
             } catch (erro) {
                 console.error('Erro ao carregar histórico:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -325,12 +294,6 @@
                 observacao: document.getElementById('obsLancamento').value.trim(),
                 dataCadastro: firebase.firestore.Timestamp.now()
             };
-            // ✅ Salva data de pagamento se estiver pago
-            if (dados.status === 'Pago' && document.getElementById('dataPagamento').value) {
-                dados.dataPagamento = firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataPagamento').value));
-            } else {
-                dados.dataPagamento = null;
-            }
             try {
                 if (id) {
                     await db.collection('lancamentos').doc(id).update(dados);
@@ -350,6 +313,7 @@
 
         function editarLancamento(id) {
             alert('Função de edição implementada — pode usar normalmente!');
+            // Implementação completa se precisar depois
         }
 
         async function excluirLancamento(id) {
