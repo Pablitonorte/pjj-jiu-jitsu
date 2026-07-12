@@ -71,7 +71,7 @@
             padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
             border-radius: 6px; color: white; font-size: 14px; outline: none;
         }
-        .campo input:disabled, .campo select:disabled { opacity: 0.6; cursor: not-allowed; }
+        .campo input:disabled, .campo select:disabled { opacity: 0.7; cursor: not-allowed; }
         .campo input:focus, .campo select:focus { border-color: var(--vermelho-principal); }
 
         .btn-salvar {
@@ -158,7 +158,7 @@
                     </div>
                     <div class="campo">
                         <label>Plano do Aluno</label>
-                        <input type="text" id="planoAluno" readonly placeholder="Plano será carregado...">
+                        <input type="text" id="planoAluno" readonly placeholder="Carregando...">
                     </div>
                     <div class="campo">
                         <label>Valor do Plano (R$)</label>
@@ -235,7 +235,7 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Carrega dados do aluno selecionado: plano, valor e data de início
+        // ✅ CORRIGIDO: Busca os campos corretos do cadastro do aluno
         async function carregarDadosAluno() {
             const alunoId = document.getElementById('alunoLancamento').value;
             if (!alunoId) {
@@ -248,19 +248,30 @@
                 const alunoSnap = await db.collection('alunos').doc(alunoId).get();
                 if (alunoSnap.exists) {
                     const dados = alunoSnap.data();
-                    document.getElementById('planoAluno').value = dados.plano || 'Não informado';
-                    document.getElementById('valorLancamento').value = dados.valorPlano || 0;
+                    
+                    // Busca o nome do plano (tenta os nomes mais comuns)
+                    const nomePlano = dados.plano || dados.tipoPlano || dados.categoria || 'Não informado';
+                    document.getElementById('planoAluno').value = nomePlano;
+                    
+                    // Busca o valor do plano
+                    const valorPlano = dados.valor || dados.valorPlano || dados.mensalidade || 0;
+                    document.getElementById('valorLancamento').value = valorPlano;
+                    
+                    // Busca a data de início
                     if (dados.dataInicio) {
                         const data = dados.dataInicio.toDate ? dados.dataInicio.toDate() : new Date(dados.dataInicio);
                         document.getElementById('dataLancamento').value = data.toISOString().split('T')[0];
+                    } else {
+                        document.getElementById('dataLancamento').value = '';
                     }
                 }
             } catch (erro) {
                 console.error('Erro ao carregar dados do aluno:', erro);
+                document.getElementById('planoAluno').value = 'Erro';
             }
         }
 
-        // Carregar lista de alunos no select
+        // Carrega lista de alunos
         async function carregarAlunosSelect() {
             const select = document.getElementById('alunoLancamento');
             select.innerHTML = '<option value="">Selecione um aluno</option>';
@@ -287,7 +298,7 @@
             }
         }
 
-        // Carregar histórico de lançamentos
+        // Carrega histórico de lançamentos
         async function carregarHistorico() {
             const lista = document.getElementById('listaHistorico');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando lançamentos...</td></tr>';
@@ -302,7 +313,7 @@
                     const dados = doc.data();
                     const alunoRef = dados.alunoId ? await db.collection('alunos').doc(dados.alunoId).get() : null;
                     const nomeAluno = alunoRef?.exists ? alunoRef.data().nome : 'Aluno não encontrado';
-                    const planoAluno = alunoRef?.exists ? alunoRef.data().plano || '-' : '-';
+                    const planoAluno = alunoRef?.exists ? (alunoRef.data().plano || alunoRef.data().tipoPlano || '-') : '-';
                     const dataFormatada = dados.data ? dados.data.toDate().toLocaleDateString('pt-BR') : '-';
                     const valorFormatado = `R$ ${(dados.valor || 0).toFixed(2).replace('.', ',')}`;
                     const classeStatus = dados.status === 'Pago' ? 'status-pago' : 'status-pendente';
@@ -331,7 +342,7 @@
             }
         }
 
-        // Salvar lançamento
+        // Salva lançamento
         document.getElementById('formLancamento').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('idLancamento').value;
@@ -362,7 +373,7 @@
         });
 
         function editarLancamento(id) {
-            alert('Função de edição carregará os dados do plano automaticamente!');
+            alert('Selecione o aluno novamente para carregar os dados do plano');
         }
 
         async function excluirLancamento(id) {
@@ -384,7 +395,7 @@
             });
         });
 
-        // Inicializar
+        // Inicializa
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
