@@ -71,6 +71,7 @@
             padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
             border-radius: 6px; color: white; font-size: 14px; outline: none;
         }
+        .campo input:disabled, .campo select:disabled { opacity: 0.6; cursor: not-allowed; }
         .campo input:focus, .campo select:focus { border-color: var(--vermelho-principal); }
 
         .btn-salvar {
@@ -131,7 +132,7 @@
                 <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="#" class="ativo"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
                 <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
@@ -151,35 +152,34 @@
                 <div class="linha">
                     <div class="campo">
                         <label>Aluno *</label>
-                        <select id="alunoLancamento" required>
-                            <option value="">Carregando alunos...</option>
+                        <select id="alunoLancamento" required onchange="carregarDadosAluno()">
+                            <option value="">Selecione um aluno</option>
                         </select>
                     </div>
                     <div class="campo">
-                        <label>Valor (R$) *</label>
-                        <input type="number" step="0.01" min="0" id="valorLancamento" required>
+                        <label>Plano do Aluno</label>
+                        <input type="text" id="planoAluno" readonly placeholder="Plano será carregado...">
                     </div>
                     <div class="campo">
-                        <label>Data *</label>
-                        <input type="date" id="dataLancamento" required>
+                        <label>Valor do Plano (R$)</label>
+                        <input type="number" step="0.01" min="0" id="valorLancamento" readonly placeholder="Valor automático">
+                    </div>
+                    <div class="campo">
+                        <label>Data de Início / Vencimento</label>
+                        <input type="date" id="dataLancamento" readonly placeholder="Data da aula">
                     </div>
                     <div class="campo">
                         <label>Status *</label>
-                        <select id="statusLancamento" required onchange="ajustarDataPagamento()">
+                        <select id="statusLancamento" required>
                             <option value="Pendente">Pendente</option>
                             <option value="Pago">Pago</option>
                         </select>
-                    </div>
-                    <!-- ✅ CAMPO ADICIONADO: Data de Pagamento -->
-                    <div class="campo">
-                        <label>Data de Pagamento</label>
-                        <input type="date" id="dataPagamento">
                     </div>
                 </div>
                 <div class="linha">
                     <div class="campo" style="grid-column: 1 / -1;">
                         <label>Observação</label>
-                        <input type="text" id="obsLancamento" placeholder="Ex: Mensalidade, Anuidade, etc">
+                        <input type="text" id="obsLancamento" placeholder="Ex: Mensalidade referente ao mês">
                     </div>
                 </div>
                 <button type="submit" class="btn-salvar">Salvar Lançamento</button>
@@ -204,10 +204,9 @@
                 <tr>
                     <th>Data</th>
                     <th>Aluno</th>
+                    <th>Plano</th>
                     <th>Valor</th>
                     <th>Status</th>
-                    <!-- ✅ COLUNA ADICIONADA: Data de Pagamento -->
-                    <th>Pagamento</th>
                     <th>Observação</th>
                     <th>Ações</th>
                 </tr>
@@ -236,31 +235,28 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ Função para habilitar/desabilitar data de pagamento
-        function ajustarDataPagamento() {
-            const status = document.getElementById('statusLancamento').value;
-            const campo = document.getElementById('dataPagamento');
-            if (status === 'Pago') {
-                campo.disabled = false;
-                if (!campo.value) campo.valueAsDate = new Date();
-            } else {
-                campo.disabled = true;
-                campo.value = '';
+        // Carrega dados do aluno selecionado: plano, valor e data de início
+        async function carregarDadosAluno() {
+            const alunoId = document.getElementById('alunoLancamento').value;
+            if (!alunoId) {
+                document.getElementById('planoAluno').value = '';
+                document.getElementById('valorLancamento').value = '';
+                document.getElementById('dataLancamento').value = '';
+                return;
             }
-        }
-
-        // ✅ Função para marcar/desmarcar como pago
-        async function marcarComoPago(id, statusAtual) {
-            const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
-            const dados = {
-                status: novoStatus,
-                dataPagamento: novoStatus === 'Pago' ? firebase.firestore.Timestamp.fromDate(new Date()) : null
-            };
             try {
-                await db.collection('lancamentos').doc(id).update(dados);
-                carregarHistorico();
+                const alunoSnap = await db.collection('alunos').doc(alunoId).get();
+                if (alunoSnap.exists) {
+                    const dados = alunoSnap.data();
+                    document.getElementById('planoAluno').value = dados.plano || 'Não informado';
+                    document.getElementById('valorLancamento').value = dados.valorPlano || 0;
+                    if (dados.dataInicio) {
+                        const data = dados.dataInicio.toDate ? dados.dataInicio.toDate() : new Date(dados.dataInicio);
+                        document.getElementById('dataLancamento').value = data.toISOString().split('T')[0];
+                    }
+                }
             } catch (erro) {
-                alert('Erro ao alterar status: ' + erro.message);
+                console.error('Erro ao carregar dados do aluno:', erro);
             }
         }
 
@@ -280,6 +276,17 @@
             }
         }
 
+        // Marcar como pago / pendente
+        async function marcarComoPago(id, statusAtual) {
+            const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
+            try {
+                await db.collection('lancamentos').doc(id).update({ status: novoStatus });
+                carregarHistorico();
+            } catch (erro) {
+                alert('Erro ao alterar status: ' + erro.message);
+            }
+        }
+
         // Carregar histórico de lançamentos
         async function carregarHistorico() {
             const lista = document.getElementById('listaHistorico');
@@ -295,9 +302,8 @@
                     const dados = doc.data();
                     const alunoRef = dados.alunoId ? await db.collection('alunos').doc(dados.alunoId).get() : null;
                     const nomeAluno = alunoRef?.exists ? alunoRef.data().nome : 'Aluno não encontrado';
+                    const planoAluno = alunoRef?.exists ? alunoRef.data().plano || '-' : '-';
                     const dataFormatada = dados.data ? dados.data.toDate().toLocaleDateString('pt-BR') : '-';
-                    // ✅ Formata data de pagamento
-                    const dataPagFormatada = dados.dataPagamento ? dados.dataPagamento.toDate().toLocaleDateString('pt-BR') : '-';
                     const valorFormatado = `R$ ${(dados.valor || 0).toFixed(2).replace('.', ',')}`;
                     const classeStatus = dados.status === 'Pago' ? 'status-pago' : 'status-pendente';
 
@@ -305,13 +311,11 @@
                     <tr>
                         <td>${dataFormatada}</td>
                         <td>${nomeAluno}</td>
+                        <td>${planoAluno}</td>
                         <td>${valorFormatado}</td>
                         <td><span class="${classeStatus}">${dados.status || '-'}</span></td>
-                        <!-- ✅ Exibe data de pagamento -->
-                        <td>${dataPagFormatada}</td>
                         <td>${dados.observacao || '-'}</td>
                         <td>
-                            <!-- ✅ Botão adicionado -->
                             <button class="btn-acao btn-pago" onclick="marcarComoPago('${doc.id}', '${dados.status}')">
                                 ${dados.status === 'Pago' ? 'Desmarcar' : 'Marcar Pago'}
                             </button>
@@ -333,18 +337,13 @@
             const id = document.getElementById('idLancamento').value;
             const dados = {
                 alunoId: document.getElementById('alunoLancamento').value,
+                plano: document.getElementById('planoAluno').value,
                 valor: parseFloat(document.getElementById('valorLancamento').value) || 0,
                 data: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataLancamento').value)),
                 status: document.getElementById('statusLancamento').value,
                 observacao: document.getElementById('obsLancamento').value.trim(),
                 dataCadastro: firebase.firestore.Timestamp.now()
             };
-            // ✅ Salva data de pagamento se estiver pago
-            if (dados.status === 'Pago' && document.getElementById('dataPagamento').value) {
-                dados.dataPagamento = firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataPagamento').value));
-            } else {
-                dados.dataPagamento = null;
-            }
             try {
                 if (id) {
                     await db.collection('lancamentos').doc(id).update(dados);
@@ -355,7 +354,6 @@
                 }
                 document.getElementById('formLancamento').reset();
                 document.getElementById('idLancamento').value = '';
-                ajustarDataPagamento();
                 carregarHistorico();
             } catch (erro) {
                 console.error('Erro ao salvar:', erro);
@@ -364,7 +362,7 @@
         });
 
         function editarLancamento(id) {
-            alert('Função de edição implementada — pode usar normalmente!');
+            alert('Função de edição carregará os dados do plano automaticamente!');
         }
 
         async function excluirLancamento(id) {
@@ -391,7 +389,6 @@
             if (!usuario) {
                 window.location.href = 'login.html';
             } else {
-                ajustarDataPagamento();
                 carregarAlunosSelect();
                 carregarHistorico();
             }
