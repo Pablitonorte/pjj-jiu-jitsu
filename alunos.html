@@ -35,6 +35,7 @@
             transition: transform 0.3s ease; overflow-y: auto;
         }
         .menu-lateral.fechado { transform: translateX(-100%); }
+        .menu-lateral.aberto { transform: translateX(0); }
 
         .logo { text-align: center; margin-bottom: 40px; }
         .logo img { width: 90px; margin-bottom: 10px; }
@@ -174,8 +175,8 @@
                 <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="#" class="ativo"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                <li><a href="historico-financeiro.html"><i class="fas fa-history"></i> Histórico Financeiro</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
+                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
@@ -381,7 +382,6 @@
                 lista.innerHTML = '';
                 snapshot.forEach(doc => {
                     const dados = doc.data();
-                    // Correção: define valor padrão 0 se não existir
                     const valorPlano = dados.valorPlano || 0;
                     const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
                     const classeTipo = `tipo-${(dados.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
@@ -481,6 +481,7 @@
                 desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
                 valorPlano: valorFinal,
                 faixa: document.getElementById('faixaAluno').value,
+                statusPagamento: 'Pendente',
                 dataCadastro: firebase.firestore.Timestamp.now()
             };
 
