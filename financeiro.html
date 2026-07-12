@@ -13,6 +13,7 @@
             --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
             --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --cinza: #6B7280;
+            --vermelho-atraso: #ff4444;
         }
 
         html, body { 
@@ -75,9 +76,11 @@
 
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-pendente { color: var(--amarelo); font-weight: 600; }
+        .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
         .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; }
         .btn-pago { background: var(--verde); color: white; }
         .btn-pendente { background: var(--amarelo); color: #111; }
+        .btn-atrasado { background: var(--vermelho-atraso); color: white; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
@@ -131,6 +134,7 @@
                 <option value="">Todos os status</option>
                 <option value="Pago">Pago</option>
                 <option value="Pendente">Pendente</option>
+                <option value="Atrasado">Atrasado</option>
             </select>
         </div>
 
@@ -142,7 +146,7 @@
                     <th>Tipo de Aluno</th>
                     <th>Período do Plano</th>
                     <th>Valor</th>
-                    <th>Data de Início</th>
+                    <th>Vencimento</th>
                     <th>Status do Pagamento</th>
                     <th>Ações</th>
                 </tr>
@@ -171,6 +175,48 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
+        // ✅ Calcula a data de vencimento com base no período do plano
+        function calcularVencimento(dataInicio, periodo) {
+            if (!dataInicio || !periodo) return null;
+            const data = new Date(dataInicio);
+            
+            switch(periodo) {
+                case 'Mensal':
+                    data.setMonth(data.getMonth() + 1);
+                    break;
+                case 'Trimestral':
+                    data.setMonth(data.getMonth() + 3);
+                    break;
+                case 'Semestral':
+                    data.setMonth(data.getMonth() + 6);
+                    break;
+                case 'Anual':
+                    data.setFullYear(data.getFullYear() + 1);
+                    break;
+                default:
+                    return null;
+            }
+            return data;
+        }
+
+        // ✅ Verifica se está atrasado
+        function estaAtrasado(dataVencimento, statusPagamento) {
+            if (!dataVencimento || statusPagamento === 'Pago') return false;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const venc = new Date(dataVencimento);
+            venc.setHours(0, 0, 0, 0);
+            return hoje > venc;
+        }
+
+        // ✅ Calcula quantos dias está atrasado
+        function diasAtrasado(dataVencimento) {
+            const hoje = new Date();
+            const venc = new Date(dataVencimento);
+            const diff = hoje - venc;
+            return Math.floor(diff / (1000 * 60 * 60 * 24));
+        }
+
         // ✅ Carrega TODOS os dados DIRETAMENTE do cadastro dos alunos
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
@@ -195,14 +241,35 @@
                     const tipoAluno = dados.tipoAluno || dados.tipo || '-';
                     const periodoPlano = dados.periodoPlano || dados.periodo || '-';
                     const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-                    const dataInicio = dados.dataInicio ? 
-                        (dados.dataInicio.toDate ? dados.dataInicio.toDate() : new Date(dados.dataInicio)) 
+                    const dataInicio = dados.dataPrimeiraAula ? 
+                        (dados.dataPrimeiraAula.toDate ? dados.dataPrimeiraAula.toDate() : new Date(dados.dataPrimeiraAula)) 
                         : null;
-                    const dataFormatada = dataInicio ? dataInicio.toLocaleDateString('pt-BR') : '-';
 
-                    // Status do pagamento (salvo no cadastro ou padrão Pendente)
-                    const status = dados.statusPagamento || 'Pendente';
-                    const classeStatus = status === 'Pago' ? 'status-pago' : 'status-pendente';
+                    // Calcula vencimento e atraso
+                    const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
+                    const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : '-';
+                    const statusPagamento = dados.statusPagamento || 'Pendente';
+                    const atrasado = estaAtrasado(dataVencimento, statusPagamento);
+                    const dias = atrasado ? diasAtrasado(dataVencimento) : 0;
+
+                    // Define aparência do status
+                    let classeStatus, textoStatus, classeBotao, textoBotao;
+                    if (statusPagamento === 'Pago') {
+                        classeStatus = 'status-pago';
+                        textoStatus = 'Pago';
+                        classeBotao = 'btn-pendente';
+                        textoBotao = 'Marcar Pendente';
+                    } else if (atrasado) {
+                        classeStatus = 'status-atrasado';
+                        textoStatus = `Atrasado (${dias} dia${dias !== 1 ? 's' : ''})`;
+                        classeBotao = 'btn-atrasado';
+                        textoBotao = 'Marcar Pago';
+                    } else {
+                        classeStatus = 'status-pendente';
+                        textoStatus = 'Pendente';
+                        classeBotao = 'btn-pago';
+                        textoBotao = 'Marcar Pago';
+                    }
 
                     const linha = `
                     <tr>
@@ -210,12 +277,12 @@
                         <td>${tipoAluno}</td>
                         <td>${periodoPlano}</td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td>${dataFormatada}</td>
-                        <td><span class="${classeStatus}">${status}</span></td>
+                        <td>${vencFormatado}</td>
+                        <td><span class="${classeStatus}">${textoStatus}</span></td>
                         <td>
-                            <button class="btn-acao ${status === 'Pago' ? 'btn-pendente' : 'btn-pago'}" 
-                                onclick="alterarStatus('${alunoId}', '${status}')">
-                                ${status === 'Pago' ? 'Marcar Pendente' : 'Marcar Pago'}
+                            <button class="btn-acao ${classeBotao}" 
+                                onclick="alterarStatus('${alunoId}', '${statusPagamento}')">
+                                ${textoBotao}
                             </button>
                         </td>
                     </tr>`;
@@ -259,7 +326,11 @@
                     return;
                 }
                 const statusTexto = linha.querySelector('span').textContent;
-                linha.style.display = statusTexto === filtro ? '' : 'none';
+                if (filtro === 'Atrasado') {
+                    linha.style.display = statusTexto.includes('Atrasado') ? '' : 'none';
+                } else {
+                    linha.style.display = statusTexto === filtro ? '' : 'none';
+                }
             });
         });
 
