@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         :root {
             --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
-            --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
-            --verde: #00C853; --azul: #2563eb; --amarelo: #FFC107;
+            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
+            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --roxo: #9C27B0; --laranja: #FF9800;
         }
 
-        html, body { background: var(--fundo-escuro); color: var(--texto-branco); min-height: 100vh; }
+        html, body { 
+            background: var(--fundo-escuro); 
+            color: var(--texto-branco); 
+            min-height: 100vh; 
+            overflow-y: auto;
+        }
 
         .btn-menu {
             display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
@@ -28,9 +33,9 @@
         .menu-lateral {
             width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
             padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
-            transition: transform 0.3s ease; overflow-y: auto;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
         }
-        .menu-lateral.aberto { transform: translateX(0); }
         .menu-lateral.fechado { transform: translateX(-100%); }
 
         .logo { text-align: center; margin-bottom: 40px; }
@@ -44,38 +49,131 @@
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
 
-        .conteudo {
-            margin-left: 240px;
-            padding: 35px 45px;
+        .conteudo { 
+            margin-left: 240px; 
+            padding: 35px 45px; 
             min-height: 100vh;
             width: calc(100% - 240px);
         }
 
-        .titulo-pagina { font-size: 26px; font-weight: 800; margin-bottom: 30px; position: relative; }
-        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
+        .cabecalho {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;
+        }
+        .titulo-pagina { font-size: 28px; font-weight: 800; position: relative; }
+        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 80px; height: 3px; background: var(--vermelho-principal); }
 
-        .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card-resumo { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; display: flex; align-items: center; justify-content: space-between; }
-        .card-resumo .info h3 { font-size: 14px; font-weight: 600; color: var(--texto-cinza); margin-bottom: 8px; }
-        .card-resumo .info p { font-size: 28px; font-weight: 800; color: var(--texto-branco); }
-        .card-resumo .icone { font-size: 36px; opacity: 0.2; color: var(--vermelho-principal); }
+        /* Cards de Resumo */
+        .grid-resumo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
 
-        .grid-graficos { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .card-grafico { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; }
-        .card-grafico h4 { margin-bottom: 20px; font-size: 16px; font-weight: 700; }
+        .card-resumo {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .card-resumo:hover { transform: translateY(-3px); }
 
-        .card-lista { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; }
-        .card-lista h4 { margin-bottom: 20px; font-size: 16px; font-weight: 700; }
-        .card-lista ul { list-style: none; }
-        .card-lista li { padding: 12px 0; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-cinza); }
-        .card-lista li:last-child { border-bottom: none; }
+        .card-icone {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .card-dados h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--texto-cinza);
+            margin-bottom: 8px;
+        }
+        .card-dados p {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .card-alunos { border-left: 4px solid var(--azul); }
+        .card-alunos .card-icone { background: rgba(37, 99, 235, 0.15); color: var(--azul); }
+
+        .card-recebido { border-left: 4px solid var(--verde); }
+        .card-recebido .card-icone { background: rgba(0, 195, 81, 0.15); color: var(--verde); }
+
+        .card-pendente { border-left: 4px solid var(--amarelo); }
+        .card-pendente .card-icone { background: rgba(255, 193, 7, 0.15); color: var(--amarelo); }
+
+        .card-atrasado { border-left: 4px solid var(--vermelho-principal); }
+        .card-atrasado .card-icone { background: rgba(220, 38, 38, 0.15); color: var(--vermelho-principal); }
+
+        /* Seções inferiores */
+        .grid-inferior {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .card-grande {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .card-grande h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        .lista-tipo {
+            list-style: none;
+        }
+        .lista-tipo li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .lista-tipo li:last-child { border: none; }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-kids { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
+        .badge-baby { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
+        .badge-comercial { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
+        .badge-competidor { background: rgba(244, 67, 54, 0.2); color: #F44336; }
+        .badge-bolsista { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
-            .grid-graficos { grid-template-columns: 1fr; }
+            .grid-inferior { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .grid-resumo { grid-template-columns: 1fr; }
         }
     </style>
 
@@ -99,7 +197,8 @@
                 <li><a href="#" class="ativo"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="historico-financeiro.html"><i class="fas fa-history"></i> Histórico Financeiro</a></li>
+                <li><a href="relatorios.html"><i class="fas fa-file-alt"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
@@ -107,47 +206,70 @@
     </aside>
 
     <main class="conteudo">
-        <h1 class="titulo-pagina">Painel de Controle</h1>
+        <div class="cabecalho">
+            <h1 class="titulo-pagina">Painel de Controle</h1>
+            <p class="text-gray-400">Bem-vindo! Acompanhe os dados da academia em tempo real</p>
+        </div>
 
-        <div class="grid-cards">
-            <div class="card-resumo">
-                <div class="info">
+        <div class="grid-resumo">
+            <div class="card-resumo card-alunos">
+                <div class="card-dados">
                     <h3>Total de Alunos</h3>
                     <p id="totalAlunos">0</p>
                 </div>
-                <div class="icone"><i class="fas fa-users"></i></div>
-            </div>
-            <div class="card-resumo">
-                <div class="info">
-                    <h3>Plano Mensal</h3>
-                    <p id="planoMensal">0</p>
+                <div class="card-icone">
+                    <i class="fas fa-users"></i>
                 </div>
-                <div class="icone"><i class="fas fa-calendar-day"></i></div>
             </div>
-            <div class="card-resumo">
-                <div class="info">
-                    <h3>Plano Trimestral</h3>
-                    <p id="planoTrimestral">0</p>
+
+            <div class="card-resumo card-recebido">
+                <div class="card-dados">
+                    <h3>Total Recebido</h3>
+                    <p id="valorRecebido">R$ 0,00</p>
                 </div>
-                <div class="icone"><i class="fas fa-calendar-week"></i></div>
+                <div class="card-icone">
+                    <i class="fas fa-check-circle"></i>
+                </div>
             </div>
-            <div class="card-resumo">
-                <div class="info">
-                    <h3>Planos Semestral/Anual</h3>
-                    <p id="planoLongo">0</p>
+
+            <div class="card-resumo card-pendente">
+                <div class="card-dados">
+                    <h3>Total Pendente</h3>
+                    <p id="valorPendente">R$ 0,00</p>
                 </div>
-                <div class="icone"><i class="fas fa-calendar-alt"></i></div>
+                <div class="card-icone">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+
+            <div class="card-resumo card-atrasado">
+                <div class="card-dados">
+                    <h3>Total Atrasado</h3>
+                    <p id="valorAtrasado">R$ 0,00</p>
+                </div>
+                <div class="card-icone">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
             </div>
         </div>
 
-        <div class="grid-graficos">
-            <div class="card-grafico">
-                <h4>Distribuição por Planos</h4>
-                <canvas id="graficoPlanos" height="250"></canvas>
+        <div class="grid-inferior">
+            <div class="card-grande">
+                <h3>Distribuição de Alunos por Tipo</h3>
+                <ul class="lista-tipo" id="listaTipos">
+                    <li><span>Kids</span> <span class="badge badge-kids">0</span></li>
+                    <li><span>Baby Class</span> <span class="badge badge-baby">0</span></li>
+                    <li><span>Comercial</span> <span class="badge badge-comercial">0</span></li>
+                    <li><span>Competidor</span> <span class="badge badge-competidor">0</span></li>
+                    <li><span>Bolsista</span> <span class="badge badge-bolsista">0</span></li>
+                </ul>
             </div>
-            <div class="card-lista">
-                <h4>Últimos Cadastros</h4>
-                <ul id="ultimosCadastros"></ul>
+
+            <div class="card-grande">
+                <h3>Últimos Cadastros</h3>
+                <ul class="lista-tipo" id="ultimosCadastros">
+                    <li class="text-gray-400 text-center py-4">Carregando...</li>
+                </ul>
             </div>
         </div>
     </main>
@@ -170,54 +292,75 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        let graficoPlanos;
-
         async function carregarDadosDashboard() {
             try {
-                const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
-                const total = snapshot.size;
-                let mensal = 0, trimestral = 0, semestral = 0, anual = 0;
-                const ultimos = [];
+                // --- Dados dos Alunos ---
+                const alunosSnapshot = await db.collection('alunos').get();
+                const totalAlunos = alunosSnapshot.size;
+                document.getElementById('totalAlunos').textContent = totalAlunos;
 
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    const plano = d.periodo || 'Não informado';
-                    if (plano === 'Mensal') mensal++;
-                    else if (plano === 'Trimestral') trimestral++;
-                    else if (plano === 'Semestral') semestral++;
-                    else if (plano === 'Anual') anual++;
-
-                    if (ultimos.length < 5) ultimos.push(d);
+                // Contagem por tipo
+                let contagemTipos = { Kids: 0, "Baby Class": 0, Comercial: 0, Competidor: 0, Bolsista: 0 };
+                alunosSnapshot.forEach(doc => {
+                    const tipo = doc.data().tipo;
+                    if (contagemTipos.hasOwnProperty(tipo)) contagemTipos[tipo]++;
                 });
 
-                document.getElementById('totalAlunos').textContent = total;
-                document.getElementById('planoMensal').textContent = mensal;
-                document.getElementById('planoTrimestral').textContent = trimestral;
-                document.getElementById('planoLongo').textContent = semestral + anual;
+                document.querySelector('.badge-kids').textContent = contagemTipos.Kids;
+                document.querySelector('.badge-baby').textContent = contagemTipos["Baby Class"];
+                document.querySelector('.badge-comercial').textContent = contagemTipos.Comercial;
+                document.querySelector('.badge-competidor').textContent = contagemTipos.Competidor;
+                document.querySelector('.badge-bolsista').textContent = contagemTipos.Bolsista;
 
-                const ctx = document.getElementById('graficoPlanos').getContext('2d');
-                if (graficoPlanos) graficoPlanos.destroy();
-                graficoPlanos = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Mensal', 'Trimestral', 'Semestral', 'Anual'],
-                        datasets: [{
-                            data: [mensal, trimestral, semestral, anual],
-                            backgroundColor: ['#2563eb', '#FFC107', '#9C27B0', '#00C853'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                // Últimos 5 cadastros
+                const ultimosSnapshot = await db.collection('alunos').orderBy('dataCadastro', 'desc').limit(5).get();
+                const listaUltimos = document.getElementById('ultimosCadastros');
+                listaUltimos.innerHTML = '';
+
+                if (ultimosSnapshot.empty) {
+                    listaUltimos.innerHTML = '<li class="text-gray-400 text-center py-4">Nenhum aluno cadastrado</li>';
+                } else {
+                    ultimosSnapshot.forEach(doc => {
+                        const dados = doc.data();
+                        const data = dados.dataCadastro.toDate().toLocaleDateString('pt-BR');
+                        listaUltimos.innerHTML += `<li><span>${dados.nome}</span> <small class="text-gray-400">${data}</small></li>`;
+                    });
+                }
+
+                // --- Dados Financeiros ---
+                const hoje = new Date();
+                let recebido = 0, pendente = 0, atrasado = 0;
+
+                const mensalidadesSnapshot = await db.collection('mensalidades').get();
+                mensalidadesSnapshot.forEach(doc => {
+                    const m = doc.data();
+                    const vencimento = m.dataVencimento.toDate();
+
+                    if (m.status === 'Pago') {
+                        recebido += m.valor || 0;
+                    } else if (m.status === 'Gratuito') {
+                        // Não soma valor
+                    } else {
+                        if (vencimento < hoje) {
+                            atrasado += m.valor || 0;
+                        } else {
+                            pendente += m.valor || 0;
+                        }
+                    }
                 });
 
-                const lista = document.getElementById('ultimosCadastros');
-                lista.innerHTML = '';
-                ultimos.forEach(d => {
-                    lista.innerHTML += `<li>${d.nome} - ${d.periodo || 'Plano não informado'}</li>`;
-                });
+                document.getElementById('valorRecebido').textContent = `R$ ${recebido.toFixed(2).replace('.', ',')}`;
+                document.getElementById('valorPendente').textContent = `R$ ${pendente.toFixed(2).replace('.', ',')}`;
+                document.getElementById('valorAtrasado').textContent = `R$ ${atrasado.toFixed(2).replace('.', ',')}`;
 
             } catch (erro) {
                 console.error('Erro ao carregar dados do painel:', erro);
+            }
+        }
+
+        function sair() {
+            if (confirm('Deseja sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
@@ -228,12 +371,6 @@
                 carregarDadosDashboard();
             }
         });
-
-        function sair() {
-            if (confirm('Deseja realmente sair?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
-            }
-        }
     </script>
 </body>
 </html>
