@@ -64,7 +64,7 @@
         .card-form { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; margin-bottom: 30px; }
         .card-form h3 { margin-bottom: 20px; color: var(--texto-branco); font-size: 18px; }
 
-        .linha { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 18px; }
+        .linha { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 18px; }
         .campo { display: flex; flex-direction: column; }
         .campo label { margin-bottom: 8px; font-size: 14px; font-weight: 600; }
         .campo input, .campo select {
@@ -157,8 +157,12 @@
                         </select>
                     </div>
                     <div class="campo">
-                        <label>Plano do Aluno</label>
-                        <input type="text" id="planoAluno" readonly placeholder="Carregando...">
+                        <label>Tipo de Aluno</label>
+                        <input type="text" id="tipoAluno" readonly placeholder="Carregando...">
+                    </div>
+                    <div class="campo">
+                        <label>Período do Plano</label>
+                        <input type="text" id="periodoPlano" readonly placeholder="Carregando...">
                     </div>
                     <div class="campo">
                         <label>Valor do Plano (R$)</label>
@@ -204,7 +208,8 @@
                 <tr>
                     <th>Data</th>
                     <th>Aluno</th>
-                    <th>Plano</th>
+                    <th>Tipo de Aluno</th>
+                    <th>Período do Plano</th>
                     <th>Valor</th>
                     <th>Status</th>
                     <th>Observação</th>
@@ -212,7 +217,7 @@
                 </tr>
             </thead>
             <tbody id="listaHistorico">
-                <tr><td colspan="7" class="vazio">Carregando lançamentos...</td></tr>
+                <tr><td colspan="8" class="vazio">Carregando lançamentos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -235,11 +240,12 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ CORRIGIDO: Busca os campos corretos do cadastro do aluno
+        // ✅ Agora busca exatamente os campos que você tem
         async function carregarDadosAluno() {
             const alunoId = document.getElementById('alunoLancamento').value;
             if (!alunoId) {
-                document.getElementById('planoAluno').value = '';
+                document.getElementById('tipoAluno').value = '';
+                document.getElementById('periodoPlano').value = '';
                 document.getElementById('valorLancamento').value = '';
                 document.getElementById('dataLancamento').value = '';
                 return;
@@ -249,15 +255,16 @@
                 if (alunoSnap.exists) {
                     const dados = alunoSnap.data();
                     
-                    // Busca o nome do plano (tenta os nomes mais comuns)
-                    const nomePlano = dados.plano || dados.tipoPlano || dados.categoria || 'Não informado';
-                    document.getElementById('planoAluno').value = nomePlano;
+                    // Busca Tipo de Aluno
+                    document.getElementById('tipoAluno').value = dados.tipoAluno || dados.tipo || 'Não informado';
                     
-                    // Busca o valor do plano
-                    const valorPlano = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-                    document.getElementById('valorLancamento').value = valorPlano;
+                    // Busca Período do Plano
+                    document.getElementById('periodoPlano').value = dados.periodoPlano || dados.periodo || 'Não informado';
                     
-                    // Busca a data de início
+                    // Busca Valor
+                    document.getElementById('valorLancamento').value = dados.valor || dados.valorPlano || dados.mensalidade || 0;
+                    
+                    // Busca Data de Início
                     if (dados.dataInicio) {
                         const data = dados.dataInicio.toDate ? dados.dataInicio.toDate() : new Date(dados.dataInicio);
                         document.getElementById('dataLancamento').value = data.toISOString().split('T')[0];
@@ -267,7 +274,8 @@
                 }
             } catch (erro) {
                 console.error('Erro ao carregar dados do aluno:', erro);
-                document.getElementById('planoAluno').value = 'Erro';
+                document.getElementById('tipoAluno').value = 'Erro';
+                document.getElementById('periodoPlano').value = 'Erro';
             }
         }
 
@@ -301,11 +309,11 @@
         // Carrega histórico de lançamentos
         async function carregarHistorico() {
             const lista = document.getElementById('listaHistorico');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando lançamentos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando lançamentos...</td></tr>';
             try {
                 const snapshot = await db.collection('lancamentos').orderBy('data', 'desc').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum lançamento cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum lançamento cadastrado</td></tr>';
                     return;
                 }
                 lista.innerHTML = '';
@@ -313,7 +321,8 @@
                     const dados = doc.data();
                     const alunoRef = dados.alunoId ? await db.collection('alunos').doc(dados.alunoId).get() : null;
                     const nomeAluno = alunoRef?.exists ? alunoRef.data().nome : 'Aluno não encontrado';
-                    const planoAluno = alunoRef?.exists ? (alunoRef.data().plano || alunoRef.data().tipoPlano || '-') : '-';
+                    const tipoAluno = alunoRef?.exists ? (alunoRef.data().tipoAluno || alunoRef.data().tipo || '-') : '-';
+                    const periodoPlano = alunoRef?.exists ? (alunoRef.data().periodoPlano || alunoRef.data().periodo || '-') : '-';
                     const dataFormatada = dados.data ? dados.data.toDate().toLocaleDateString('pt-BR') : '-';
                     const valorFormatado = `R$ ${(dados.valor || 0).toFixed(2).replace('.', ',')}`;
                     const classeStatus = dados.status === 'Pago' ? 'status-pago' : 'status-pendente';
@@ -322,7 +331,8 @@
                     <tr>
                         <td>${dataFormatada}</td>
                         <td>${nomeAluno}</td>
-                        <td>${planoAluno}</td>
+                        <td>${tipoAluno}</td>
+                        <td>${periodoPlano}</td>
                         <td>${valorFormatado}</td>
                         <td><span class="${classeStatus}">${dados.status || '-'}</span></td>
                         <td>${dados.observacao || '-'}</td>
@@ -338,7 +348,7 @@
                 }
             } catch (erro) {
                 console.error('Erro ao carregar histórico:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -348,7 +358,8 @@
             const id = document.getElementById('idLancamento').value;
             const dados = {
                 alunoId: document.getElementById('alunoLancamento').value,
-                plano: document.getElementById('planoAluno').value,
+                tipoAluno: document.getElementById('tipoAluno').value,
+                periodoPlano: document.getElementById('periodoPlano').value,
                 valor: parseFloat(document.getElementById('valorLancamento').value) || 0,
                 data: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataLancamento').value)),
                 status: document.getElementById('statusLancamento').value,
@@ -373,7 +384,7 @@
         });
 
         function editarLancamento(id) {
-            alert('Selecione o aluno novamente para carregar os dados do plano');
+            alert('Selecione o aluno novamente para carregar os dados');
         }
 
         async function excluirLancamento(id) {
