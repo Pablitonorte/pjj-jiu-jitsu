@@ -61,25 +61,6 @@
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
 
-        .card-form { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; margin-bottom: 30px; }
-        .card-form h3 { margin-bottom: 20px; color: var(--texto-branco); font-size: 18px; }
-
-        .linha { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 18px; }
-        .campo { display: flex; flex-direction: column; }
-        .campo label { margin-bottom: 8px; font-size: 14px; font-weight: 600; }
-        .campo input, .campo select {
-            padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
-            border-radius: 6px; color: white; font-size: 14px; outline: none;
-        }
-        .campo input:disabled, .campo select:disabled { opacity: 0.7; cursor: not-allowed; }
-        .campo input:focus, .campo select:focus { border-color: var(--vermelho-principal); }
-
-        .btn-salvar {
-            background: var(--verde); color: white; border: none; padding: 12px 20px;
-            border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s;
-        }
-        .btn-salvar:hover { background: #00b348; }
-
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
         .card-filtro input, .card-filtro select {
             padding: 10px; background: var(--fundo-escuro); border: 1px solid var(--borda);
@@ -96,8 +77,7 @@
         .status-pendente { color: var(--amarelo); font-weight: 600; }
         .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; }
         .btn-pago { background: var(--verde); color: white; }
-        .btn-editar { background: var(--azul); color: white; }
-        .btn-excluir { background: var(--vermelho-principal); color: white; }
+        .btn-pendente { background: var(--amarelo); color: #111; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
@@ -141,83 +121,34 @@
 
     <main class="conteudo">
         <div class="cabecalho">
-            <h1 class="titulo-pagina">Financeiro e Histórico</h1>
+            <h1 class="titulo-pagina">Controle Financeiro</h1>
         </div>
 
-        <!-- Formulário de Lançamento -->
-        <div class="card-form">
-            <h3>Novo Lançamento</h3>
-            <form id="formLancamento">
-                <input type="hidden" id="idLancamento" value="">
-                <div class="linha">
-                    <div class="campo">
-                        <label>Aluno *</label>
-                        <select id="alunoLancamento" required onchange="carregarDadosAluno()">
-                            <option value="">Selecione um aluno</option>
-                        </select>
-                    </div>
-                    <div class="campo">
-                        <label>Tipo de Aluno</label>
-                        <input type="text" id="tipoAluno" readonly placeholder="Carregando...">
-                    </div>
-                    <div class="campo">
-                        <label>Período do Plano</label>
-                        <input type="text" id="periodoPlano" readonly placeholder="Carregando...">
-                    </div>
-                    <div class="campo">
-                        <label>Valor do Plano (R$)</label>
-                        <input type="number" step="0.01" min="0" id="valorLancamento" readonly placeholder="Valor automático">
-                    </div>
-                    <div class="campo">
-                        <label>Data de Início / Vencimento</label>
-                        <input type="date" id="dataLancamento" readonly placeholder="Data da aula">
-                    </div>
-                    <div class="campo">
-                        <label>Status *</label>
-                        <select id="statusLancamento" required>
-                            <option value="Pendente">Pendente</option>
-                            <option value="Pago">Pago</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="linha">
-                    <div class="campo" style="grid-column: 1 / -1;">
-                        <label>Observação</label>
-                        <input type="text" id="obsLancamento" placeholder="Ex: Mensalidade referente ao mês">
-                    </div>
-                </div>
-                <button type="submit" class="btn-salvar">Salvar Lançamento</button>
-            </form>
-        </div>
-
-        <!-- Filtros do Histórico -->
+        <!-- Filtros -->
         <div class="card-filtro">
-            <input type="text" id="buscaHistorico" placeholder="🔍 Buscar por aluno...">
+            <input type="text" id="busca" placeholder="🔍 Buscar por nome...">
             <select id="filtroStatus">
                 <option value="">Todos os status</option>
                 <option value="Pago">Pago</option>
                 <option value="Pendente">Pendente</option>
             </select>
-            <input type="date" id="filtroDataInicio">
-            <input type="date" id="filtroDataFim">
         </div>
 
-        <!-- Tabela com Histórico -->
+        <!-- Tabela com dados direto do cadastro -->
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Data</th>
-                    <th>Aluno</th>
+                    <th>Nome do Aluno</th>
                     <th>Tipo de Aluno</th>
                     <th>Período do Plano</th>
                     <th>Valor</th>
-                    <th>Status</th>
-                    <th>Observação</th>
+                    <th>Data de Início</th>
+                    <th>Status do Pagamento</th>
                     <th>Ações</th>
                 </tr>
             </thead>
-            <tbody id="listaHistorico">
-                <tr><td colspan="8" class="vazio">Carregando lançamentos...</td></tr>
+            <tbody id="listaAlunos">
+                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
@@ -240,169 +171,95 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ Agora busca exatamente os campos que você tem
-        async function carregarDadosAluno() {
-            const alunoId = document.getElementById('alunoLancamento').value;
-            if (!alunoId) {
-                document.getElementById('tipoAluno').value = '';
-                document.getElementById('periodoPlano').value = '';
-                document.getElementById('valorLancamento').value = '';
-                document.getElementById('dataLancamento').value = '';
-                return;
-            }
-            try {
-                const alunoSnap = await db.collection('alunos').doc(alunoId).get();
-                if (alunoSnap.exists) {
-                    const dados = alunoSnap.data();
-                    
-                    // Busca Tipo de Aluno
-                    document.getElementById('tipoAluno').value = dados.tipoAluno || dados.tipo || 'Não informado';
-                    
-                    // Busca Período do Plano
-                    document.getElementById('periodoPlano').value = dados.periodoPlano || dados.periodo || 'Não informado';
-                    
-                    // Busca Valor
-                    document.getElementById('valorLancamento').value = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-                    
-                    // Busca Data de Início
-                    if (dados.dataInicio) {
-                        const data = dados.dataInicio.toDate ? dados.dataInicio.toDate() : new Date(dados.dataInicio);
-                        document.getElementById('dataLancamento').value = data.toISOString().split('T')[0];
-                    } else {
-                        document.getElementById('dataLancamento').value = '';
-                    }
-                }
-            } catch (erro) {
-                console.error('Erro ao carregar dados do aluno:', erro);
-                document.getElementById('tipoAluno').value = 'Erro';
-                document.getElementById('periodoPlano').value = 'Erro';
-            }
-        }
+        // ✅ Carrega TODOS os dados DIRETAMENTE do cadastro dos alunos
+        async function carregarLista() {
+            const lista = document.getElementById('listaAlunos');
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
 
-        // Carrega lista de alunos
-        async function carregarAlunosSelect() {
-            const select = document.getElementById('alunoLancamento');
-            select.innerHTML = '<option value="">Selecione um aluno</option>';
             try {
                 const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
-                snapshot.forEach(doc => {
-                    const aluno = doc.data();
-                    select.innerHTML += `<option value="${doc.id}">${aluno.nome || 'Sem nome'}</option>`;
-                });
+
+                if (snapshot.empty) {
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    return;
+                }
+
+                lista.innerHTML = '';
+
+                for (const doc of snapshot.docs) {
+                    const dados = doc.data();
+                    const alunoId = doc.id;
+
+                    // Pega os dados exatos do cadastro
+                    const nome = dados.nome || '-';
+                    const tipoAluno = dados.tipoAluno || dados.tipo || '-';
+                    const periodoPlano = dados.periodoPlano || dados.periodo || '-';
+                    const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
+                    const dataInicio = dados.dataInicio ? 
+                        (dados.dataInicio.toDate ? dados.dataInicio.toDate() : new Date(dados.dataInicio)) 
+                        : null;
+                    const dataFormatada = dataInicio ? dataInicio.toLocaleDateString('pt-BR') : '-';
+
+                    // Status do pagamento (salvo no cadastro ou padrão Pendente)
+                    const status = dados.statusPagamento || 'Pendente';
+                    const classeStatus = status === 'Pago' ? 'status-pago' : 'status-pendente';
+
+                    const linha = `
+                    <tr>
+                        <td>${nome}</td>
+                        <td>${tipoAluno}</td>
+                        <td>${periodoPlano}</td>
+                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
+                        <td>${dataFormatada}</td>
+                        <td><span class="${classeStatus}">${status}</span></td>
+                        <td>
+                            <button class="btn-acao ${status === 'Pago' ? 'btn-pendente' : 'btn-pago'}" 
+                                onclick="alterarStatus('${alunoId}', '${status}')">
+                                ${status === 'Pago' ? 'Marcar Pendente' : 'Marcar Pago'}
+                            </button>
+                        </td>
+                    </tr>`;
+
+                    lista.innerHTML += linha;
+                }
+
             } catch (erro) {
-                console.error('Erro ao carregar alunos:', erro);
-                select.innerHTML = '<option value="">Erro ao carregar</option>';
+                console.error('Erro ao carregar:', erro);
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        // Marcar como pago / pendente
-        async function marcarComoPago(id, statusAtual) {
+        // Apenas altera o status no próprio cadastro do aluno
+        async function alterarStatus(alunoId, statusAtual) {
             const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
             try {
-                await db.collection('lancamentos').doc(id).update({ status: novoStatus });
-                carregarHistorico();
+                await db.collection('alunos').doc(alunoId).update({
+                    statusPagamento: novoStatus
+                });
+                carregarLista(); // Atualiza a tela
             } catch (erro) {
                 alert('Erro ao alterar status: ' + erro.message);
             }
         }
 
-        // Carrega histórico de lançamentos
-        async function carregarHistorico() {
-            const lista = document.getElementById('listaHistorico');
-            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando lançamentos...</td></tr>';
-            try {
-                const snapshot = await db.collection('lancamentos').orderBy('data', 'desc').get();
-                if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum lançamento cadastrado</td></tr>';
-                    return;
-                }
-                lista.innerHTML = '';
-                for (const doc of snapshot.docs) {
-                    const dados = doc.data();
-                    const alunoRef = dados.alunoId ? await db.collection('alunos').doc(dados.alunoId).get() : null;
-                    const nomeAluno = alunoRef?.exists ? alunoRef.data().nome : 'Aluno não encontrado';
-                    const tipoAluno = alunoRef?.exists ? (alunoRef.data().tipoAluno || alunoRef.data().tipo || '-') : '-';
-                    const periodoPlano = alunoRef?.exists ? (alunoRef.data().periodoPlano || alunoRef.data().periodo || '-') : '-';
-                    const dataFormatada = dados.data ? dados.data.toDate().toLocaleDateString('pt-BR') : '-';
-                    const valorFormatado = `R$ ${(dados.valor || 0).toFixed(2).replace('.', ',')}`;
-                    const classeStatus = dados.status === 'Pago' ? 'status-pago' : 'status-pendente';
-
-                    const linha = `
-                    <tr>
-                        <td>${dataFormatada}</td>
-                        <td>${nomeAluno}</td>
-                        <td>${tipoAluno}</td>
-                        <td>${periodoPlano}</td>
-                        <td>${valorFormatado}</td>
-                        <td><span class="${classeStatus}">${dados.status || '-'}</span></td>
-                        <td>${dados.observacao || '-'}</td>
-                        <td>
-                            <button class="btn-acao btn-pago" onclick="marcarComoPago('${doc.id}', '${dados.status}')">
-                                ${dados.status === 'Pago' ? 'Desmarcar' : 'Marcar Pago'}
-                            </button>
-                            <button class="btn-acao btn-editar" onclick="editarLancamento('${doc.id}')">Editar</button>
-                            <button class="btn-acao btn-excluir" onclick="excluirLancamento('${doc.id}')">Excluir</button>
-                        </td>
-                    </tr>`;
-                    lista.innerHTML += linha;
-                }
-            } catch (erro) {
-                console.error('Erro ao carregar histórico:', erro);
-                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
-            }
-        }
-
-        // Salva lançamento
-        document.getElementById('formLancamento').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('idLancamento').value;
-            const dados = {
-                alunoId: document.getElementById('alunoLancamento').value,
-                tipoAluno: document.getElementById('tipoAluno').value,
-                periodoPlano: document.getElementById('periodoPlano').value,
-                valor: parseFloat(document.getElementById('valorLancamento').value) || 0,
-                data: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dataLancamento').value)),
-                status: document.getElementById('statusLancamento').value,
-                observacao: document.getElementById('obsLancamento').value.trim(),
-                dataCadastro: firebase.firestore.Timestamp.now()
-            };
-            try {
-                if (id) {
-                    await db.collection('lancamentos').doc(id).update(dados);
-                    alert('Lançamento atualizado com sucesso!');
-                } else {
-                    await db.collection('lancamentos').add(dados);
-                    alert('Lançamento cadastrado com sucesso!');
-                }
-                document.getElementById('formLancamento').reset();
-                document.getElementById('idLancamento').value = '';
-                carregarHistorico();
-            } catch (erro) {
-                console.error('Erro ao salvar:', erro);
-                alert('Erro: ' + erro.message);
-            }
+        // Filtro de busca
+        document.getElementById('busca').addEventListener('input', () => {
+            const termo = document.getElementById('busca').value.toLowerCase();
+            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            });
         });
 
-        function editarLancamento(id) {
-            alert('Selecione o aluno novamente para carregar os dados');
-        }
-
-        async function excluirLancamento(id) {
-            if (!confirm('Deseja excluir este lançamento?')) return;
-            try {
-                await db.collection('lancamentos').doc(id).delete();
-                carregarHistorico();
-            } catch (erro) {
-                console.error('Erro ao excluir:', erro);
-                alert('Erro: ' + erro.message);
-            }
-        }
-
-        // Filtros
-        document.getElementById('buscaHistorico').addEventListener('input', () => {
-            const termo = document.getElementById('buscaHistorico').value.toLowerCase();
-            document.querySelectorAll('#listaHistorico tr').forEach(linha => {
-                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+        // Filtro por status
+        document.getElementById('filtroStatus').addEventListener('change', () => {
+            const filtro = document.getElementById('filtroStatus').value;
+            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (!filtro) {
+                    linha.style.display = '';
+                    return;
+                }
+                const statusTexto = linha.querySelector('span').textContent;
+                linha.style.display = statusTexto === filtro ? '' : 'none';
             });
         });
 
@@ -411,8 +268,7 @@
             if (!usuario) {
                 window.location.href = 'login.html';
             } else {
-                carregarAlunosSelect();
-                carregarHistorico();
+                carregarLista();
             }
         });
 
