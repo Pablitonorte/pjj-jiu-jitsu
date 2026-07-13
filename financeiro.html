@@ -9,11 +9,36 @@
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        /* 🎨 Variáveis dos temas */
         :root {
-            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
-            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
-            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --cinza: #6B7280;
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --verde: #00C853;
+            --amarelo: #FFC107;
+            --azul: #2563eb;
+            --cinza: #6B7280;
             --vermelho-atraso: #ff4444;
+        }
+
+        /* 🌙 Tema Escuro */
+        .tema-escuro {
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
+            --fundo-input: #0C0C0E;
+        }
+
+        /* ☀️ Tema Claro */
+        .tema-claro {
+            --fundo-escuro: #F8F9FA;
+            --fundo-card: #FFFFFF;
+            --texto-branco: #121214;
+            --texto-cinza: #6B7280;
+            --borda: #DEE2E6;
+            --fundo-input: #FFFFFF;
         }
 
         html, body { 
@@ -21,6 +46,7 @@
             color: var(--texto-branco); 
             min-height: 100vh; 
             overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .btn-menu {
@@ -31,7 +57,7 @@
         }
 
         .menu-lateral {
-            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
+            width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
             padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
             transition: transform 0.3s ease; overflow-y: auto;
         }
@@ -64,12 +90,12 @@
 
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
         .card-filtro input, .card-filtro select {
-            padding: 10px; background: var(--fundo-escuro); border: 1px solid var(--borda);
-            border-radius: 6px; color: white; font-size: 14px;
+            padding: 10px; background: var(--fundo-input); border: 1px solid var(--borda);
+            border-radius: 6px; color: var(--texto-branco); font-size: 14px;
         }
 
         .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
-        .tabela th { background: #1f1f25; padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
         .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
@@ -77,10 +103,13 @@
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-pendente { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
-        .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; }
+        .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-pago { background: var(--verde); color: white; }
+        .btn-pago:hover { background: #00E05C; }
         .btn-pendente { background: var(--amarelo); color: #111; }
+        .btn-pendente:hover { background: #FFD54F; }
         .btn-atrasado { background: var(--vermelho-atraso); color: white; }
+        .btn-atrasado:hover { background: #FF6666; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
@@ -98,7 +127,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body class="tema-escuro">
 
     <button class="btn-menu" onclick="abrirFecharMenu()">
         <i class="fas fa-bars"></i>
@@ -171,6 +200,19 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // ✅ Carrega tema salvo
+        function carregarTema() {
+            const temaSalvo = localStorage.getItem('tema') || 'escuro';
+            const corpo = document.body;
+            if (temaSalvo === 'claro') {
+                corpo.classList.remove('tema-escuro');
+                corpo.classList.add('tema-claro');
+            } else {
+                corpo.classList.remove('tema-claro');
+                corpo.classList.add('tema-escuro');
+            }
+        }
+
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
@@ -212,7 +254,9 @@
         // ✅ Calcula quantos dias está atrasado
         function diasAtrasado(dataVencimento) {
             const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
             const venc = new Date(dataVencimento);
+            venc.setHours(0, 0, 0, 0);
             const diff = hoje - venc;
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
@@ -311,8 +355,9 @@
 
         // Filtro de busca
         document.getElementById('busca').addEventListener('input', () => {
-            const termo = document.getElementById('busca').value.toLowerCase();
+            const termo = document.getElementById('busca').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (linha.classList.contains('vazio')) return;
                 linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
             });
         });
@@ -321,6 +366,7 @@
         document.getElementById('filtroStatus').addEventListener('change', () => {
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (linha.classList.contains('vazio')) return;
                 if (!filtro) {
                     linha.style.display = '';
                     return;
@@ -339,15 +385,17 @@
             if (!usuario) {
                 window.location.href = 'login.html';
             } else {
+                carregarTema();
                 carregarLista();
             }
         });
 
         function sair() {
-            if (confirm('Deseja sair?')) {
+            if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
     </script>
+
 </body>
 </html>
