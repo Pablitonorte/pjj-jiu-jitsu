@@ -26,6 +26,7 @@
             --texto-branco: #FFFFFF;
             --texto-cinza: #B0B0B8;
             --borda: #29292E;
+            --fundo-input: #0C0C0E;
         }
 
         /* ☀️ Tema Claro */
@@ -35,6 +36,7 @@
             --texto-branco: #121214;
             --texto-cinza: #6B7280;
             --borda: #DEE2E6;
+            --fundo-input: #FFFFFF;
         }
 
         html, body {
@@ -77,6 +79,64 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+
+        /* 📋 FORMULÁRIO DE PREENCHIMENTO */
+        .card-formulario {
+            width: 210mm;
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .card-formulario h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--vermelho-claro);
+            text-align: center;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .form-grupo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-grupo label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--texto-cinza);
+        }
+        .form-grupo input,
+        .form-grupo select {
+            padding: 12px;
+            background: var(--fundo-input);
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            color: var(--texto-branco);
+            font-size: 14px;
+        }
+        .btn-gerar {
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            background: var(--verde);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-gerar:hover {
+            background: #00E05C;
         }
 
         /* 📄 Estilo da Declaração - Formato A4 */
@@ -184,18 +244,17 @@
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
-            .documento-area { width: 100% !important; }
-            .botoes-acao { width: 100%; }
+            .card-formulario, .documento-area, .botoes-acao { width: 100% !important; }
         }
 
-        /* 🖨️ Impressão Perfeita */
+        /* 🖨️ Impressão Perfeita - OCULTA O FORMULÁRIO */
         @page {
             size: A4;
             margin: 0;
         }
         @media print {
             body { background: white; padding: 0; }
-            .menu-lateral, .btn-menu, .botoes-acao { display: none !important; }
+            .menu-lateral, .btn-menu, .botoes-acao, .card-formulario { display: none !important; }
             .conteudo { margin: 0; padding: 0; width: 100%; }
             .documento-area {
                 width: 210mm !important;
@@ -208,6 +267,11 @@
             }
         }
     </style>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body class="tema-escuro">
 
@@ -234,7 +298,46 @@
     </aside>
 
     <main class="conteudo">
-        <!-- Área da Declaração -->
+
+        <!-- 📋 FORMULÁRIO DE PREENCHIMENTO -->
+        <div class="card-formulario">
+            <h2>Preencha os dados para gerar a declaração</h2>
+            <div class="form-grid">
+                <div class="form-grupo">
+                    <label>Selecione o Aluno</label>
+                    <select id="selecionarAluno" onchange="carregarDadosAluno()">
+                        <option value="">Carregando alunos...</option>
+                    </select>
+                </div>
+                <div class="form-grupo">
+                    <label>Nome do Aluno</label>
+                    <input type="text" id="campoNome" placeholder="Nome completo" readonly>
+                </div>
+                <div class="form-grupo">
+                    <label>CPF do Aluno</label>
+                    <input type="text" id="campoCpf" placeholder="CPF" readonly>
+                </div>
+                <div class="form-grupo">
+                    <label>Nome da Instituição/Escola</label>
+                    <input type="text" id="campoEscola" placeholder="Ex: Escola Estadual Paulo Freire">
+                </div>
+                <div class="form-grupo">
+                    <label>Período de Ausência</label>
+                    <input type="text" id="campoPeriodo" placeholder="Ex: 15 e 16 de julho de 2026">
+                </div>
+                <div class="form-grupo">
+                    <label>Nome do Campeonato</label>
+                    <input type="text" id="campoCampeonato" placeholder="Ex: Campeonato Paraense de Jiu-Jitsu">
+                </div>
+                <div class="form-grupo">
+                    <label>Cidade / Estado</label>
+                    <input type="text" id="campoCidade" placeholder="Ex: Belém / PA">
+                </div>
+            </div>
+            <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
+        </div>
+
+        <!-- 📄 ÁREA DA DECLARAÇÃO -->
         <div class="documento-area">
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
@@ -247,8 +350,8 @@
             <div class="titulo-doc">DECLARAÇÃO</div>
 
             <div class="corpo-doc">
-                A Federação de Jiu Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, pertence à academia PARÁ JIU JITSU e é filiado e devidamente regularizado.<br><br>
-                O mesmo precisará se ausentar no dia <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar sua equipe no <span id="texto-campeonato">[NOME DO CAMPEONATO]</span>, que acontecerá na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
+                A Federação de Jiu Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, portador do CPF nº <span id="texto-cpf">[CPF]</span>, pertence à academia PARÁ JIU JITSU e é filiado e devidamente regularizado.<br><br>
+                O mesmo precisará se ausentar no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar sua equipe no <span id="texto-campeonato">[NOME DO CAMPEONATO]</span>, que acontecerá na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
                 Atenciosamente,
             </div>
 
@@ -268,11 +371,26 @@
         <!-- Botões -->
         <div class="botoes-acao">
             <button class="btn-acao" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Declaração</button>
+            <button class="btn-acao" onclick="limparFormulario()"><i class="fa-solid fa-eraser"></i> Limpar Campos</button>
             <button class="btn-acao" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
         </div>
     </main>
 
     <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
         // Função para abrir/fechar menu lateral
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
@@ -301,30 +419,88 @@
             return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
         }
 
-        // Preenche os dados vindos da URL
-        function preencherDados() {
-            const params = new URLSearchParams(window.location.search);
-            
-            document.getElementById('texto-nome-aluno').textContent = params.get('nome') || '[NOME DO ATLETA]';
-            document.getElementById('texto-escola').textContent = params.get('escola') || '[NOME DA INSTITUIÇÃO]';
-            document.getElementById('texto-periodo').textContent = params.get('periodo') || '[PERÍODO]';
-            document.getElementById('texto-campeonato').textContent = params.get('campeonato') || '[NOME DO CAMPEONATO]';
-            document.getElementById('texto-cidade').textContent = params.get('cidade') || '[CIDADE / ESTADO]';
-            
+        // 📋 Carrega lista de alunos cadastrados
+        async function carregarListaAlunos() {
+            const select = document.getElementById('selecionarAluno');
+            select.innerHTML = '<option value="">Escolha um aluno...</option>';
+
+            try {
+                const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
+                if (snapshot.empty) {
+                    select.innerHTML = '<option value="">Nenhum aluno cadastrado</option>';
+                    return;
+                }
+
+                snapshot.docs.forEach(doc => {
+                    const dados = doc.data();
+                    const opcao = document.createElement('option');
+                    opcao.value = JSON.stringify({ nome: dados.nome, cpf: dados.cpf || '' });
+                    opcao.textContent = dados.nome;
+                    select.appendChild(opcao);
+                });
+
+            } catch (erro) {
+                select.innerHTML = '<option value="">Erro ao carregar alunos</option>';
+                console.error(erro);
+            }
+        }
+
+        // 📋 Preenche nome e CPF ao selecionar aluno
+        function carregarDadosAluno() {
+            const valor = document.getElementById('selecionarAluno').value;
+            if (!valor) {
+                document.getElementById('campoNome').value = '';
+                document.getElementById('campoCpf').value = '';
+                return;
+            }
+            const dados = JSON.parse(valor);
+            document.getElementById('campoNome').value = dados.nome;
+            document.getElementById('campoCpf').value = dados.cpf;
+        }
+
+        // ✅ Gera a declaração com todos os dados
+        function gerarDeclaracao() {
+            const nome = document.getElementById('campoNome').value.trim();
+            const cpf = document.getElementById('campoCpf').value.trim();
+            const escola = document.getElementById('campoEscola').value.trim();
+            const periodo = document.getElementById('campoPeriodo').value.trim();
+            const campeonato = document.getElementById('campoCampeonato').value.trim();
+            const cidade = document.getElementById('campoCidade').value.trim();
+
+            // Preenche a área do documento
+            document.getElementById('texto-nome-aluno').textContent = nome || '[NOME DO ATLETA]';
+            document.getElementById('texto-cpf').textContent = cpf || '[CPF]';
+            document.getElementById('texto-escola').textContent = escola || '[NOME DA INSTITUIÇÃO]';
+            document.getElementById('texto-periodo').textContent = periodo || '[PERÍODO]';
+            document.getElementById('texto-campeonato').textContent = campeonato || '[NOME DO CAMPEONATO]';
+            document.getElementById('texto-cidade').textContent = cidade || '[CIDADE / ESTADO]';
             document.getElementById('data-atual').textContent = obterDataAtual();
+        }
+
+        // 🧹 Limpa todos os campos
+        function limparFormulario() {
+            document.getElementById('selecionarAluno').value = '';
+            document.getElementById('campoNome').value = '';
+            document.getElementById('campoCpf').value = '';
+            document.getElementById('campoEscola').value = '';
+            document.getElementById('campoPeriodo').value = '';
+            document.getElementById('campoCampeonato').value = '';
+            document.getElementById('campoCidade').value = '';
+            gerarDeclaracao();
         }
 
         // Função para sair do sistema
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
-                window.location.href = 'login.html';
+                auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
         // Inicializa tudo ao carregar a página
         window.addEventListener('load', () => {
             carregarTema();
-            preencherDados();
+            carregarListaAlunos();
+            gerarDeclaracao();
         });
     </script>
 
