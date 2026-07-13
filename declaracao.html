@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Declaração - PJJ Pará Jiu-Jitsu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        /* 🎨 Variáveis dos temas */
+        :root {
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --verde: #00C853;
+            --amarelo: #FFC107;
+            --cinza: #6B7280;
+        }
+
+        /* 🌙 Tema Escuro */
+        .tema-escuro {
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
+        }
+
+        /* ☀️ Tema Claro */
+        .tema-claro {
+            --fundo-escuro: #F8F9FA;
+            --fundo-card: #FFFFFF;
+            --texto-branco: #121214;
+            --texto-cinza: #6B7280;
+            --borda: #DEE2E6;
+        }
+
+        html, body {
+            background: var(--fundo-escuro);
+            color: var(--texto-branco);
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-menu {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .menu-lateral {
+            width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            transition: transform 0.3s ease; overflow-y: auto;
+        }
+        .menu-lateral.aberto { transform: translateX(0); }
+        .menu-lateral.fechado { transform: translateX(-100%); }
+
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo img { width: 90px; margin-bottom: 10px; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+
+        .menu-navegacao ul { list-style: none; padding: 0 15px; }
+        .menu-navegacao li a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
+        }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+
+        .conteudo {
+            margin-left: 240px;
+            padding: 30px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 📄 Estilo da Declaração - Formato A4 */
+        .documento-area {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 25mm;
+            box-sizing: border-box;
+            color: black;
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            box-shadow: 0 0 8px rgba(0,0,0,0.35);
+            position: relative;
+        }
+
+        .cabecalho-doc { text-align: center; margin-bottom: 5mm; }
+        .logo-cabecalho {
+            width: 160mm;
+            height: auto;
+            margin: 0 auto 3mm auto;
+            display: block;
+            border: 2px solid #008000;
+            padding: 2px;
+            border-radius: 2px;
+        }
+
+        .data-doc { text-align: right; font-size: 12pt; margin-bottom: 10mm; margin-top: 0; }
+        .destinatario { text-align: left; font-size: 12pt; margin-bottom: 10mm; }
+        .titulo-doc { text-align: center; font-weight: bold; font-size: 14pt; margin: 8mm 0; text-transform: uppercase; }
+        .corpo-doc { text-align: justify; font-size: 12pt; margin-bottom: 30mm; width: 160mm; margin-left: auto; margin-right: auto; }
+
+        .assinatura-doc {
+            text-align: center;
+            margin-top: 10mm;
+            position: relative;
+            width: 160mm;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 8mm;
+        }
+        .linha-assinatura {
+            border-top: 1px solid #000;
+            width: 60mm;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            z-index: 2;
+        }
+        .img-assinatura {
+            height: 35px;
+            width: 60mm;
+            display: block;
+            margin: 0 auto 5px auto;
+            background: white;
+            padding: 0;
+            object-fit: contain;
+            position: relative;
+            z-index: 1;
+        }
+        .nome-assinatura { font-weight: bold; font-size: 12pt; margin: 0; position: relative; z-index: 3; }
+        .cargo-assinatura { font-size: 11pt; margin: 0; position: relative; z-index: 3; }
+
+        .texto-rodape {
+            font-size: 10pt;
+            line-height: 1.3;
+            text-align: center;
+            width: 160mm;
+            margin: 0 auto;
+            display: block;
+            position: static;
+        }
+
+        /* Botões de Ação */
+        .botoes-acao {
+            width: 210mm;
+            margin: 25px auto;
+            text-align: center;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-acao {
+            background-color: var(--vermelho-principal);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .btn-acao:hover { background-color: var(--vermelho-claro); }
+
+        /* Responsivo */
+        @media (max-width: 992px) {
+            .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .menu-lateral { transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
+            .documento-area { width: 100% !important; }
+            .botoes-acao { width: 100%; }
+        }
+
+        /* 🖨️ Impressão Perfeita */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .menu-lateral, .btn-menu, .botoes-acao { display: none !important; }
+            .conteudo { margin: 0; padding: 0; width: 100%; }
+            .documento-area {
+                width: 210mm !important;
+                height: 297mm !important;
+                min-height: auto !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                page-break-after: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body class="tema-escuro">
+
+    <button class="btn-menu" onclick="abrirFecharMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="menu-lateral" id="menuLateral">
+        <div class="logo">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
+            <h1>PJJ<br>Pará Jiu-Jitsu</h1>
+        </div>
+        <nav class="menu-navegacao">
+            <ul>
+                <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-file-alt"></i> Declaração</a></li>
+                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="conteudo">
+        <!-- Área da Declaração -->
+        <div class="documento-area">
+            <div class="cabecalho-doc">
+                <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
+            </div>
+
+            <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
+
+            <div class="destinatario">Ao <span id="texto-escola">[NOME DA INSTITUIÇÃO]</span></div>
+
+            <div class="titulo-doc">DECLARAÇÃO</div>
+
+            <div class="corpo-doc">
+                A Federação de Jiu Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, pertence à academia PARÁ JIU JITSU e é filiado e devidamente regularizado.<br><br>
+                O mesmo precisará se ausentar no dia <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar sua equipe no <span id="texto-campeonato">[NOME DO CAMPEONATO]</span>, que acontecerá na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
+                Atenciosamente,
+            </div>
+
+            <div class="assinatura-doc">
+                <div class="linha-assinatura"></div>
+                <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
+                <div class="nome-assinatura">Ricardo Candido Gomes</div>
+                <div class="cargo-assinatura">Presidente</div>
+            </div>
+
+            <div class="texto-rodape">
+                Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.<br>
+                Contatos: (91) 8356-0215
+            </div>
+        </div>
+
+        <!-- Botões -->
+        <div class="botoes-acao">
+            <button class="btn-acao" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Declaração</button>
+            <button class="btn-acao" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        </div>
+    </main>
+
+    <script>
+        // Função para abrir/fechar menu lateral
+        function abrirFecharMenu() {
+            document.getElementById('menuLateral').classList.toggle('aberto');
+        }
+
+        // Carrega o tema salvo do sistema
+        function carregarTema() {
+            const temaSalvo = localStorage.getItem('tema') || 'escuro';
+            const corpo = document.body;
+            if (temaSalvo === 'claro') {
+                corpo.classList.remove('tema-escuro');
+                corpo.classList.add('tema-claro');
+            } else {
+                corpo.classList.remove('tema-claro');
+                corpo.classList.add('tema-escuro');
+            }
+        }
+
+        // Função para obter data formatada corretamente
+        function obterDataAtual() {
+            const hoje = new Date();
+            const meses = [
+                "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+                "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+            ];
+            return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
+        }
+
+        // Preenche os dados vindos da URL
+        function preencherDados() {
+            const params = new URLSearchParams(window.location.search);
+            
+            document.getElementById('texto-nome-aluno').textContent = params.get('nome') || '[NOME DO ATLETA]';
+            document.getElementById('texto-escola').textContent = params.get('escola') || '[NOME DA INSTITUIÇÃO]';
+            document.getElementById('texto-periodo').textContent = params.get('periodo') || '[PERÍODO]';
+            document.getElementById('texto-campeonato').textContent = params.get('campeonato') || '[NOME DO CAMPEONATO]';
+            document.getElementById('texto-cidade').textContent = params.get('cidade') || '[CIDADE / ESTADO]';
+            
+            document.getElementById('data-atual').textContent = obterDataAtual();
+        }
+
+        // Função para sair do sistema
+        function sair() {
+            if (confirm('Deseja sair do sistema?')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Inicializa tudo ao carregar a página
+        window.addEventListener('load', () => {
+            carregarTema();
+            preencherDados();
+        });
+    </script>
+
+</body>
+</html>
