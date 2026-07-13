@@ -30,6 +30,21 @@
             width: 100%;
             display: block;
             overflow-x: auto;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+
+        .tabela-horarios th,
+        .tabela-horarios td {
+            padding: 12px 15px;
+            border: 1px solid #29292E;
+            text-align: left;
+        }
+
+        .tabela-horarios th {
+            background-color: #1A1A1F;
+            color: #FFFFFF;
+            font-weight: 600;
         }
 
         /* Ajustes apenas para telas menores, sem mudar a versão de computador */
@@ -152,24 +167,24 @@
             <div class="card-diferencial">
                 <i class="fa-solid fa-trophy"></i>
                 <h3>GRADUAÇÕES</h3>
-                <p>Formação completa para todas as idades e níveis.</p>
+                <p>Formação completa para todas as idades e níveis, acompanhamento individual.</p>
             </div>
             <div class="card-diferencial">
                 <i class="fa-solid fa-medal"></i>
                 <h3>CONQUISTAS</h3>
-                <p>Resultados que refletem dedicação, foco e muito trabalho.</p>
+                <p>Resultados que refletem dedicação, foco e muito trabalho em campeonatos regionais e nacionais.</p>
             </div>
             <div class="card-diferencial">
                 <i class="fa-solid fa-people-group"></i>
                 <h3>FAMÍLIA</h3>
-                <p>Mais que uma equipe, somos uma verdadeira família.</p>
+                <p>Mais que uma equipe, somos uma verdadeira família que cresce junto.</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Horários e Benefícios -->
-<section class="secao horarios-beneficios">
+<section class="secao horarios-beneficios" id="horarios">
     <div class="container">
         <div class="bloco-horarios">
             <h2>HORÁRIOS DAS AULAS</h2>
@@ -177,18 +192,39 @@
                 <thead>
                     <tr>
                         <th>TURMA</th>
+                        <th>IDADE</th>
                         <th>HORÁRIO</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>INFANTIL (5 A 10 ANOS)</td><td>18:00</td></tr>
-                    <tr><td>INICIANTE</td><td>19:00</td></tr>
-                    <tr><td>INTERMEDIÁRIO</td><td>20:00</td></tr>
-                    <tr><td>AVANÇADO</td><td>21:00</td></tr>
-                    <tr><td>COMPETIÇÃO</td><td>21:00</td></tr>
+                    <tr>
+                        <td>Baby Class</td>
+                        <td>3 a 5 anos</td>
+                        <td>17:30 - 18:15</td>
+                    </tr>
+                    <tr>
+                        <td>Kids</td>
+                        <td>6 a 10 anos</td>
+                        <td>18:15 - 19:15</td>
+                    </tr>
+                    <tr>
+                        <td>Iniciante / Comercial</td>
+                        <td>A partir de 11 anos</td>
+                        <td>19:15 - 20:15</td>
+                    </tr>
+                    <tr>
+                        <td>Intermediário / Avançado</td>
+                        <td>Graduação acima da faixa branca</td>
+                        <td>20:15 - 21:15</td>
+                    </tr>
+                    <tr>
+                        <td>Turma de Competição</td>
+                        <td>Atletas inscritos em campeonatos</td>
+                        <td>21:15 - 22:15</td>
+                    </tr>
                 </tbody>
             </table>
-            <a href="#todos-horarios" class="btn-vermelho pequeno">VER TODOS OS HORÁRIOS</a>
+            <a href="https://wa.me/5591999999999" target="_blank" class="btn-vermelho pequeno">MAIS INFORMAÇÕES</a>
         </div>
 
         <div class="bloco-beneficios">
@@ -197,27 +233,28 @@
                 <div class="card-beneficio">
                     <i class="fa-solid fa-hand-fist"></i>
                     <h4>DEFESA PESSOAL</h4>
-                    <p>Aprenda técnicas eficazes de defesa pessoal.</p>
+                    <p>Aprenda técnicas eficazes para se proteger em qualquer situação.</p>
                 </div>
                 <div class="card-beneficio">
                     <i class="fa-solid fa-dumbbell"></i>
                     <h4>CONDICIONAMENTO FÍSICO</h4>
-                    <p>Melhora da força, resistência e flexibilidade.</p>
+                    <p>Melhora força, resistência, flexibilidade e saúde geral do corpo.</p>
                 </div>
                 <div class="card-beneficio">
                     <i class="fa-solid fa-brain"></i>
-                    <h4>DISCIPLINA</h4>
-                    <p>Desenvolvimento mental e controle emocional.</p>
+                    <h4>DISCIPLINA E FOCO</h4>
+                    <p>Desenvolve concentração, controle emocional e disciplina para a vida.</p>
                 </div>
                 <div class="card-beneficio">
                     <i class="fa-solid fa-medal"></i>
-                    <h4>COMPETIÇÕES</h4>
-                    <p>Oportunidade de superação e evolução constante.</p>
+                    <h4>EVOLUÇÃO CONSTANTE</h4>
+                    <p>Sistema de graduação que acompanha seu progresso passo a passo.</p>
                 </div>
                 <div class="card-beneficio">
                     <i class="fa-solid fa-handshake"></i>
-                    <h4>AMIZADE</h4>
-                    <p>Ambiente saudável de respeito e camaradagem.</p>
+                    <h4>
+                    <h4>AMIZADE E CONVÍVIO</h4>
+                    <p>Ambiente saudável, respeitoso e com muita camaradagem entre alunos.</p>
                 </div>
             </div>
         </div>
@@ -229,41 +266,58 @@
     <div class="container">
         <div class="card-plano">
             <i class="fa-solid fa-child"></i>
-            <h3>PLANO INFANTIL</h3>
-            <p>Crianças de 5 a 10 anos</p>
+            <h3>PLANO BABY CLASS / KIDS</h3>
+            <p>Para crianças de 3 a 10 anos</p>
             <ul>
-                <li>✓ Aulas específicas para crianças</li>
-                <li>✓ Desenvolvimento físico e mental</li>
+                <li>✓ Aulas específicas para idade</li>
+                <li>✓ Desenvolvimento motor e social</li>
                 <li>✓ Ambiente seguro e divertido</li>
-                <li>✓ Uniforme incluso</li>
+                <li>✓ Acompanhamento individual</li>
             </ul>
+            <div class="valor-plano">
+                <span class="periodo">Mensal</span>
+                <span class="preco">R$ 90,00</span>
+            </div>
             <a href="cadastro.html" class="btn-vermelho">MATRICULE-SE</a>
         </div>
 
         <div class="card-plano destaque">
-            <span class="etiqueta">MAIS PROCURADO</span>
+            <span class="etiqueta">MAIS ESCOLHIDO</span>
             <i class="fa-solid fa-person"></i>
-            <h3>PLANO ADULTO</h3>
+            <h3>PLANO COMERCIAL / ADULTO</h3>
             <p>A partir de 11 anos</p>
             <ul>
-                <li>✓ Aulas todos os níveis</li>
+                <li>✓ Acesso a todas as turmas</li>
                 <li>✓ Treinamento completo</li>
-                <li>✓ Condicionamento físico</li>
+                <li>✓ Condicionamento e técnica</li>
                 <li>✓ Primeira aula experimental grátis</li>
             </ul>
+            <div class="valor-plano">
+                <span class="periodo">Mensal</span>
+                <span class="preco">R$ 90,00</span>
+            </div>
+            <div class="outros-valores">
+                <p>Trimestral: <strong>R$ 240,00</strong></p>
+                <p>Semestral: <strong>R$ 450,00</strong></p>
+                <p>Anual: <strong>R$ 820,00</strong></p>
+            </div>
             <a href="cadastro.html" class="btn-vermelho">MATRICULE-SE</a>
         </div>
 
         <div class="card-plano">
-            <i class="fa-solid fa-people-group"></i>
-            <h3>PLANO FAMÍLIA</h3>
-            <p>Para toda a família</p>
+            <i class="fa-solid fa-medal"></i>
+            <h3>PLANO COMPETIDOR</h3>
+            <p>Para atletas inscritos em campeonatos</p>
             <ul>
-                <li>✓ Desconto para 2 ou mais membros</li>
-                <li>✓ Ambiente familiar</li>
-                <li>✓ Horários flexíveis</li>
-                <li>✓ Planos especiais</li>
+                <li>✓ Acesso a todas as turmas</li>
+                <li>✓ Treinamento específico para competição</li>
+                <li>✓ Acompanhamento técnico</li>
+                <li>✓ Descontos em taxas de inscrição</li>
             </ul>
+            <div class="valor-plano">
+                <span class="periodo">Mensal</span>
+                <span class="preco">R$ 90,00</span>
+            </div>
             <a href="cadastro.html" class="btn-vermelho">MATRICULE-SE</a>
         </div>
     </div>
@@ -314,14 +368,14 @@
         <div class="coluna-rodape">
             <h4>SIGA-NOS</h4>
             <div class="redes">
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
             </div>
         </div>
     </div>
     <div class="copyright">
-        <p>© 2024 PJJ Pará Jiu-Jitsu. Todos os direitos reservados.</p>
+        <p>© 2026 PJJ Pará Jiu-Jitsu. Todos os direitos reservados.</p>
     </div>
 </footer>
 
