@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="css/estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Variáveis alinhadas com o restante do sistema */
+        :root {
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --vermelho-escuro: #A00000;
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --cinza-medio: #1E1E24;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
+            --sucesso: #00C853;
+            --erro: #FF4D4D;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('imagens/capactpjj.png');
             background-size: cover;
@@ -24,13 +41,14 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            color: var(--branco);
+            color: var(--texto-branco);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
-            transition: color 0.3s;
+            gap: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         .voltar-inicio:hover {
@@ -38,100 +56,111 @@
         }
 
         .formulario-cadastro {
-            background-color: var(--cinza-escuro);
-            padding: 40px 30px;
-            border-radius: 8px;
+            background-color: var(--fundo-card);
+            padding: 35px 30px;
+            border-radius: 10px;
             width: 100%;
             max-width: 450px;
             border: 2px solid var(--vermelho-principal);
-            box-shadow: 0 0 20px rgba(184, 0, 0, 0.2);
+            box-shadow: 0 0 25px rgba(209, 0, 0, 0.25);
         }
 
         .logo-cadastro {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .logo-cadastro img {
-            height: 80px;
+            height: 85px;
             object-fit: contain;
         }
 
         .formulario-cadastro h2 {
             text-align: center;
-            margin-bottom: 25px;
-            color: var(--branco);
-            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--texto-branco);
+            font-size: 1.7rem;
+            font-weight: 800;
         }
 
         .grupo-campo {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .grupo-campo label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: var(--texto-cinza);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            font-weight: 500;
         }
 
         .grupo-campo input {
             width: 100%;
-            padding: 10px 12px;
-            background-color: var(--cinza-medio);
-            border: 1px solid var(--vermelho-principal);
-            color: var(--branco);
-            border-radius: 4px;
-            font-size: 0.95rem;
+            padding: 13px;
+            background-color: var(--fundo-escuro);
+            border: 1px solid var(--borda);
+            color: var(--texto-branco);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border 0.2s;
         }
 
         .grupo-campo input:focus {
             outline: none;
-            border-color: var(--branco);
+            border-color: var(--vermelho-principal);
+            box-shadow: 0 0 0 2px rgba(209, 0, 0, 0.15);
         }
 
         .termos {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 25px;
+        }
+
+        .termos input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
         }
 
         .termos label {
             margin: 0;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             color: var(--texto-cinza);
+            cursor: pointer;
         }
 
         .btn-cadastrar {
             width: 100%;
-            padding: 12px;
-            font-size: 1rem;
+            padding: 14px;
+            font-size: 1.05rem;
             font-weight: 700;
             text-transform: uppercase;
             background-color: var(--vermelho-principal);
-            color: var(--branco);
+            color: var(--texto-branco);
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.2s;
         }
 
         .btn-cadastrar:hover {
-            background-color: var(--vermelho-escuro);
+            background-color: var(--vermelho-claro);
         }
 
         .link-login {
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
+            margin-top: 22px;
+            font-size: 0.95rem;
             color: var(--texto-cinza);
         }
 
         .link-login a {
             color: var(--vermelho-principal);
             text-decoration: none;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .link-login a:hover {
@@ -140,14 +169,25 @@
 
         #mensagem {
             display: none;
-            padding: 10px;
+            padding: 13px;
             text-align: center;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-weight: 500;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
-        .sucesso { background-color: #2ecc71; color: white; }
-        .erro { background-color: #e74c3c; color: white; }
+        .sucesso { background-color: rgba(0, 200, 83, 0.15); color: var(--sucesso); border: 1px solid rgba(0, 200, 83, 0.3); }
+        .erro { background-color: rgba(255, 77, 77, 0.15); color: var(--erro); border: 1px solid rgba(255, 77, 77, 0.3); }
+
+        /* Responsivo */
+        @media (max-width: 480px) {
+            .formulario-cadastro {
+                padding: 28px 22px;
+            }
+            .formulario-cadastro h2 {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -172,32 +212,32 @@
 
         <form id="formCadastro">
             <div class="grupo-campo">
-                <label for="nome">Nome Completo</label>
+                <label for="nome">Nome Completo *</label>
                 <input type="text" id="nome" name="nome" required>
             </div>
 
             <div class="grupo-campo">
-                <label for="email">E-mail</label>
+                <label for="email">E-mail *</label>
                 <input type="email" id="email" name="email" required>
             </div>
 
             <div class="grupo-campo">
-                <label for="telefone">Telefone / WhatsApp</label>
-                <input type="tel" id="telefone" name="telefone" placeholder="(91) 9XXXX-XXXX" required>
+                <label for="telefone">Telefone / WhatsApp *</label>
+                <input type="tel" id="telefone" name="telefone" placeholder="(91) 9XXXX-XXXX" maxlength="15" required>
             </div>
 
             <div class="grupo-campo">
-                <label for="nascimento">Data de Nascimento</label>
+                <label for="nascimento">Data de Nascimento *</label>
                 <input type="date" id="nascimento" name="nascimento" required>
             </div>
 
             <div class="grupo-campo">
-                <label for="senha">Senha</label>
+                <label for="senha">Senha * (mínimo 6 caracteres)</label>
                 <input type="password" id="senha" name="senha" required minlength="6">
             </div>
 
             <div class="grupo-campo">
-                <label for="confirmar-senha">Confirmar Senha</label>
+                <label for="confirmar-senha">Confirmar Senha *</label>
                 <input type="password" id="confirmar-senha" name="confirmar-senha" required>
             </div>
 
@@ -219,12 +259,28 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // ✅ Função para formatar telefone enquanto digita
+        function formatarTelefone(numero) {
+            numero = numero.replace(/\D/g, '');
+            if (numero.length === 11) {
+                return `(${numero.slice(0,2)}) ${numero.slice(2,7)}-${numero.slice(7)}`;
+            } else if (numero.length === 10) {
+                return `(${numero.slice(0,2)}) ${numero.slice(2,6)}-${numero.slice(6)}`;
+            }
+            return numero;
+        }
+
+        // Aplica a máscara no campo de telefone
+        document.getElementById('telefone').addEventListener('input', function() {
+            this.value = formatarTelefone(this.value);
+        });
+
         function mostrarMensagem(texto, tipo) {
             const div = document.getElementById('mensagem');
             div.textContent = texto;
             div.className = tipo;
             div.style.display = 'block';
-            setTimeout(() => div.style.display = 'none', 4000);
+            setTimeout(() => div.style.display = 'none', 4500);
         }
 
         document.getElementById('formCadastro').addEventListener('submit', function(e) {
@@ -232,37 +288,46 @@
 
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('email').value.trim();
-            const telefone = document.getElementById('telefone').value.trim();
+            const telefoneFormatado = document.getElementById('telefone').value.trim();
+            const telefoneApenasNumeros = telefoneFormatado.replace(/\D/g, '');
             const nascimento = document.getElementById('nascimento').value;
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmar-senha').value;
 
+            // Validações extras
             if (senha !== confirmarSenha) {
                 mostrarMensagem("❌ As senhas não coincidem!", "erro");
+                return;
+            }
+
+            if (telefoneApenasNumeros.length < 10 || telefoneApenasNumeros.length > 11) {
+                mostrarMensagem("❌ Digite um telefone válido com DDD!", "erro");
                 return;
             }
 
             auth.createUserWithEmailAndPassword(email, senha)
                 .then((userCredential) => {
                     const usuario = userCredential.user;
+                    // Salva o telefone SEM formatação no banco para funcionar com o login
                     return db.collection('usuarios').doc(usuario.uid).set({
                         nome: nome,
                         email: email,
-                        telefone: telefone,
+                        telefone: telefoneApenasNumeros,
                         nascimento: nascimento,
                         tipo: "aluno",
                         dataCadastro: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 })
                 .then(() => {
-                    mostrarMensagem("✅ Cadastro realizado com sucesso!", "sucesso");
+                    mostrarMensagem("✅ Cadastro realizado com sucesso! Redirecionando...", "sucesso");
                     this.reset();
                     setTimeout(() => window.location.href = "login.html", 2000);
                 })
                 .catch((erro) => {
-                    let mensagem = "Erro ao cadastrar!";
-                    if (erro.code === 'auth/email-already-in-use') mensagem = "E-mail já cadastrado!";
-                    if (erro.code === 'auth/weak-password') mensagem = "Senha muito fraca! Use pelo menos 6 caracteres.";
+                    let mensagem = "❌ Erro ao cadastrar! Tente novamente.";
+                    if (erro.code === 'auth/email-already-in-use') mensagem = "❌ Este e-mail já está cadastrado!";
+                    if (erro.code === 'auth/weak-password') mensagem = "❌ Senha muito fraca! Use pelo menos 6 caracteres.";
+                    if (erro.code === 'auth/invalid-email') mensagem = "❌ Formato de e-mail inválido!";
                     mostrarMensagem(mensagem, "erro");
                 });
         });
