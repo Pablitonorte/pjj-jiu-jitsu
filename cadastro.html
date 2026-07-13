@@ -95,6 +95,12 @@
             font-weight: 500;
         }
 
+        .opcional {
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: var(--texto-cinza);
+        }
+
         .grupo-campo input {
             width: 100%;
             padding: 13px;
@@ -194,7 +200,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-    <script src="config-firebase.js"></script>
+    <!-- ✅ Configuração centralizada -->
+    <script src="js/config-firebase.js"></script>
 </head>
 <body>
 
@@ -217,8 +224,8 @@
             </div>
 
             <div class="grupo-campo">
-                <label for="email">E-mail *</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">E-mail <span class="opcional">(opcional)</span></label>
+                <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com">
             </div>
 
             <div class="grupo-campo">
@@ -255,6 +262,7 @@
     </div>
 
     <script>
+        // ✅ Usa configuração centralizada
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -283,7 +291,7 @@
             setTimeout(() => div.style.display = 'none', 4500);
         }
 
-        document.getElementById('formCadastro').addEventListener('submit', function(e) {
+        document.getElementById('formCadastro').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const nome = document.getElementById('nome').value.trim();
@@ -294,7 +302,7 @@
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmar-senha').value;
 
-            // Validações extras
+            // Validações
             if (senha !== confirmarSenha) {
                 mostrarMensagem("❌ As senhas não coincidem!", "erro");
                 return;
@@ -305,31 +313,47 @@
                 return;
             }
 
-            auth.createUserWithEmailAndPassword(email, senha)
-                .then((userCredential) => {
-                    const usuario = userCredential.user;
-                    // Salva o telefone SEM formatação no banco para funcionar com o login
-                    return db.collection('usuarios').doc(usuario.uid).set({
-                        nome: nome,
-                        email: email,
-                        telefone: telefoneApenasNumeros,
-                        nascimento: nascimento,
-                        tipo: "aluno",
-                        dataCadastro: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                })
-                .then(() => {
-                    mostrarMensagem("✅ Cadastro realizado com sucesso! Redirecionando...", "sucesso");
-                    this.reset();
-                    setTimeout(() => window.location.href = "login.html", 2000);
-                })
-                .catch((erro) => {
-                    let mensagem = "❌ Erro ao cadastrar! Tente novamente.";
-                    if (erro.code === 'auth/email-already-in-use') mensagem = "❌ Este e-mail já está cadastrado!";
-                    if (erro.code === 'auth/weak-password') mensagem = "❌ Senha muito fraca! Use pelo menos 6 caracteres.";
-                    if (erro.code === 'auth/invalid-email') mensagem = "❌ Formato de e-mail inválido!";
-                    mostrarMensagem(mensagem, "erro");
+            // ✅ Valida e-mail apenas se preenchido
+            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                mostrarMensagem("❌ Formato de e-mail inválido!", "erro");
+                return;
+            }
+
+            try {
+                let usuarioCredencial;
+
+                // ✅ Cadastro: usa e-mail se preenchido, senão usa telefone como identificador
+                if (email) {
+                    usuarioCredencial = await auth.createUserWithEmailAndPassword(email, senha);
+                } else {
+                    // Gera um e-mail fictício baseado no telefone para o Firebase Auth
+                    const emailFicticio = `tel_${telefoneApenasNumeros}@pjj.com.br`;
+                    usuarioCredencial = await auth.createUserWithEmailAndPassword(emailFicticio, senha);
+                }
+
+                const usuario = usuarioCredencial.user;
+
+                // Salva os dados no Firestore
+                await db.collection('usuarios').doc(usuario.uid).set({
+                    nome: nome,
+                    email: email || null,
+                    telefone: telefoneApenasNumeros,
+                    nascimento: nascimento,
+                    tipo: "aluno",
+                    dataCadastro: firebase.firestore.FieldValue.serverTimestamp()
                 });
+
+                mostrarMensagem("✅ Cadastro realizado com sucesso! Redirecionando...", "sucesso");
+                this.reset();
+                setTimeout(() => window.location.href = "login.html", 2000);
+
+            } catch (erro) {
+                let mensagem = "❌ Erro ao cadastrar! Tente novamente.";
+                if (erro.code === 'auth/email-already-in-use') mensagem = "❌ Este e-mail ou telefone já está cadastrado!";
+                if (erro.code === 'auth/weak-password') mensagem = "❌ Senha muito fraca! Use pelo menos 6 caracteres.";
+                if (erro.code === 'auth/invalid-email') mensagem = "❌ Formato de e-mail inválido!";
+                mostrarMensagem(mensagem, "erro");
+            }
         });
     </script>
 
