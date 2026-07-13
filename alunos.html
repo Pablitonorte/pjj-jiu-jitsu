@@ -9,10 +9,35 @@
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        /* 🎨 Variáveis dos temas */
         :root {
-            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
-            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
-            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb;
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --verde: #00C853;
+            --amarelo: #FFC107;
+            --azul: #2563eb;
+            --cinza: #6B7280;
+        }
+
+        /* 🌙 Tema Escuro */
+        .tema-escuro {
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
+            --fundo-input: #0C0C0E;
+        }
+
+        /* ☀️ Tema Claro */
+        .tema-claro {
+            --fundo-escuro: #F8F9FA;
+            --fundo-card: #FFFFFF;
+            --texto-branco: #121214;
+            --texto-cinza: #6B7280;
+            --borda: #DEE2E6;
+            --fundo-input: #FFFFFF;
         }
 
         html, body { 
@@ -20,6 +45,7 @@
             color: var(--texto-branco); 
             min-height: 100vh; 
             overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .btn-menu {
@@ -30,7 +56,7 @@
         }
 
         .menu-lateral {
-            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
+            width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
             padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
             transition: transform 0.3s ease; overflow-y: auto;
         }
@@ -70,14 +96,14 @@
 
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
-            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
-            border-radius: 6px; color: white; font-size: 14px; outline: none;
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
+            border-radius: 6px; color: var(--texto-branco); font-size: 14px; outline: none;
         }
         .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); }
 
         .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
-        .tabela th { background: #1f1f25; padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
-        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
+        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
@@ -101,8 +127,11 @@
 
         .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-editar { background: var(--azul); color: white; }
+        .btn-editar:hover { background: #3b82f6; }
         .btn-excluir { background: var(--vermelho-principal); color: white; }
+        .btn-excluir:hover { background: var(--vermelho-claro); }
         .btn-declaracao { background: var(--amarelo); color: #111; }
+        .btn-declaracao:hover { background: #FFD54F; }
 
         .fundo-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -130,10 +159,10 @@
 
         .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 18px; }
         .campo { display: flex; flex-direction: column; }
-        .campo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+        .campo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--texto-branco); }
         .campo input, .campo select {
-            width: 100%; padding: 12px; background: var(--fundo-escuro); border: 1px solid var(--borda);
-            border-radius: 4px; color: white; font-size: 14px;
+            width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
+            border-radius: 4px; color: var(--texto-branco); font-size: 14px;
         }
         .campo input:focus, .campo select:focus {
             outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.2);
@@ -160,7 +189,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body class="tema-escuro">
 
     <button class="btn-menu" onclick="abrirFecharMenu()">
         <i class="fas fa-bars"></i>
@@ -247,7 +276,7 @@
                         </div>
                         <div class="campo">
                             <label>CPF *</label>
-                            <input type="text" id="cpfAluno" placeholder="000.000.000-00" required>
+                            <input type="text" id="cpfAluno" placeholder="000.000.000-00" maxlength="14" required>
                         </div>
                     </div>
                     <div class="linha">
@@ -356,6 +385,33 @@
             'Anual': 820.00
         };
 
+        // ✅ Carrega tema salvo do sistema
+        function carregarTema() {
+            const temaSalvo = localStorage.getItem('tema') || 'escuro';
+            const corpo = document.body;
+            if (temaSalvo === 'claro') {
+                corpo.classList.remove('tema-escuro');
+                corpo.classList.add('tema-claro');
+            } else {
+                corpo.classList.remove('tema-claro');
+                corpo.classList.add('tema-escuro');
+            }
+        }
+
+        // ✅ Função para formatar CPF
+        function formatarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length <= 11) {
+                return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            }
+            return cpf;
+        }
+
+        // ✅ Aplica máscara no campo de CPF
+        document.getElementById('cpfAluno').addEventListener('input', function() {
+            this.value = formatarCPF(this.value);
+        });
+
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
@@ -399,7 +455,7 @@
                     const classeTipo = `tipo-${(dados.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const classeFaixa = `faixa-${(dados.faixa || 'branca').toLowerCase()}`;
                     const nascimento = dados.dataNascimento ? dados.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
-                    const cpf = dados.cpf || '-';
+                    const cpf = dados.cpf ? formatarCPF(dados.cpf) : '-';
 
                     const linha = `
                     <tr>
@@ -413,7 +469,7 @@
                         <td><span class="faixa ${classeFaixa}">${dados.faixa || '-'}</span></td>
                         <td>
                             <button class="btn-acao btn-editar" onclick="editarAluno('${doc.id}')">Editar</button>
-                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${dados.nome}', '${cpf}')">Declaração</button>
+                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${dados.nome}', '${dados.cpf || ''}')">Declaração</button>
                             <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
                         </td>
                     </tr>`;
@@ -454,7 +510,7 @@
                 document.getElementById('idAluno').value = id;
                 document.getElementById('tituloModal').textContent = 'Editar Aluno';
                 document.getElementById('nomeAluno').value = dados.nome || '';
-                document.getElementById('cpfAluno').value = dados.cpf || '';
+                document.getElementById('cpfAluno').value = dados.cpf ? formatarCPF(dados.cpf) : '';
                 document.getElementById('tipoAluno').value = dados.tipo || '';
                 document.getElementById('nascimentoAluno').value = dados.dataNascimento ? dados.dataNascimento.toDate().toISOString().split('T')[0] : '';
                 document.getElementById('responsavelAluno').value = dados.responsavel || '';
@@ -490,10 +546,11 @@
             e.preventDefault();
             const id = document.getElementById('idAluno').value;
             const valorFinal = parseFloat(document.getElementById('valorFinalAluno').dataset.valor) || 0;
+            const cpfSemFormatacao = document.getElementById('cpfAluno').value.replace(/\D/g, '');
 
             const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
-                cpf: document.getElementById('cpfAluno').value.trim(),
+                cpf: cpfSemFormatacao,
                 tipo: document.getElementById('tipoAluno').value,
                 dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
                 responsavel: document.getElementById('responsavelAluno').value.trim(),
@@ -555,6 +612,7 @@
             if (!usuario) {
                 window.location.href = 'login.html';
             } else {
+                carregarTema();
                 carregarAlunos();
             }
         });
