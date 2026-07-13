@@ -170,8 +170,8 @@
 
         <form id="formLogin">
             <div class="campo">
-                <label>E-mail</label>
-                <input type="email" id="email" required>
+                <label>E-mail ou Telefone</label>
+                <input type="text" id="login" placeholder="seu@email.com ou (91) 99999-9999" required>
             </div>
             <div class="campo">
                 <label>Senha</label>
@@ -209,22 +209,53 @@
             el.style.display = 'block';
         }
 
-        // Lógica do login
-        document.getElementById('formLogin').addEventListener('submit', function(e) {
+        // ✅ Função para verificar se o valor é telefone
+        function ehTelefone(valor) {
+            const apenasNumeros = valor.replace(/\D/g, '');
+            return apenasNumeros.length >= 10 && apenasNumeros.length <= 11;
+        }
+
+        // ✅ Função para buscar e-mail pelo telefone no Firestore
+        async function buscarEmailPorTelefone(telefone) {
+            const telSemFormatacao = telefone.replace(/\D/g, '');
+            const snapshot = await db.collection('usuarios')
+                .where('telefone', '==', telSemFormatacao)
+                .limit(1)
+                .get();
+            
+            if (!snapshot.empty) {
+                return snapshot.docs[0].data().email;
+            }
+            return null;
+        }
+
+        // ✅ Lógica do login atualizada
+        document.getElementById('formLogin').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const email = document.getElementById('email').value.trim();
+            const entrada = document.getElementById('login').value.trim();
             const senha = document.getElementById('senha').value.trim();
+            let emailFinal = entrada;
 
             mostrarMensagem("🔄 Verificando dados...", "info");
 
-            auth.signInWithEmailAndPassword(email, senha)
-            .then(resultado => {
+            try {
+                // Se for telefone, busca o e-mail correspondente
+                if (ehTelefone(entrada)) {
+                    const emailEncontrado = await buscarEmailPorTelefone(entrada);
+                    if (!emailEncontrado) {
+                        throw new Error("Telefone não cadastrado no sistema!");
+                    }
+                    emailFinal = emailEncontrado;
+                }
+
+                // Realiza o login com o e-mail
+                const resultado = await auth.signInWithEmailAndPassword(emailFinal, senha);
                 const usuario = resultado.user;
                 console.log("Usuário autenticado:", usuario.uid);
-                return db.collection('usuarios').doc(usuario.uid).get();
-            })
-            .then(doc => {
+
+                // Busca dados do usuário
+                const doc = await db.collection('usuarios').doc(usuario.uid).get();
                 if (!doc.exists) {
                     throw new Error("Conta existe, mas não tem cadastro no sistema!");
                 }
@@ -234,31 +265,27 @@
 
                 if (dados.tipo === "admin") {
                     mostrarMensagem("✅ Acesso de Administrador! Entrando...", "sucesso");
-                    setTimeout(() => {
-                        window.location.href = "admin.html";
-                    }, 1200);
+                    setTimeout(() => window.location.href = "admin.html", 1200);
                 } else if (dados.tipo === "aluno") {
                     mostrarMensagem("✅ Acesso de Aluno! Entrando...", "sucesso");
-                    setTimeout(() => {
-                        window.location.href = "aluno.html";
-                    }, 1200);
+                    setTimeout(() => window.location.href = "aluno.html", 1200);
                 } else {
                     throw new Error("Tipo de usuário não definido: " + dados.tipo);
                 }
-            })
-            .catch(erro => {
+
+            } catch (erro) {
                 console.error("Erro completo:", erro);
                 let msg;
 
                 switch(erro.code) {
                     case "auth/user-not-found":
-                        msg = "❌ E-mail não cadastrado";
+                        msg = "❌ E-mail ou telefone não cadastrado";
                         break;
                     case "auth/wrong-password":
                         msg = "❌ Senha incorreta";
                         break;
                     case "auth/invalid-email":
-                        msg = "❌ Formato de e-mail inválido";
+                        msg = "❌ Formato inválido. Use e-mail ou telefone correto";
                         break;
                     case "auth/network-request-failed":
                         msg = "❌ Sem conexão com a internet";
@@ -268,7 +295,7 @@
                 }
 
                 mostrarMensagem(msg, "erro");
-            });
+            }
         });
     </script>
 
