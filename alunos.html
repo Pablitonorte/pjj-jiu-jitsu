@@ -102,6 +102,7 @@
         .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-editar { background: var(--azul); color: white; }
         .btn-excluir { background: var(--vermelho-principal); color: white; }
+        .btn-declaracao { background: var(--amarelo); color: #111; }
 
         .fundo-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -192,7 +193,7 @@
         </div>
 
         <div class="card-filtro">
-            <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome ou responsável...">
+            <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome, CPF ou responsável...">
             <select id="filtroTipo">
                 <option value="">Todos os Tipos</option>
                 <option value="Kids">Kids</option>
@@ -214,6 +215,7 @@
             <thead>
                 <tr>
                     <th>Nome</th>
+                    <th>CPF</th>
                     <th>Tipo</th>
                     <th>Responsável</th>
                     <th>Nascimento</th>
@@ -224,7 +226,7 @@
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="8" class="vazio">Carregando alunos...</td></tr>
+                <tr><td colspan="9" class="vazio">Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -244,6 +246,12 @@
                             <input type="text" id="nomeAluno" required>
                         </div>
                         <div class="campo">
+                            <label>CPF *</label>
+                            <input type="text" id="cpfAluno" placeholder="000.000.000-00" required>
+                        </div>
+                    </div>
+                    <div class="linha">
+                        <div class="campo">
                             <label>Tipo de Aluno *</label>
                             <select id="tipoAluno" onchange="atualizarValorPlano()" required>
                                 <option value="">Selecione</option>
@@ -254,21 +262,25 @@
                                 <option value="Bolsista">Bolsista (Gratuito)</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="linha">
                         <div class="campo">
                             <label>Data de Nascimento *</label>
                             <input type="date" id="nascimentoAluno" required>
                         </div>
+                    </div>
+                    <div class="linha">
                         <div class="campo">
                             <label>Nome do Responsável <span class="opcional">(opcional)</span></label>
                             <input type="text" id="responsavelAluno">
                         </div>
-                    </div>
-                    <div class="linha">
                         <div class="campo">
                             <label>E-mail <span class="opcional">(opcional)</span></label>
                             <input type="email" id="emailAluno">
+                        </div>
+                    </div>
+                    <div class="linha">
+                        <div class="campo">
+                            <label>Telefone / Contato <span class="opcional">(opcional)</span></label>
+                            <input type="text" id="telefoneAluno" placeholder="(91) 99999-9999">
                         </div>
                         <div class="campo">
                             <label>Data da Primeira Aula *</label>
@@ -318,7 +330,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-salvar">Salvar Aluno</button>
+                <button type="submit" class="btn-salvar" style="width:100%;padding:14px;background:var(--verde);color:white;border:none;border-radius:6px;font-weight:700;font-size:16px;cursor:pointer;">Salvar Aluno</button>
             </form>
         </div>
     </div>
@@ -369,13 +381,13 @@
 
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando alunos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="9" class="vazio">Carregando alunos...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="9" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     return;
                 }
 
@@ -387,10 +399,12 @@
                     const classeTipo = `tipo-${(dados.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const classeFaixa = `faixa-${(dados.faixa || 'branca').toLowerCase()}`;
                     const nascimento = dados.dataNascimento ? dados.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
+                    const cpf = dados.cpf || '-';
 
                     const linha = `
                     <tr>
                         <td><strong>${dados.nome || '-'}</strong></td>
+                        <td>${cpf}</td>
                         <td><span class="tipo-aluno ${classeTipo}">${dados.tipo || '-'}</span></td>
                         <td>${dados.responsavel || '-'}</td>
                         <td>${nascimento}</td>
@@ -399,6 +413,7 @@
                         <td><span class="faixa ${classeFaixa}">${dados.faixa || '-'}</span></td>
                         <td>
                             <button class="btn-acao btn-editar" onclick="editarAluno('${doc.id}')">Editar</button>
+                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${dados.nome}', '${cpf}')">Declaração</button>
                             <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
                         </td>
                     </tr>`;
@@ -407,8 +422,12 @@
 
             } catch (erro) {
                 console.error('Erro ao carregar alunos:', erro);
-                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="9" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
+        }
+
+        function abrirDeclaracao(nome, cpf) {
+            window.open(`declaracao.html?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`, '_blank');
         }
 
         function abrirModalCadastro() {
@@ -435,9 +454,11 @@
                 document.getElementById('idAluno').value = id;
                 document.getElementById('tituloModal').textContent = 'Editar Aluno';
                 document.getElementById('nomeAluno').value = dados.nome || '';
+                document.getElementById('cpfAluno').value = dados.cpf || '';
                 document.getElementById('tipoAluno').value = dados.tipo || '';
                 document.getElementById('nascimentoAluno').value = dados.dataNascimento ? dados.dataNascimento.toDate().toISOString().split('T')[0] : '';
                 document.getElementById('responsavelAluno').value = dados.responsavel || '';
+                document.getElementById('telefoneAluno').value = dados.telefone || '';
                 document.getElementById('emailAluno').value = dados.email || '';
                 document.getElementById('primeiraAulaAluno').value = dados.dataPrimeiraAula ? dados.dataPrimeiraAula.toDate().toISOString().split('T')[0] : '';
                 document.getElementById('periodoAluno').value = dados.periodo || '';
@@ -472,9 +493,11 @@
 
             const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
+                cpf: document.getElementById('cpfAluno').value.trim(),
                 tipo: document.getElementById('tipoAluno').value,
                 dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
                 responsavel: document.getElementById('responsavelAluno').value.trim(),
+                telefone: document.getElementById('telefoneAluno').value.trim(),
                 email: document.getElementById('emailAluno').value.trim(),
                 dataPrimeiraAula: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('primeiraAulaAluno').value)),
                 periodo: document.getElementById('periodoAluno').value,
@@ -536,5 +559,6 @@
             }
         });
     </script>
+
 </body>
 </html>
