@@ -103,6 +103,24 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
+        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
+        .tipo-baby-class { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
+        .tipo-comercial { background: #FF980020; color: #FF9800; border: 1px solid #FF980040; }
+        .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
+        .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
+
+        .faixa { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .faixa-branca { background: #FFFFFF; color: #121214; border: 1px solid #ddd; }
+        .faixa-cinza { background: #888888; color: #FFFFFF; }
+        .faixa-amarela { background: #FFD700; color: #121214; }
+        .faixa-laranja { background: #FF8C00; color: #FFFFFF; }
+        .faixa-verde { background: #228B22; color: #FFFFFF; }
+        .faixa-azul { background: #0066CC; color: #FFFFFF; }
+        .faixa-roxa { background: #800080; color: #FFFFFF; }
+        .faixa-marrom { background: #8B4513; color: #FFFFFF; }
+        .faixa-preta { background: #000000; color: #FFFFFF; border: 1px solid #555; }
+
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-pendente { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
@@ -130,6 +148,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script src="js/config-firebase.js"></script>
 </head>
 <body class="tema-escuro">
 
@@ -162,6 +182,14 @@
 
         <div class="card-filtro">
             <input type="text" id="busca" placeholder="🔍 Buscar por nome...">
+            <select id="filtroTipo">
+                <option value="">Todos os Tipos</option>
+                <option value="Kids">Kids</option>
+                <option value="Baby Class">Baby Class</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Competidor">Competidor</option>
+                <option value="Bolsista">Bolsista</option>
+            </select>
             <select id="filtroStatus">
                 <option value="">Todos os status</option>
                 <option value="Pago">Pago</option>
@@ -174,30 +202,22 @@
             <thead>
                 <tr>
                     <th>Nome do Aluno</th>
-                    <th>Faixa / Tipo</th>
-                    <th>Plano</th>
-                    <th>Valor Mensal</th>
-                    <th>Próximo Vencimento</th>
-                    <th>Status</th>
+                    <th>Tipo de Aluno</th>
+                    <th>Período do Plano</th>
+                    <th>Valor</th>
+                    <th>Faixa</th>
+                    <th>Vencimento</th>
+                    <th>Status do Pagamento</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="8" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
-            authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
-            projectId: "pjj-para-jiu-jitsu",
-            storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
-            messagingSenderId: "72563195814",
-            appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
-        };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -218,124 +238,118 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Calcula vencimento baseado na data de cadastro (igual ao cadastro)
-        function calcularVencimento(dataCadastro) {
-            if (!dataCadastro) return null;
-            const data = new Date(dataCadastro);
-            data.setMonth(data.getMonth() + 1); // Padrão mensal, igual ao sistema
+        function calcularVencimento(dataInicio, periodo) {
+            if (!dataInicio || !periodo) return null;
+            const data = new Date(dataInicio);
+            switch(periodo) {
+                case 'Mensal': data.setMonth(data.getMonth() + 1); break;
+                case 'Trimestral': data.setMonth(data.getMonth() + 3); break;
+                case 'Semestral': data.setMonth(data.getMonth() + 6); break;
+                case 'Anual': data.setFullYear(data.getFullYear() + 1); break;
+                default: return null;
+            }
             return data;
         }
 
         function estaAtrasado(dataVencimento, statusPagamento) {
             if (!dataVencimento || statusPagamento === 'Pago') return false;
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const venc = new Date(dataVencimento);
-            venc.setHours(0, 0, 0, 0);
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const venc = new Date(dataVencimento); venc.setHours(0,0,0,0);
             return hoje > venc;
         }
 
         function diasAtrasado(dataVencimento) {
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const venc = new Date(dataVencimento);
-            venc.setHours(0, 0, 0, 0);
-            const diff = hoje - venc;
-            return Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const venc = new Date(dataVencimento); venc.setHours(0,0,0,0);
+            return Math.floor((hoje - venc) / (1000 * 60 * 60 * 24));
         }
 
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
-
+            lista.innerHTML = '<tr><td colspan="8" class="vazio">🔍 Buscando dados...</td></tr>';
             try {
-                // Busca APENAS alunos da coleção "usuarios" (mesmo lugar do cadastro)
-                const snapshot = await db.collection('usuarios')
-                    .where('tipo', '==', 'aluno')
-                    .orderBy('nome', 'asc')
-                    .get();
-
+                // ✅ Busca SEM orderBy (não precisa de índice, funciona sempre)
+                const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado na coleção "alunos"</td></tr>';
                     return;
                 }
 
+                // Converte para array e ordena por nome manualmente
+                const alunos = [];
+                snapshot.forEach(doc => {
+                    alunos.push({ id: doc.id, dados: doc.data() });
+                });
+                alunos.sort((a, b) => (a.dados.nome || '').localeCompare(b.dados.nome || ''));
+
                 lista.innerHTML = '';
-
-                for (const doc of snapshot.docs) {
-                    const dados = doc.data();
-                    const alunoId = doc.id;
-
-                    // Campos EXATOS do cadastro e página alunos
+                for (const aluno of alunos) {
+                    const dados = aluno.dados;
+                    const alunoId = aluno.id;
                     const nome = dados.nome || '-';
+                    const tipoAluno = dados.tipo || '-';
+                    const periodoPlano = dados.periodo || '-';
+                    const valor = dados.valorPlano || dados.valor || dados.mensalidade || 0;
+                    const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
                     const faixa = dados.faixa || 'Branca';
-                    const tipoAluno = dados.tipo === 'aluno' ? 'Aluno' : dados.tipo;
-                    const plano = dados.plano || 'Mensal';
-                    const valor = Number(dados.valorMensal || 150.00); // Valor padrão igual cadastro
                     
-                    let dataCadastro = null;
-                    if (dados.dataCadastro) {
-                        dataCadastro = dados.dataCadastro.toDate ? dados.dataCadastro.toDate() : new Date(dados.dataCadastro);
-                    }
+                    const classeTipo = `tipo-aluno tipo-${(tipoAluno || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
+                    const classeFaixa = `faixa faixa-${(faixa || 'branca').toLowerCase()}`;
 
-                    const dataVencimento = calcularVencimento(dataCadastro);
+                    const dataInicio = dados.dataPrimeiraAula ? 
+                        (dados.dataPrimeiraAula.toDate ? dados.dataPrimeiraAula.toDate() : new Date(dados.dataPrimeiraAula)) 
+                        : (dados.dataCadastro ? (dados.dataCadastro.toDate ? dados.dataCadastro.toDate() : new Date(dados.dataCadastro)) : null);
+                    
+                    const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
                     const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : '-';
                     const statusPagamento = dados.statusPagamento || 'Pendente';
                     const atrasado = estaAtrasado(dataVencimento, statusPagamento);
                     const dias = atrasado ? diasAtrasado(dataVencimento) : 0;
 
                     let classeStatus, textoStatus, classeBotao, textoBotao;
-                    if (statusPagamento === 'Pago') {
-                        classeStatus = 'status-pago';
-                        textoStatus = 'Pago';
-                        classeBotao = 'btn-pendente';
+                    if (statusPagamento === 'Pago' || tipoAluno === 'Bolsista') {
+                        classeStatus = 'status-pago'; 
+                        textoStatus = tipoAluno === 'Bolsista' ? 'Gratuito' : 'Pago';
+                        classeBotao = 'btn-pendente'; 
                         textoBotao = 'Marcar Pendente';
                     } else if (atrasado) {
-                        classeStatus = 'status-atrasado';
+                        classeStatus = 'status-atrasado'; 
                         textoStatus = `Atrasado (${dias} dia${dias !== 1 ? 's' : ''})`;
-                        classeBotao = 'btn-atrasado';
+                        classeBotao = 'btn-atrasado'; 
                         textoBotao = 'Marcar Pago';
                     } else {
-                        classeStatus = 'status-pendente';
+                        classeStatus = 'status-pendente'; 
                         textoStatus = 'Pendente';
-                        classeBotao = 'btn-pago';
+                        classeBotao = 'btn-pago'; 
                         textoBotao = 'Marcar Pago';
                     }
 
                     const linha = `
                     <tr>
-                        <td>${nome}</td>
-                        <td>${faixa} / ${tipoAluno}</td>
-                        <td>${plano}</td>
-                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
+                        <td><strong>${nome}</strong></td>
+                        <td><span class="${classeTipo}">${tipoAluno}</span></td>
+                        <td>${periodoPlano}</td>
+                        <td>${valorTexto}</td>
+                        <td><span class="${classeFaixa}">${faixa}</span></td>
                         <td>${vencFormatado}</td>
                         <td><span class="${classeStatus}">${textoStatus}</span></td>
-                        <td>
-                            <button class="btn-acao ${classeBotao}" 
-                                onclick="alterarStatus('${alunoId}', '${statusPagamento}')">
-                                ${textoBotao}
-                            </button>
-                        </td>
+                        <td><button class="btn-acao ${classeBotao}" onclick="alterarStatus('${alunoId}', '${statusPagamento}')">${textoBotao}</button></td>
                     </tr>`;
-
                     lista.innerHTML += linha;
                 }
-
             } catch (erro) {
-                console.error('Erro ao carregar:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">❌ ${erro.message}</td></tr>`;
+                console.error('❌ Erro ao carregar:', erro);
+                lista.innerHTML = `<tr><td colspan="8" class="vazio">❌ ${erro.message}</td></tr>`;
             }
         }
 
         async function alterarStatus(alunoId, statusAtual) {
             const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
             try {
-                await db.collection('usuarios').doc(alunoId).update({
-                    statusPagamento: novoStatus
-                });
+                await db.collection('alunos').doc(alunoId).update({ statusPagamento: novoStatus });
                 carregarLista();
             } catch (erro) {
-                alert('Erro: ' + erro.message);
+                alert('Erro ao alterar status: ' + erro.message);
             }
         }
 
@@ -347,26 +361,31 @@
             });
         });
 
+        document.getElementById('filtroTipo').addEventListener('change', () => {
+            const filtro = document.getElementById('filtroTipo').value;
+            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (linha.classList.contains('vazio')) return;
+                linha.style.display = !filtro || linha.textContent.includes(filtro) ? '' : 'none';
+            });
+        });
+
         document.getElementById('filtroStatus').addEventListener('change', () => {
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
                 if (!filtro) { linha.style.display = ''; return; }
-                const statusTexto = linha.querySelector('span').textContent;
+                const statusTexto = linha.querySelector('span:last-of-type').textContent;
                 linha.style.display = filtro === 'Atrasado' ? statusTexto.includes('Atrasado') : statusTexto === filtro ? '' : 'none';
             });
         });
 
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) { window.location.href = 'login.html'; return; }
-            carregarTema();
-            carregarLista();
+            if (!usuario) window.location.href = 'login.html';
+            else { carregarTema(); carregarLista(); }
         });
 
         function sair() {
-            if (confirm('Sair do sistema?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
-            }
+            if (confirm('Deseja sair do sistema?')) auth.signOut().then(() => window.location.href = 'login.html');
         }
     </script>
 
