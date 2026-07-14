@@ -10,7 +10,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
-        /* 🎨 Variáveis dos temas */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -21,7 +20,6 @@
             --vermelho-atraso: #ff4444;
         }
 
-        /* 🌙 Tema Escuro */
         .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
@@ -31,7 +29,6 @@
             --fundo-input: #0C0C0E;
         }
 
-        /* ☀️ Tema Claro */
         .tema-claro {
             --fundo-escuro: #F8F9FA;
             --fundo-card: #FFFFFF;
@@ -130,13 +127,9 @@
         }
     </style>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
-    <!-- Configuração centralizada -->
-    <script src="js/config-firebase.js"></script>
 </head>
 <body class="tema-escuro">
 
@@ -167,7 +160,6 @@
             <h1 class="titulo-pagina">Controle Financeiro</h1>
         </div>
 
-        <!-- Filtros -->
         <div class="card-filtro">
             <input type="text" id="busca" placeholder="🔍 Buscar por nome...">
             <select id="filtroStatus">
@@ -178,7 +170,6 @@
             </select>
         </div>
 
-        <!-- Tabela com dados dos alunos -->
         <table class="tabela">
             <thead>
                 <tr>
@@ -198,12 +189,20 @@
     </main>
 
     <script>
-        // Inicializa Firebase
+        // ✅ Configuração direta (sem arquivo separado)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+            authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+            projectId: "pjj-para-jiu-jitsu",
+            storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+            messagingSenderId: "72563195814",
+            appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Carrega tema salvo
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -220,31 +219,20 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Calcula data de vencimento conforme o plano
         function calcularVencimento(dataInicio, periodo) {
             if (!dataInicio || !periodo) return null;
             const data = new Date(dataInicio);
             
             switch(periodo) {
-                case 'Mensal':
-                    data.setMonth(data.getMonth() + 1);
-                    break;
-                case 'Trimestral':
-                    data.setMonth(data.getMonth() + 3);
-                    break;
-                case 'Semestral':
-                    data.setMonth(data.getMonth() + 6);
-                    break;
-                case 'Anual':
-                    data.setFullYear(data.getFullYear() + 1);
-                    break;
-                default:
-                    return null;
+                case 'Mensal': data.setMonth(data.getMonth() + 1); break;
+                case 'Trimestral': data.setMonth(data.getMonth() + 3); break;
+                case 'Semestral': data.setMonth(data.getMonth() + 6); break;
+                case 'Anual': data.setFullYear(data.getFullYear() + 1); break;
+                default: return null;
             }
             return data;
         }
 
-        // Verifica se o pagamento está atrasado
         function estaAtrasado(dataVencimento, statusPagamento) {
             if (!dataVencimento || statusPagamento === 'Pago') return false;
             const hoje = new Date();
@@ -254,7 +242,6 @@
             return hoje > venc;
         }
 
-        // Calcula quantos dias de atraso
         function diasAtrasado(dataVencimento) {
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
@@ -264,16 +251,19 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // Carrega lista de alunos e seus dados financeiros
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
 
             try {
-                const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
+                // ✅ Busca na coleção CORRETA: "usuarios" (onde os cadastros são salvos)
+                const snapshot = await db.collection('usuarios')
+                    .where('tipo', '==', 'aluno')
+                    .orderBy('nome', 'asc')
+                    .get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     return;
                 }
 
@@ -285,11 +275,14 @@
 
                     const nome = dados.nome || '-';
                     const tipoAluno = dados.tipo || '-';
-                    const periodoPlano = dados.periodo || '-';
-                    const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-                    const dataInicio = dados.dataPrimeiraAula ? 
-                        (dados.dataPrimeiraAula.toDate ? dados.dataPrimeiraAula.toDate() : new Date(dados.dataPrimeiraAula)) 
-                        : null;
+                    const periodoPlano = dados.periodo || 'Mensal'; // Valor padrão
+                    const valor = Number(dados.valorPlano || dados.mensalidade || 150.00); // Valor padrão
+                    
+                    // Trata data corretamente
+                    let dataInicio = null;
+                    if (dados.dataCadastro) {
+                        dataInicio = dados.dataCadastro.toDate ? dados.dataCadastro.toDate() : new Date(dados.dataCadastro);
+                    }
 
                     const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
                     const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : '-';
@@ -335,16 +328,15 @@
                 }
 
             } catch (erro) {
-                console.error('Erro ao carregar:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                console.error('Erro ao carregar dados:', erro);
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">❌ Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        // Altera status de pagamento no Firestore
         async function alterarStatus(alunoId, statusAtual) {
             const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
             try {
-                await db.collection('alunos').doc(alunoId).update({
+                await db.collection('usuarios').doc(alunoId).update({
                     statusPagamento: novoStatus
                 });
                 carregarLista();
@@ -353,7 +345,6 @@
             }
         }
 
-        // Filtro por nome
         document.getElementById('busca').addEventListener('input', () => {
             const termo = document.getElementById('busca').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -362,7 +353,6 @@
             });
         });
 
-        // Filtro por status
         document.getElementById('filtroStatus').addEventListener('change', () => {
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -380,7 +370,6 @@
             });
         });
 
-        // Inicialização
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
