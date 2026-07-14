@@ -174,11 +174,11 @@
             <thead>
                 <tr>
                     <th>Nome do Aluno</th>
-                    <th>Tipo de Aluno</th>
-                    <th>Período do Plano</th>
-                    <th>Valor</th>
-                    <th>Vencimento</th>
-                    <th>Status do Pagamento</th>
+                    <th>Faixa / Tipo</th>
+                    <th>Plano</th>
+                    <th>Valor Mensal</th>
+                    <th>Próximo Vencimento</th>
+                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -189,7 +189,6 @@
     </main>
 
     <script>
-        // ✅ Configuração direta (sem arquivo separado)
         const firebaseConfig = {
             apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
             authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -219,17 +218,11 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        function calcularVencimento(dataInicio, periodo) {
-            if (!dataInicio || !periodo) return null;
-            const data = new Date(dataInicio);
-            
-            switch(periodo) {
-                case 'Mensal': data.setMonth(data.getMonth() + 1); break;
-                case 'Trimestral': data.setMonth(data.getMonth() + 3); break;
-                case 'Semestral': data.setMonth(data.getMonth() + 6); break;
-                case 'Anual': data.setFullYear(data.getFullYear() + 1); break;
-                default: return null;
-            }
+        // Calcula vencimento baseado na data de cadastro (igual ao cadastro)
+        function calcularVencimento(dataCadastro) {
+            if (!dataCadastro) return null;
+            const data = new Date(dataCadastro);
+            data.setMonth(data.getMonth() + 1); // Padrão mensal, igual ao sistema
             return data;
         }
 
@@ -256,14 +249,14 @@
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
 
             try {
-                // ✅ Busca na coleção CORRETA: "usuarios" (onde os cadastros são salvos)
+                // Busca APENAS alunos da coleção "usuarios" (mesmo lugar do cadastro)
                 const snapshot = await db.collection('usuarios')
                     .where('tipo', '==', 'aluno')
                     .orderBy('nome', 'asc')
                     .get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
                 }
 
@@ -273,18 +266,19 @@
                     const dados = doc.data();
                     const alunoId = doc.id;
 
+                    // Campos EXATOS do cadastro e página alunos
                     const nome = dados.nome || '-';
-                    const tipoAluno = dados.tipo || '-';
-                    const periodoPlano = dados.periodo || 'Mensal'; // Valor padrão
-                    const valor = Number(dados.valorPlano || dados.mensalidade || 150.00); // Valor padrão
+                    const faixa = dados.faixa || 'Branca';
+                    const tipoAluno = dados.tipo === 'aluno' ? 'Aluno' : dados.tipo;
+                    const plano = dados.plano || 'Mensal';
+                    const valor = Number(dados.valorMensal || 150.00); // Valor padrão igual cadastro
                     
-                    // Trata data corretamente
-                    let dataInicio = null;
+                    let dataCadastro = null;
                     if (dados.dataCadastro) {
-                        dataInicio = dados.dataCadastro.toDate ? dados.dataCadastro.toDate() : new Date(dados.dataCadastro);
+                        dataCadastro = dados.dataCadastro.toDate ? dados.dataCadastro.toDate() : new Date(dados.dataCadastro);
                     }
 
-                    const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
+                    const dataVencimento = calcularVencimento(dataCadastro);
                     const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : '-';
                     const statusPagamento = dados.statusPagamento || 'Pendente';
                     const atrasado = estaAtrasado(dataVencimento, statusPagamento);
@@ -311,8 +305,8 @@
                     const linha = `
                     <tr>
                         <td>${nome}</td>
-                        <td>${tipoAluno}</td>
-                        <td>${periodoPlano}</td>
+                        <td>${faixa} / ${tipoAluno}</td>
+                        <td>${plano}</td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
                         <td>${vencFormatado}</td>
                         <td><span class="${classeStatus}">${textoStatus}</span></td>
@@ -328,8 +322,8 @@
                 }
 
             } catch (erro) {
-                console.error('Erro ao carregar dados:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">❌ Erro: ${erro.message}</td></tr>`;
+                console.error('Erro ao carregar:', erro);
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">❌ ${erro.message}</td></tr>`;
             }
         }
 
@@ -341,7 +335,7 @@
                 });
                 carregarLista();
             } catch (erro) {
-                alert('Erro ao alterar status: ' + erro.message);
+                alert('Erro: ' + erro.message);
             }
         }
 
@@ -357,30 +351,20 @@
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
-                if (!filtro) {
-                    linha.style.display = '';
-                    return;
-                }
+                if (!filtro) { linha.style.display = ''; return; }
                 const statusTexto = linha.querySelector('span').textContent;
-                if (filtro === 'Atrasado') {
-                    linha.style.display = statusTexto.includes('Atrasado') ? '' : 'none';
-                } else {
-                    linha.style.display = statusTexto === filtro ? '' : 'none';
-                }
+                linha.style.display = filtro === 'Atrasado' ? statusTexto.includes('Atrasado') : statusTexto === filtro ? '' : 'none';
             });
         });
 
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) {
-                window.location.href = 'login.html';
-            } else {
-                carregarTema();
-                carregarLista();
-            }
+            if (!usuario) { window.location.href = 'login.html'; return; }
+            carregarTema();
+            carregarLista();
         });
 
         function sair() {
-            if (confirm('Deseja sair do sistema?')) {
+            if (confirm('Sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
