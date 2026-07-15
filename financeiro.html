@@ -8,80 +8,93 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-        body { background: #121214; color: #fff; padding: 20px; }
-        h1 { margin-bottom: 20px; color: #D10000; }
-        .lista-alunos { background: #1A1A1F; border-radius: 10px; border: 1px solid #29292E; }
-        .cabecalho-tabela { display: flex; background: rgba(255,255,255,0.05); padding: 15px; font-weight: 700; text-transform: uppercase; font-size: 13px; color: #B0B0B8; }
-        .linha-aluno { display: flex; padding: 15px; border-bottom: 1px solid #29292E; align-items: center; }
-        .linha-aluno:last-child { border-bottom: none; }
-        .col-nome { width: 40%; font-weight: bold; }
-        .col-cpf { width: 30%; color: #B0B0B8; }
-        .col-tipo { width: 30%; text-align: right; }
-        .tipo-aluno { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
-        .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
-        .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
-        .carregando { text-align: center; padding: 40px; color: #B0B0B8; }
-        .erro { text-align: center; padding: 40px; color: #ff4444; }
+        :root { --vermelho-principal: #D10000; --fundo-escuro: #121214; --fundo-card: #1A1A1F; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E; }
+        body { background: var(--fundo-escuro); color: var(--texto-branco); padding: 30px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { font-size: 28px; font-weight: 800; margin-bottom: 25px; color: var(--vermelho-principal); }
+        .tabela { width: 100%; background: var(--fundo-card); border-radius: 10px; border: 1px solid var(--borda); overflow: hidden; }
+        .cabecalho { display: flex; background: rgba(255,255,255,0.05); padding: 15px; font-weight: 700; font-size: 13px; text-transform: uppercase; color: var(--texto-cinza); }
+        .linha { display: flex; padding: 15px; border-bottom: 1px solid var(--borda); align-items: center; }
+        .linha:last-child { border-bottom: none; }
+        .col-nome { width: 35%; font-weight: bold; }
+        .col-tipo { width: 20%; }
+        .col-plano { width: 20%; }
+        .col-valor { width: 15%; }
+        .col-status { width: 10%; }
+        .carregando { text-align: center; padding: 50px; color: var(--texto-cinza); font-size: 16px; }
+        .erro { text-align: center; padding: 50px; color: #ff4444; font-size: 16px; }
     </style>
 
-    <!-- ✅ MESMOS LINKS DO FIREBASE QUE FUNCIONAM NA PÁGINA DE ALUNOS -->
+    <!-- MESMOS LINKS DO FIREBASE QUE FUNCIONAM NA PÁGINA DE ALUNOS -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="js/config-firebase.js"></script>
 </head>
 <body>
-    <h1>Controle Financeiro</h1>
-    <div class="lista-alunos" id="listaAlunos">
-        <div class="carregando">🔄 Carregando dados...</div>
+    <div class="container">
+        <h1>Controle Financeiro</h1>
+        <div class="tabela" id="listaAlunos">
+            <div class="carregando">🔄 Carregando dados...</div>
+        </div>
     </div>
 
     <script>
+        // MESMA INICIALIZAÇÃO DA PÁGINA DE ALUNOS
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.firestore();
         const lista = document.getElementById('listaAlunos');
 
-        // ✅ MESMA FUNÇÃO DE BUSCA DA PÁGINA DE ALUNOS (QUE FUNCIONA!)
-        async function carregarAlunos() {
+        // MESMA FUNÇÃO DE BUSCA QUE FUNCIONA
+        async function carregarLista() {
             try {
+                console.log('📡 Iniciando busca...');
                 const snapshot = await db.collection('alunos').get();
-                
+                console.log('✅ Busca concluída, documentos:', snapshot.size);
+
                 if (snapshot.empty) {
-                    lista.innerHTML = '<div class="erro">Nenhum aluno cadastrado</div>';
+                    lista.innerHTML = '<div class="erro">Nenhum aluno encontrado na coleção "alunos"</div>';
                     return;
                 }
 
                 let html = `
-                <div class="cabecalho-tabela">
-                    <div class="col-nome">NOME</div>
-                    <div class="col-cpf">CPF</div>
-                    <div class="col-tipo">TIPO</div>
+                <div class="cabecalho">
+                    <div class="col-nome">Nome</div>
+                    <div class="col-tipo">Tipo</div>
+                    <div class="col-plano">Plano</div>
+                    <div class="col-valor">Valor</div>
+                    <div class="col-status">Status</div>
                 </div>`;
 
                 snapshot.forEach(doc => {
-                    const a = doc.data();
+                    const d = doc.data();
                     html += `
-                    <div class="linha-aluno">
-                        <div class="col-nome">${a.nome || '-'}</div>
-                        <div class="col-cpf">${a.cpf || '-'}</div>
-                        <div class="col-tipo"><span class="tipo-aluno tipo-${(a.tipo || 'comercial').toLowerCase()}">${a.tipo || '-'}</span></div>
+                    <div class="linha">
+                        <div class="col-nome">${d.nome || 'Sem nome'}</div>
+                        <div class="col-tipo">${d.tipo || '-'}</div>
+                        <div class="col-plano">${d.plano || d.periodo || '-'}</div>
+                        <div class="col-valor">R$ ${d.valorMensal || d.valorPlano || '0,00'}</div>
+                        <div class="col-status">${d.statusPagamento || 'Pendente'}</div>
                     </div>`;
                 });
 
                 lista.innerHTML = html;
+                console.log('✅ Lista carregada com sucesso!');
 
             } catch (erro) {
-                console.error('Erro:', erro);
-                lista.innerHTML = `<div class="erro">❌ Erro: ${erro.message}</div>`;
+                console.error('❌ ERRO:', erro);
+                lista.innerHTML = `<div class="erro">❌ Falha: ${erro.message}<br>Verifique o console do navegador para detalhes</div>`;
             }
         }
 
-        // ✅ MESMA VERIFICAÇÃO DE LOGIN
-        firebase.auth().onAuthStateChanged(usuario => {
+        // MESMA VERIFICAÇÃO DE LOGIN
+        auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
             } else {
-                carregarAlunos();
+                console.log('✅ Usuário logado:', usuario.email);
+                carregarLista();
             }
         });
     </script>
