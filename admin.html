@@ -5,15 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
         :root {
-            --fundo-escuro: #121214; --fundo-card: #1A1A1F; --vermelho-principal: #D10000;
-            --vermelho-claro: #FF3B3B; --texto-branco: #FFFFFF; --texto-cinza: #B0B0B8; --borda: #29292E;
-            --verde: #00C853; --amarelo: #FFC107; --azul: #2563eb; --roxo: #9C27B0; --laranja: #FF9800;
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --vermelho-escuro: #A00000;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
+            --verde: #00C853;
+            --amarelo: #FFC107;
+            --azul: #2563eb;
+            --roxo: #9C27B0;
+            --laranja: #FF9800;
+            --erro: #FF4D4D;
         }
 
         html, body { 
@@ -24,31 +35,91 @@
         }
 
         .btn-menu {
-            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
-            background: var(--vermelho-principal); border: none; color: white;
-            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 9999;
+            background: var(--vermelho-principal);
+            border: none;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            font-size: 22px;
+            cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: background 0.2s;
         }
+        .btn-menu:hover { background: var(--vermelho-claro); }
 
         .menu-lateral {
-            width: 240px; background: var(--fundo-escuro); border-right: 1px solid var(--borda);
-            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            width: 240px;
+            background: var(--fundo-card);
+            border-right: 1px solid var(--borda);
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: 999;
             transition: transform 0.3s ease;
             overflow-y: auto;
         }
         .menu-lateral.fechado { transform: translateX(-100%); }
         .menu-lateral.aberto { transform: translateX(0); }
 
-        .logo { text-align: center; margin-bottom: 40px; }
-        .logo img { width: 90px; margin-bottom: 10px; }
-        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .logo { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0 35px 0;
+            padding: 0 10px;
+        }
+        .logo img { 
+            width: 90px; 
+            height: auto;
+            margin-bottom: 12px; 
+            object-fit: contain;
+            display: block;
+        }
+        .logo h1 { 
+            font-size: 14px; 
+            font-weight: 700; 
+            line-height: 1.4; 
+            color: var(--texto-branco);
+            text-align: center;
+            margin: 0;
+        }
 
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
-            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
-            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            color: var(--texto-cinza);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
-        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+        .menu-navegacao li a.ativo, 
+        .menu-navegacao li a:hover { 
+            background: rgba(209, 0, 0, 0.15); 
+            color: var(--vermelho-principal); 
+        }
+        .menu-navegacao li a.sair {
+            margin-top: 20px;
+            color: var(--erro);
+        }
+        .menu-navegacao li a.sair:hover {
+            background: rgba(255, 77, 77, 0.15);
+            color: var(--erro);
+        }
 
         .conteudo { 
             margin-left: 240px; 
@@ -58,12 +129,36 @@
         }
 
         .cabecalho {
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+            margin-bottom: 30px;
         }
-        .titulo-pagina { font-size: 28px; font-weight: 800; position: relative; }
-        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 80px; height: 3px; background: var(--vermelho-principal); }
+        .titulo-pagina { 
+            font-size: 28px; 
+            font-weight: 800; 
+            position: relative; 
+            color: var(--texto-branco);
+        }
+        .titulo-pagina::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: -8px; 
+            left: 0; 
+            width: 80px; 
+            height: 3px; 
+            background: var(--vermelho-principal); 
+            border-radius: 2px;
+        }
+        .subtitulo {
+            color: var(--texto-cinza);
+            font-size: 1rem;
+            font-weight: 400;
+            margin-top: 8px;
+        }
 
-        /* Cards de Resumo */
         .grid-resumo {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -80,9 +175,13 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
+            transition: transform 0.2s ease;
+            border-left: 4px solid transparent;
         }
-        .card-resumo:hover { transform: translateY(-3px); }
+        .card-resumo:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
 
         .card-icone {
             width: 60px;
@@ -103,21 +202,65 @@
         .card-dados p {
             font-size: 26px;
             font-weight: 800;
+            color: var(--texto-branco);
         }
 
-        .card-alunos { border-left: 4px solid var(--azul); }
+        .card-alunos { border-left-color: var(--azul); }
         .card-alunos .card-icone { background: rgba(37, 99, 235, 0.15); color: var(--azul); }
 
-        .card-recebido { border-left: 4px solid var(--verde); }
-        .card-recebido .card-icone { background: rgba(0, 195, 81, 0.15); color: var(--verde); }
+        .card-recebido { border-left-color: var(--verde); }
+        .card-recebido .card-icone { background: rgba(0, 200, 83, 0.15); color: var(--verde); }
 
-        .card-pendente { border-left: 4px solid var(--amarelo); }
+        .card-pendente { border-left-color: var(--amarelo); }
         .card-pendente .card-icone { background: rgba(255, 193, 7, 0.15); color: var(--amarelo); }
 
-        .card-atrasado { border-left: 4px solid var(--vermelho-principal); }
-        .card-atrasado .card-icone { background: rgba(220, 38, 38, 0.15); color: var(--vermelho-principal); }
+        .card-atrasado { border-left-color: var(--vermelho-principal); }
+        .card-atrasado .card-icone { background: rgba(209, 0, 0, 0.15); color: var(--vermelho-principal); }
 
-        /* Seções inferiores */
+        .acoes-rapidas {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .acoes-rapidas h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--borda);
+            color: var(--texto-branco);
+        }
+        .grid-acoes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .btn-acao {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-acao.aluno { background: rgba(37, 99, 235, 0.15); color: var(--azul); }
+        .btn-acao.aluno:hover { background: rgba(37, 99, 235, 0.25); transform: translateY(-2px); }
+        .btn-acao.financeiro { background: rgba(0, 200, 83, 0.15); color: var(--verde); }
+        .btn-acao.financeiro:hover { background: rgba(0, 200, 83, 0.25); transform: translateY(-2px); }
+        .btn-acao.declaracao { background: rgba(156, 39, 176, 0.15); color: var(--roxo); }
+        .btn-acao.declaracao:hover { background: rgba(156, 39, 176, 0.25); transform: translateY(-2px); }
+        .btn-acao.relatorio { background: rgba(255, 152, 0, 0.15); color: var(--laranja); }
+        .btn-acao.relatorio:hover { background: rgba(255, 152, 0, 0.25); transform: translateY(-2px); }
+
         .grid-inferior {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -138,11 +281,10 @@
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--borda);
+            color: var(--texto-branco);
         }
 
-        .lista-tipo {
-            list-style: none;
-        }
+        .lista-tipo { list-style: none; }
         .lista-tipo li {
             display: flex;
             justify-content: space-between;
@@ -151,6 +293,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .lista-tipo li:last-child { border: none; }
+        .lista-tipo span:first-child { color: var(--texto-branco); }
+        .lista-tipo small { color: var(--texto-cinza); font-size: 0.85rem; }
 
         .badge {
             padding: 4px 12px;
@@ -174,7 +318,11 @@
         }
 
         @media (max-width: 600px) {
-            .grid-resumo { grid-template-columns: 1fr; }
+            .grid-resumo, .grid-acoes { grid-template-columns: 1fr; }
+            .cabecalho { flex-direction: column; text-align: center; }
+            .titulo-pagina { font-size: 24px; }
+            .titulo-pagina::after { left: 50%; transform: translateX(-50%); }
+            .logo img { width: 80px; }
         }
     </style>
 
@@ -190,7 +338,7 @@
 
     <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
-            <img src="imagens/logopjj.png" alt="Logo PJJ">
+            <img src="imagens/logopjj.png" alt="Logo PJJ Pará Jiu-Jitsu">
             <h1>PJJ<br>Pará Jiu-Jitsu</h1>
         </div>
         <nav class="menu-navegacao">
@@ -198,19 +346,20 @@
                 <li><a href="#" class="ativo"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
-                <!-- ✅ TROCADO: Histórico Financeiro → Declaração -->
                 <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
                 <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
-                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                <li><a href="#" class="sair" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
     </aside>
 
     <main class="conteudo">
         <div class="cabecalho">
-            <h1 class="titulo-pagina">Painel de Controle</h1>
-            <p class="text-gray-400">Bem-vindo! Acompanhe os dados da academia em tempo real</p>
+            <div>
+                <h1 class="titulo-pagina">Painel de Controle</h1>
+                <p class="subtitulo">Bem-vindo! Acompanhe os dados da academia em tempo real</p>
+            </div>
         </div>
 
         <div class="grid-resumo">
@@ -255,6 +404,24 @@
             </div>
         </div>
 
+        <div class="acoes-rapidas">
+            <h3>Ações Rápidas</h3>
+            <div class="grid-acoes">
+                <a href="alunos.html" class="btn-acao aluno">
+                    <i class="fas fa-user-plus"></i> Novo Aluno
+                </a>
+                <a href="financeiro.html" class="btn-acao financeiro">
+                    <i class="fas fa-file-invoice-dollar"></i> Lançar Mensalidade
+                </a>
+                <a href="declaracao.html" class="btn-acao declaracao">
+                    <i class="fas fa-file-pdf"></i> Emitir Declaração
+                </a>
+                <a href="relatorios.html" class="btn-acao relatorio">
+                    <i class="fas fa-chart-line"></i> Ver Relatórios
+                </a>
+            </div>
+        </div>
+
         <div class="grid-inferior">
             <div class="card-grande">
                 <h3>Distribuição de Alunos por Tipo</h3>
@@ -270,7 +437,7 @@
             <div class="card-grande">
                 <h3>Últimos Cadastros</h3>
                 <ul class="lista-tipo" id="ultimosCadastros">
-                    <li class="text-gray-400 text-center py-4">Carregando...</li>
+                    <li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Carregando...</li>
                 </ul>
             </div>
         </div>
@@ -278,15 +445,15 @@
 
     <script>
         const firebaseConfig = {
-          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
-          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
-          projectId: "pjj-para-jiu-jitsu",
-          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
-          messagingSenderId: "72563195814",
-          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+            apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+            authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+            projectId: "pjj-para-jiu-jitsu",
+            storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+            messagingSenderId: "72563195814",
+            appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
 
-        const app = firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -294,9 +461,33 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
+        function formatarValor(valor) {
+            return `R$ ${Number(valor).toFixed(2).replace('.', ',')}`;
+        }
+
+        // Funções iguais à página Financeiro
+        function calcularVencimento(dataInicio, periodo) {
+            if (!dataInicio || !periodo) return null;
+            const data = new Date(dataInicio);
+            switch(periodo) {
+                case 'Mensal': data.setMonth(data.getMonth() + 1); break;
+                case 'Trimestral': data.setMonth(data.getMonth() + 3); break;
+                case 'Semestral': data.setMonth(data.getMonth() + 6); break;
+                case 'Anual': data.setFullYear(data.getFullYear() + 1); break;
+                default: return null;
+            }
+            return data;
+        }
+
+        function estaAtrasado(dataVencimento, statusPagamento) {
+            if (!dataVencimento || statusPagamento === 'Pago') return false;
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const venc = new Date(dataVencimento); venc.setHours(0,0,0,0);
+            return hoje > venc;
+        }
+
         async function carregarDadosDashboard() {
             try {
-                // --- Dados dos Alunos ---
                 const alunosSnapshot = await db.collection('alunos').get();
                 const totalAlunos = alunosSnapshot.size;
                 document.getElementById('totalAlunos').textContent = totalAlunos;
@@ -304,7 +495,7 @@
                 // Contagem por tipo
                 let contagemTipos = { Kids: 0, "Baby Class": 0, Comercial: 0, Competidor: 0, Bolsista: 0 };
                 alunosSnapshot.forEach(doc => {
-                    const tipo = doc.data().tipo;
+                    const tipo = doc.data().tipo || doc.data().tipoAluno;
                     if (contagemTipos.hasOwnProperty(tipo)) contagemTipos[tipo]++;
                 });
 
@@ -314,65 +505,98 @@
                 document.querySelector('.badge-competidor').textContent = contagemTipos.Competidor;
                 document.querySelector('.badge-bolsista').textContent = contagemTipos.Bolsista;
 
-                // Últimos 5 cadastros
-                const ultimosSnapshot = await db.collection('alunos').orderBy('dataCadastro', 'desc').limit(5).get();
+                // Últimos cadastros
                 const listaUltimos = document.getElementById('ultimosCadastros');
                 listaUltimos.innerHTML = '';
+                const alunosOrdenados = [];
+                alunosSnapshot.forEach(doc => alunosOrdenados.push({ id: doc.id, dados: doc.data() }));
+                alunosOrdenados.sort((a, b) => {
+                    const dataA = a.dados.dataCadastro ? (a.dados.dataCadastro.toDate ? a.dados.dataCadastro.toDate() : new Date(a.dados.dataCadastro)) : new Date(0);
+                    const dataB = b.dados.dataCadastro ? (b.dados.dataCadastro.toDate ? b.dados.dataCadastro.toDate() : new Date(b.dados.dataCadastro)) : new Date(0);
+                    return dataB - dataA;
+                });
+                const ultimos5 = alunosOrdenados.slice(0, 5);
 
-                if (ultimosSnapshot.empty) {
-                    listaUltimos.innerHTML = '<li class="text-gray-400 text-center py-4">Nenhum aluno cadastrado</li>';
+                if (ultimos5.length === 0) {
+                    listaUltimos.innerHTML = '<li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Nenhum aluno cadastrado</li>';
                 } else {
-                    ultimosSnapshot.forEach(doc => {
-                        const dados = doc.data();
-                        const data = dados.dataCadastro.toDate().toLocaleDateString('pt-BR');
-                        listaUltimos.innerHTML += `<li><span>${dados.nome}</span> <small class="text-gray-400">${data}</small></li>`;
+                    ultimos5.forEach(aluno => {
+                        const dados = aluno.dados;
+                        const data = dados.dataCadastro ? 
+                            (dados.dataCadastro.toDate ? dados.dataCadastro.toDate().toLocaleDateString('pt-BR') : new Date(dados.dataCadastro).toLocaleDateString('pt-BR')) 
+                            : '-';
+                        listaUltimos.innerHTML += `<li><span>${dados.nome || 'Sem nome'}</span> <small>${data}</small></li>`;
                     });
                 }
 
-                // --- Dados Financeiros ---
-                const hoje = new Date();
+                // 🚀 Cálculo financeiro CORRIGIDO e mais robusto
                 let recebido = 0, pendente = 0, atrasado = 0;
 
-                const mensalidadesSnapshot = await db.collection('mensalidades').get();
-                mensalidadesSnapshot.forEach(doc => {
-                    const m = doc.data();
-                    const vencimento = m.dataVencimento.toDate();
+                alunosSnapshot.forEach(doc => {
+                    const d = doc.data();
+                    
+                    // Busca valor em TODOS os campos possíveis e garante que é número
+                    const valor = Number(d.valor || d.valorPlano || d.mensalidade || d.valorMensal || 0);
+                    const tipo = (d.tipo || d.tipoAluno || '').trim();
+                    const status = (d.statusPagamento || 'Pendente').trim();
 
-                    if (m.status === 'Pago') {
-                        recebido += m.valor || 0;
-                    } else if (m.status === 'Gratuito') {
-                        // Não soma valor
+                    // Mostra no console para conferir o que está lendo
+                    console.log(`Aluno: ${d.nome} | Tipo: ${tipo} | Valor lido: ${valor} | Status: ${status}`);
+
+                    // Ignora apenas bolsistas confirmados e valores realmente zerados
+                    if (tipo === 'Bolsista' || valor <= 0) {
+                        console.log(`-> Ignorado: ${tipo === 'Bolsista' ? 'Bolsista' : 'Valor zero'}`);
+                        return;
+                    }
+
+                    // Busca data de início e período
+                    const dataInicio = d.dataPrimeiraAula ? 
+                        (d.dataPrimeiraAula.toDate ? d.dataPrimeiraAula.toDate() : new Date(d.dataPrimeiraAula)) 
+                        : (d.dataCadastro ? (d.dataCadastro.toDate ? d.dataCadastro.toDate() : new Date(d.dataCadastro)) : new Date());
+                    const periodo = d.periodoPlano || d.periodo || d.plano || 'Mensal';
+                    const vencimento = calcularVencimento(dataInicio, periodo);
+
+                    // Soma os valores corretamente
+                    if (status === 'Pago') {
+                        recebido += valor;
+                        console.log(`-> Adicionado ao RECEBIDO: R$ ${valor.toFixed(2)}`);
+                    } else if (vencimento && estaAtrasado(vencimento, status)) {
+                        atrasado += valor;
+                        console.log(`-> Adicionado ao ATRASADO: R$ ${valor.toFixed(2)}`);
                     } else {
-                        if (vencimento < hoje) {
-                            atrasado += m.valor || 0;
-                        } else {
-                            pendente += m.valor || 0;
-                        }
+                        pendente += valor;
+                        console.log(`-> Adicionado ao PENDENTE: R$ ${valor.toFixed(2)}`);
                     }
                 });
 
-                document.getElementById('valorRecebido').textContent = `R$ ${recebido.toFixed(2).replace('.', ',')}`;
-                document.getElementById('valorPendente').textContent = `R$ ${pendente.toFixed(2).replace('.', ',')}`;
-                document.getElementById('valorAtrasado').textContent = `R$ ${atrasado.toFixed(2).replace('.', ',')}`;
+                // Mostra total no console
+                console.log(`\nTOTAIS FINAIS:`);
+                console.log(`Recebido: R$ ${recebido.toFixed(2)}`);
+                console.log(`Pendente: R$ ${pendente.toFixed(2)}`);
+                console.log(`Atrasado: R$ ${atrasado.toFixed(2)}`);
+
+                // Atualiza na tela
+                document.getElementById('valorRecebido').textContent = formatarValor(recebido);
+                document.getElementById('valorPendente').textContent = formatarValor(pendente);
+                document.getElementById('valorAtrasado').textContent = formatarValor(atrasado);
 
             } catch (erro) {
-                console.error('Erro ao carregar dados do painel:', erro);
+                console.error('Erro ao carregar dados do Dashboard:', erro);
+                document.getElementById('ultimosCadastros').innerHTML = '<li class="text-center" style="color: var(--erro); padding: 20px;">Erro ao carregar dados</li>';
             }
         }
 
         function sair() {
-            if (confirm('Deseja sair do sistema?')) {
+            if (confirm('Deseja realmente sair?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) {
-                window.location.href = 'login.html';
-            } else {
-                carregarDadosDashboard();
-            }
+            if (!usuario) window.location.href = 'login.html';
+            else carregarDadosDashboard();
         });
     </script>
+
 </body>
 </html>
