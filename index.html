@@ -2,21 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <!-- Mantém a tag original + garante responsividade -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PJJ Pará Jiu-Jitsu</title>
-    <!-- ✅ Caminho correto para o CSS: dentro da pasta css/ -->
     <link rel="stylesheet" href="css/estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- AQUI SÓ AS REGRAS ADICIONAIS DE RESPONSIVIDADE, SEM ALTERAR O RESTO -->
     <style>
-        /* Garante que elementos não ultrapassem a tela */
         * {
             box-sizing: border-box;
         }
 
-        /* Ajusta container para não ficar grudado nas bordas em telas pequenas */
         .container {
             width: 100%;
             max-width: 1200px;
@@ -25,7 +20,6 @@
             padding-right: 15px;
         }
 
-        /* Tabela de horários com rolagem horizontal se necessário */
         .tabela-horarios {
             width: 100%;
             display: block;
@@ -47,7 +41,6 @@
             font-weight: 600;
         }
 
-        /* Ajustes apenas para telas menores, sem mudar a versão de computador */
         @media (max-width: 768px) {
             .cabecalho {
                 flex-wrap: wrap;
@@ -105,11 +98,9 @@
 </head>
 <body>
 
-<!-- Cabeçalho COM LINKS CORRETOS - FORMATO ORIGINAL MANTIDO -->
 <header class="cabecalho">
     <div class="container">
         <div class="logo">
-            <!-- ✅ Caminho correto para imagem: dentro da pasta imagens/ -->
             <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu">
         </div>
         <nav class="menu">
@@ -121,13 +112,12 @@
             <a href="#contato">CONTATO</a>
         </nav>
         <div class="botoes-cabecalho">
-            <a href="cadastro.html" class="btn-branco">CADASTRE-SE</a>
+            <!-- ✅ Apenas o botão LOGIN agora -->
             <a href="login.html" class="btn-vermelho">LOGIN</a>
         </div>
     </div>
 </header>
 
-<!-- Banner Principal -->
 <section class="banner" id="inicio">
     <div class="container">
         <div class="texto-banner">
@@ -150,7 +140,6 @@
     </div>
 </section>
 
-<!-- Sobre a Academia -->
 <section class="secao sobre" id="sobre">
     <div class="container">
         <div class="texto-sobre">
@@ -183,7 +172,6 @@
     </div>
 </section>
 
-<!-- Horários e Benefícios -->
 <section class="secao horarios-beneficios" id="horarios">
     <div class="container">
         <div class="bloco-horarios">
@@ -252,7 +240,6 @@
                 </div>
                 <div class="card-beneficio">
                     <i class="fa-solid fa-handshake"></i>
-                    <h4>
                     <h4>AMIZADE E CONVÍVIO</h4>
                     <p>Ambiente saudável, respeitoso e com muita camaradagem entre alunos.</p>
                 </div>
@@ -261,7 +248,6 @@
     </div>
 </section>
 
-<!-- Planos -->
 <section class="secao planos" id="planos">
     <div class="container">
         <div class="card-plano">
@@ -278,7 +264,8 @@
                 <span class="periodo">Mensal</span>
                 <span class="preco">R$ 90,00</span>
             </div>
-            <a href="cadastro.html" class="btn-vermelho">MATRICULE-SE</a>
+            <!-- ✅ Link alterado para contato -->
+            <a href="#contato" class="btn-vermelho">SAIBA MAIS</a>
         </div>
 
         <div class="card-plano destaque">
@@ -301,7 +288,8 @@
                 <p>Semestral: <strong>R$ 450,00</strong></p>
                 <p>Anual: <strong>R$ 820,00</strong></p>
             </div>
-            <a href="cadastro.html" class="btn-vermelho">MATRICULE-SE</a>
+            <!-- ✅ Link alterado para contato -->
+            <a href="#contato" class="btn-vermelho">SAIBA MAIS</a>
         </div>
 
         <div class="card-plano">
@@ -318,17 +306,16 @@
                 <span class="periodo">Mensal</span>
                 <span class="preco">R$ 90,00</span>
             </div>
-            <a href="cadastro.html" class="btn-vermelho">MATRICULE-SE</a>
+            <!-- ✅ Link alterado para contato -->
+            <a href="#contato" class="btn-vermelho">SAIBA MAIS</a>
         </div>
     </div>
 </section>
 
-<!-- Galeria -->
 <section class="secao galeria">
     <div class="container">
         <h2>GALERIA</h2>
         <div class="fotos-galeria">
-            <!-- ✅ Caminho correto das imagens da galeria -->
             <img src="imagens/galeria1.jpg" alt="Treinamento PJJ Pará">
             <img src="imagens/galeria2.jpg" alt="Equipe PJJ Pará">
             <img src="imagens/galeria3.jpg" alt="Competição">
@@ -339,11 +326,9 @@
     </div>
 </section>
 
-<!-- Rodapé -->
 <footer class="rodape" id="contato">
     <div class="container">
         <div class="logo-rodape">
-            <!-- ✅ Caminho correto da logo no rodapé -->
             <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu">
         </div>
 
@@ -379,7 +364,6 @@
     </div>
 </footer>
 
-<!-- ✅ Caminho correto para o JavaScript: dentro da pasta js/ -->
 <script src="js/script.js"></script>
 </body>
 </html>
