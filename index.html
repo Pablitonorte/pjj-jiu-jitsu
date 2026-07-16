@@ -2,8 +2,16 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PJJ Pará Jiu-Jitsu</title>
+
+    <!-- ✅ Configurações para funcionar como app no iPhone / Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PJJ Pará">
+    <link rel="apple-touch-icon" href="imagens/logopjj.png">
+    <link rel="apple-touch-startup-image" href="imagens/logopjj.png">
+
     <link rel="stylesheet" href="css/estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -41,6 +49,33 @@
             font-weight: 600;
         }
 
+        /* ✅ Logo principal do Banner */
+        .logo-banner-principal {
+            max-width: 420px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            display: block;
+            filter: drop-shadow(2px 2px 8px rgba(0,0,0,0.5));
+        }
+
+        .logo-banner {
+            max-width: 380px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .titulo-banner {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 12px;
+            color: #FFFFFF;
+            text-transform: uppercase;
+        }
+
         @media (max-width: 768px) {
             .cabecalho {
                 flex-wrap: wrap;
@@ -66,8 +101,16 @@
                 gap: 18px;
             }
 
-            .texto-banner h1 {
-                font-size: 2.2rem;
+            .logo-banner-principal {
+                max-width: 300px;
+            }
+
+            .logo-banner {
+                max-width: 280px;
+            }
+
+            .titulo-banner {
+                font-size: 2.5rem;
             }
 
             .fotos-galeria {
@@ -85,13 +128,21 @@
                 font-size: 0.88rem;
             }
 
-            .btn-branco, .btn-vermelho {
+            .btn-vermelho {
                 padding: 9px 16px;
                 font-size: 0.9rem;
             }
 
-            .texto-banner h1 {
-                font-size: 1.8rem;
+            .logo-banner-principal {
+                max-width: 240px;
+            }
+
+            .logo-banner {
+                max-width: 220px;
+            }
+
+            .titulo-banner {
+                font-size: 2rem;
             }
         }
     </style>
@@ -101,7 +152,7 @@
 <header class="cabecalho">
     <div class="container">
         <div class="logo">
-            <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu">
+            <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu" id="logoCabecalho">
         </div>
         <nav class="menu">
             <a href="#inicio">INÍCIO</a>
@@ -112,7 +163,6 @@
             <a href="#contato">CONTATO</a>
         </nav>
         <div class="botoes-cabecalho">
-            <!-- ✅ Apenas o botão LOGIN agora -->
             <a href="login.html" class="btn-vermelho">LOGIN</a>
         </div>
     </div>
@@ -121,11 +171,12 @@
 <section class="banner" id="inicio">
     <div class="container">
         <div class="texto-banner">
-            <h1>PJJ PARÁ<br>JIU-JITSU</h1>
+            <!-- ✅ Texto substituído pela Logo -->
+            <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu" class="logo-banner-principal" id="logoBannerPrincipal">
             <p class="subtitulo">DISCIPLINA, RESPEITO E EVOLUÇÃO</p>
-            <p class="descricao">Treinamento para crianças, jovens e adultos.<br>Aprenda defesa pessoal, condicionamento físico e competição.</p>
+            <p class="descricao" id="textoApresentacao">Treinamento para crianças, jovens e adultos.<br>Aprenda defesa pessoal, condicionamento físico e competição.</p>
             <div class="botoes-banner">
-                <a href="https://wa.me/5591999999999" target="_blank" class="btn-vermelho">AGENDE UMA AULA EXPERIMENTAL</a>
+                <a href="https://wa.me/5591999999999" target="_blank" class="btn-vermelho" id="btnWhatsappBanner">AGENDE UMA AULA EXPERIMENTAL</a>
             </div>
         </div>
         <div class="navegacao-banner">
@@ -212,7 +263,7 @@
                     </tr>
                 </tbody>
             </table>
-            <a href="https://wa.me/5591999999999" target="_blank" class="btn-vermelho pequeno">MAIS INFORMAÇÕES</a>
+            <a href="https://wa.me/5591999999999" target="_blank" class="btn-vermelho pequeno" id="btnWhatsappHorarios">MAIS INFORMAÇÕES</a>
         </div>
 
         <div class="bloco-beneficios">
@@ -264,7 +315,6 @@
                 <span class="periodo">Mensal</span>
                 <span class="preco">R$ 90,00</span>
             </div>
-            <!-- ✅ Link alterado para contato -->
             <a href="#contato" class="btn-vermelho">SAIBA MAIS</a>
         </div>
 
@@ -288,7 +338,6 @@
                 <p>Semestral: <strong>R$ 450,00</strong></p>
                 <p>Anual: <strong>R$ 820,00</strong></p>
             </div>
-            <!-- ✅ Link alterado para contato -->
             <a href="#contato" class="btn-vermelho">SAIBA MAIS</a>
         </div>
 
@@ -306,7 +355,6 @@
                 <span class="periodo">Mensal</span>
                 <span class="preco">R$ 90,00</span>
             </div>
-            <!-- ✅ Link alterado para contato -->
             <a href="#contato" class="btn-vermelho">SAIBA MAIS</a>
         </div>
     </div>
@@ -329,15 +377,15 @@
 <footer class="rodape" id="contato">
     <div class="container">
         <div class="logo-rodape">
-            <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu">
+            <img src="imagens/logopjj.png" alt="PJJ Pará Jiu-Jitsu" id="logoRodape">
         </div>
 
-        <div class="coluna-rodape">
+        <div class="coluna-rodape" id="blocoContato">
             <h4>CONTATO</h4>
-            <p>Rua dos Mundurucus, 1234<br>Guamá, Belém - PA, 66075-360</p>
-            <p><i class="fa-brands fa-whatsapp"></i> (91) 99999-9999</p>
-            <p><i class="fa-brands fa-instagram"></i> @pjjparajj</p>
-            <p><i class="fa-solid fa-envelope"></i> contato@pjjpara.com.br</p>
+            <p id="enderecoRodape">Rua dos Mundurucus, 1234<br>Guamá, Belém - PA, 66075-360</p>
+            <p id="telefoneRodape"><i class="fa-brands fa-whatsapp"></i> (91) 99999-9999</p>
+            <p id="instagramRodape"><i class="fa-brands fa-instagram"></i> @pjjparajj</p>
+            <p id="emailRodape"><i class="fa-solid fa-envelope"></i> contato@pjjpara.com.br</p>
         </div>
 
         <div class="coluna-rodape">
@@ -352,18 +400,66 @@
 
         <div class="coluna-rodape">
             <h4>SIGA-NOS</h4>
-            <div class="redes">
-                <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+            <div class="redes" id="redesSociais">
+                <a href="#" target="_blank" id="linkInstagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" target="_blank" id="linkFacebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" target="_blank" id="linkYoutube"><i class="fa-brands fa-youtube"></i></a>
             </div>
         </div>
     </div>
     <div class="copyright">
-        <p>© 2026 PJJ Pará Jiu-Jitsu. Todos os direitos reservados.</p>
+        <p>© 2026 <span id="nomeAcademiaRodape">PJJ Pará Jiu-Jitsu</span>. Todos os direitos reservados.</p>
     </div>
 </footer>
 
 <script src="js/script.js"></script>
+<script>
+function carregarDadosConfiguracoes() {
+    const config = JSON.parse(localStorage.getItem('configSite') || {});
+    const nomePadrao = "PJJ Pará Jiu-Jitsu";
+
+    if (config.nomeAcademia) {
+        const nomeAtual = config.nomeAcademia.toUpperCase();
+        // Se quiser manter o texto em outro lugar, mantivemos aqui
+        document.getElementById('nomeAcademiaRodape').textContent = config.nomeAcademia;
+        document.getElementById('logoCabecalho').alt = config.nomeAcademia;
+        document.getElementById('logoRodape').alt = config.nomeAcademia;
+        document.getElementById('logoBannerPrincipal').alt = config.nomeAcademia;
+        document.title = config.nomeAcademia;
+    }
+
+    if (config.textoApresentacao) {
+        document.getElementById('textoApresentacao').textContent = config.textoApresentacao;
+    }
+
+    if (config.linkWhatsapp) {
+        document.getElementById('btnWhatsappBanner').href = config.linkWhatsapp;
+        document.getElementById('btnWhatsappHorarios').href = config.linkWhatsapp;
+    }
+
+    if (config.enderecoAcademia) {
+        document.getElementById('enderecoRodape').innerHTML = config.enderecoAcademia.replace(', ', '<br>');
+    }
+    if (config.telefoneAcademia) {
+        document.getElementById('telefoneRodape').innerHTML = `<i class="fa-brands fa-whatsapp"></i> ${config.telefoneAcademia}`;
+    }
+    if (config.emailAcademia) {
+        document.getElementById('emailRodape').innerHTML = `<i class="fa-solid fa-envelope"></i> ${config.emailAcademia}`;
+    }
+
+    if (config.linkInstagram) {
+        document.getElementById('linkInstagram').href = config.linkInstagram;
+    }
+    if (config.linkFacebook) {
+        document.getElementById('linkFacebook').href = config.linkFacebook;
+    }
+    if (config.linkYoutube) {
+        document.getElementById('linkYoutube').href = config.linkYoutube;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', carregarDadosConfiguracoes);
+</script>
+
 </body>
 </html>
