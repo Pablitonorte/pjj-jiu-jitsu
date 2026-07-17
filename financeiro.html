@@ -118,7 +118,6 @@
         .btn-atrasado { background: var(--vermelho-atraso); color: white; }
         .btn-atrasado:hover { background: #FF6666; }
 
-        /* MODAL PARA ESCOLHER O MÊS */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--fundo-modal); z-index: 10000; align-items: center; justify-content: center;
@@ -135,6 +134,7 @@
             width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
             border-radius: 6px; color: var(--texto-branco); font-size: 15px;
         }
+        .info-vencimento { font-size: 13px; color: var(--texto-cinza); margin-top: 5px; }
         .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
         .btn-cancelar { background: var(--cinza); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-confirmar { background: var(--verde); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
@@ -209,24 +209,28 @@
                     <th>Tipo</th>
                     <th>Plano</th>
                     <th>Valor Mensal</th>
+                    <th>Vencimento Cadastrado</th>
                     <th>Último Pagamento</th>
                     <th>Status Atual</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="8" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
 
-    <!-- MODAL PARA MARCAR PAGAMENTO -->
     <div class="modal" id="modalMes">
         <div class="modal-conteudo">
             <h3 class="modal-titulo">Marcar Pagamento do Mês</h3>
             <div class="modal-grupo">
                 <label>Aluno:</label>
                 <span id="nomeAlunoModal" style="font-weight:600; font-size:15px;"></span>
+            </div>
+            <div class="modal-grupo">
+                <label>Data de Vencimento Cadastrada:</label>
+                <span id="dataVencimentoModal" class="info-vencimento"></span>
             </div>
             <div class="modal-grupo">
                 <label>Selecione o Mês/Ano:</label>
@@ -270,6 +274,7 @@
         const db = firebase.firestore();
 
         let alunoSelecionado = null;
+        let dataVencimentoAluno = null;
 
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
@@ -287,7 +292,6 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ Verifica status usando os dados do cadastro
         function verificarStatus(mesesPagos = []) {
             const hoje = new Date();
             const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
@@ -298,7 +302,6 @@
                 return { texto: 'Sem pagamentos', classe: 'status-atrasado', ultimo: 'Nenhum' };
             }
 
-            // Ordena os meses pagos
             const datasOrdenadas = mesesPagos
                 .map(mes => {
                     const [m, a] = mes.split('/');
@@ -308,7 +311,6 @@
 
             const ultimo = datasOrdenadas[0].mes + '/' + datasOrdenadas[0].ano;
 
-            // Verifica se tem meses anteriores não pagos
             let temAtraso = false;
             for (let i = 1; i <= hoje.getMonth(); i++) {
                 const mesVerificar = String(i).padStart(2, '0') + '/' + anoAtual;
@@ -318,7 +320,6 @@
                 }
             }
 
-            // Define status final
             if (mesesPagos.includes(dataAtual)) {
                 return { texto: 'Em dia', classe: 'status-pago', ultimo };
             } else if (temAtraso) {
@@ -330,19 +331,18 @@
 
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando dados...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando dados...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
                 }
 
                 let alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
 
-                // Ordena por status: Atrasado > Pendente > Pago
                 alunos.sort((a, b) => {
                     const statusA = verificarStatus(a.dados.mesesPagos);
                     const statusB = verificarStatus(b.dados.mesesPagos);
@@ -358,6 +358,9 @@
                     const valor = d.valorPlano || 0;
                     const classeTipo = `tipo-${(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
+                    
+                    // Formata a data de vencimento cadastrada
+                    const dataVenc = d.dataVencimento ? d.dataVencimento.toDate().toLocaleDateString('pt-BR') : 'Não informada';
 
                     const linha = `
                     <tr>
@@ -365,10 +368,11 @@
                         <td><span class="tipo-aluno ${classeTipo}">${d.tipo || '-'}</span></td>
                         <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
+                        <td>${dataVenc}</td>
                         <td>${status.ultimo}</td>
                         <td><span class="${status.classe}">${status.texto}</span></td>
                         <td>
-                            <button class="btn-acao btn-pago" onclick="abrirModal('${aluno.id}', '${d.nome}')">
+                            <button class="btn-acao btn-pago" onclick="abrirModal('${aluno.id}', '${d.nome}', ${d.dataVencimento ? `new Date(${d.dataVencimento.toDate().getTime()})` : 'null'})">
                                 Marcar Mês Pago
                             </button>
                         </td>
@@ -378,19 +382,35 @@
 
             } catch (erro) {
                 console.error('Erro:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        function abrirModal(id, nome) {
+        // ✅ Abre o modal e já seleciona o mês da data de vencimento
+        function abrirModal(id, nome, dataVenc) {
             alunoSelecionado = id;
+            dataVencimentoAluno = dataVenc;
             document.getElementById('nomeAlunoModal').textContent = nome;
+            
+            // Mostra a data de vencimento cadastrada
+            const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada';
+            document.getElementById('dataVencimentoModal').textContent = textoVenc;
+
+            // Seleciona automaticamente o mês e ano da data de vencimento
+            if (dataVenc) {
+                const mes = String(dataVenc.getMonth() + 1).padStart(2, '0');
+                const ano = dataVenc.getFullYear();
+                const valorMes = `${mes}/${ano}`;
+                document.getElementById('mesPagamento').value = valorMes;
+            }
+
             document.getElementById('modalMes').classList.add('aberto');
         }
 
         function fecharModal() {
             document.getElementById('modalMes').classList.remove('aberto');
             alunoSelecionado = null;
+            dataVencimentoAluno = null;
         }
 
         async function confirmarPagamento() {
@@ -418,7 +438,6 @@
             }
         }
 
-        // Filtros
         document.getElementById('busca').addEventListener('input', () => {
             const termo = document.getElementById('busca').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(l => {
