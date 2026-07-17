@@ -100,9 +100,14 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
+        /* ✅ Cores organizadas e legíveis */
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-aviso { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
+        .data-atrasada { color: var(--vermelho-atraso); font-weight: 500; }
+        .data-proxima { color: var(--amarelo); font-weight: 500; }
+        .data-normal { color: var(--texto-branco); }
+
         .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-pago { background: var(--verde); color: white; }
         .btn-pago:hover { background: #00E05C; }
@@ -218,22 +223,19 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ Calcula vencimento com fallback e tratamento de erros
+        // ✅ Calcula vencimento — usa HOJE se não tiver data!
         function calcularVencimento(dataInicio, periodo) {
-            if (!dataInicio) {
-                console.warn("Data de início não encontrada");
-                return null;
+            // Se não tiver data nenhuma, usa HOJE como base — nunca fica sem data!
+            if (!dataInicio || isNaN(new Date(dataInicio).getTime())) {
+                console.warn("Sem data de início — usando HOJE como base");
+                dataInicio = new Date();
             }
             if (!periodo) {
-                console.warn("Período não informado, usando Mensal");
+                console.warn("Período não informado — usando Mensal");
                 periodo = 'Mensal';
             }
 
             const data = new Date(dataInicio);
-            if (isNaN(data.getTime())) {
-                console.error("Data inválida:", dataInicio);
-                return null;
-            }
             
             switch(periodo.trim().toLowerCase()) {
                 case 'mensal':
@@ -249,7 +251,6 @@
                     data.setFullYear(data.getFullYear() + 1);
                     break;
                 default:
-                    console.warn("Período desconhecido:", periodo);
                     data.setMonth(data.getMonth() + 1);
             }
             return data;
@@ -286,7 +287,7 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // ✅ CARREGA TODOS OS DADOS, INCLUSIVE VENCIMENTOS ANTIGOS
+        // ✅ CARREGA E ORDENA: VENCIDOS PRIMEIRO, DEPOIS OS PRÓXIMOS
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
@@ -302,20 +303,30 @@
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
 
-                // ✅ Ordena por VENCIMENTO: os mais antigos/vencidos aparecem primeiro
+                // ✅ ORDENAÇÃO PERFEITA:
+                // 1. Vencidos mais antigos primeiro
+                // 2. Depois os que vencem em breve
+                // 3. Depois os que vencem mais tarde
                 alunos.sort((a, b) => {
-                    // Tenta TODOS os nomes possíveis de campo de data
-                    const dataA = 
-                        a.dados.dataPrimeiraAula?.toDate?.() || 
-                        new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || a.dados.dataCadastro || null);
-                    const periodoA = a.dados.periodoPlano || a.dados.periodo || 'Mensal';
-                    const vencA = calcularVencimento(dataA, periodoA) || new Date(0);
+                    // Primeiro tenta usar vencimento direto se salvo no cadastro
+                    let vencA, vencB;
+                    if (a.dados.vencimento) {
+                        vencA = a.dados.vencimento.toDate ? a.dados.vencimento.toDate() : new Date(a.dados.vencimento);
+                    } else {
+                        const dataA = 
+                            a.dados.dataPrimeiraAula?.toDate?.() || 
+                            new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || a.dados.dataCadastro || null);
+                        vencA = calcularVencimento(dataA, a.dados.periodoPlano || a.dados.periodo || 'Mensal');
+                    }
 
-                    const dataB = 
-                        b.dados.dataPrimeiraAula?.toDate?.() || 
-                        new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || b.dados.dataCadastro || null);
-                    const periodoB = b.dados.periodoPlano || b.dados.periodo || 'Mensal';
-                    const vencB = calcularVencimento(dataB, periodoB) || new Date(0);
+                    if (b.dados.vencimento) {
+                        vencB = b.dados.vencimento.toDate ? b.dados.vencimento.toDate() : new Date(b.dados.vencimento);
+                    } else {
+                        const dataB = 
+                            b.dados.dataPrimeiraAula?.toDate?.() || 
+                            new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || b.dados.dataCadastro || null);
+                        vencB = calcularVencimento(dataB, b.dados.periodoPlano || b.dados.periodo || 'Mensal');
+                    }
 
                     return vencA - vencB;
                 });
@@ -331,18 +342,29 @@
                     const periodoPlano = dados.periodoPlano || dados.periodo || '-';
                     const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
 
-                    // ✅ Busca data em todos os campos possíveis
-                    const dataInicio = 
-                        dados.dataPrimeiraAula?.toDate?.() || 
-                        new Date(dados.dataPrimeiraAula || dados.dataInicio || dados.dataCadastro || null);
+                    // ✅ Usa vencimento direto se existir, senão calcula
+                    let dataVencimento;
+                    if (dados.vencimento) {
+                        dataVencimento = dados.vencimento.toDate ? dados.vencimento.toDate() : new Date(dados.vencimento);
+                    } else {
+                        const dataInicio = 
+                            dados.dataPrimeiraAula?.toDate?.() || 
+                            new Date(dados.dataPrimeiraAula || dados.dataInicio || dados.dataCadastro || null);
+                        dataVencimento = calcularVencimento(dataInicio, periodoPlano);
+                    }
 
-                    // ✅ Mostra vencimento mesmo que seja antigo
-                    const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
-                    const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : 'Sem data';
+                    // ✅ Formata e aplica cor na data
+                    const vencFormatado = dataVencimento.toLocaleDateString('pt-BR');
+                    let classeData = 'data-normal';
                     const statusPagamento = dados.statusPagamento || 'Pendente';
                     const atrasado = estaAtrasado(dataVencimento, statusPagamento);
                     const proximo = estaProximoVencimento(dataVencimento, statusPagamento);
                     const dias = atrasado ? diasAtrasado(dataVencimento) : 0;
+
+                    if (statusPagamento !== 'Pago') {
+                        if (atrasado) classeData = 'data-atrasada';
+                        else if (proximo) classeData = 'data-proxima';
+                    }
 
                     // Define cor e texto do status
                     let classeStatus, textoStatus, classeBotao, textoBotao;
@@ -377,7 +399,7 @@
                         <td>${tipoAluno}</td>
                         <td>${periodoPlano}</td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td>${vencFormatado}</td>
+                        <td class="${classeData}">${vencFormatado}</td>
                         <td><span class="${classeStatus}">${textoStatus}</span></td>
                         <td>
                             <button class="btn-acao ${classeBotao}" 
