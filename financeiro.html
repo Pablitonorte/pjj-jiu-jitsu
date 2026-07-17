@@ -10,7 +10,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
-        /* 🎨 Variáveis dos temas */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -21,7 +20,6 @@
             --vermelho-atraso: #ff4444;
         }
 
-        /* 🌙 Tema Escuro */
         .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
@@ -31,7 +29,6 @@
             --fundo-input: #0C0C0E;
         }
 
-        /* ☀️ Tema Claro */
         .tema-claro {
             --fundo-escuro: #F8F9FA;
             --fundo-card: #FFFFFF;
@@ -100,7 +97,6 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        /* ✅ Cores organizadas e legíveis */
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-aviso { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
@@ -161,7 +157,6 @@
             <h1 class="titulo-pagina">Controle Financeiro</h1>
         </div>
 
-        <!-- Filtros -->
         <div class="card-filtro">
             <input type="text" id="busca" placeholder="🔍 Buscar por nome...">
             <select id="filtroStatus">
@@ -173,7 +168,6 @@
             </select>
         </div>
 
-        <!-- Tabela com dados direto do cadastro -->
         <table class="tabela">
             <thead>
                 <tr>
@@ -206,7 +200,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ✅ Carrega tema salvo
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -223,40 +216,24 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ Calcula vencimento — usa HOJE se não tiver data!
+        // Apenas calcula se NÃO tiver data manual cadastrada
         function calcularVencimento(dataInicio, periodo) {
-            // Se não tiver data nenhuma, usa HOJE como base — nunca fica sem data!
             if (!dataInicio || isNaN(new Date(dataInicio).getTime())) {
-                console.warn("Sem data de início — usando HOJE como base");
                 dataInicio = new Date();
             }
-            if (!periodo) {
-                console.warn("Período não informado — usando Mensal");
-                periodo = 'Mensal';
-            }
+            if (!periodo) periodo = 'Mensal';
 
             const data = new Date(dataInicio);
-            
             switch(periodo.trim().toLowerCase()) {
-                case 'mensal':
-                    data.setMonth(data.getMonth() + 1);
-                    break;
-                case 'trimestral':
-                    data.setMonth(data.getMonth() + 3);
-                    break;
-                case 'semestral':
-                    data.setMonth(data.getMonth() + 6);
-                    break;
-                case 'anual':
-                    data.setFullYear(data.getFullYear() + 1);
-                    break;
-                default:
-                    data.setMonth(data.getMonth() + 1);
+                case 'mensal': data.setMonth(data.getMonth() + 1); break;
+                case 'trimestral': data.setMonth(data.getMonth() + 3); break;
+                case 'semestral': data.setMonth(data.getMonth() + 6); break;
+                case 'anual': data.setFullYear(data.getFullYear() + 1); break;
+                default: data.setMonth(data.getMonth() + 1);
             }
             return data;
         }
 
-        // ✅ Verifica se está atrasado
         function estaAtrasado(dataVencimento, statusPagamento) {
             if (!dataVencimento || statusPagamento === 'Pago') return false;
             const hoje = new Date();
@@ -266,7 +243,6 @@
             return hoje > venc;
         }
 
-        // ✅ Verifica se faltam até 3 dias para vencer
         function estaProximoVencimento(dataVencimento, statusPagamento) {
             if (!dataVencimento || statusPagamento === 'Pago') return false;
             const hoje = new Date();
@@ -277,7 +253,6 @@
             return diffDias >= 0 && diffDias <= 3;
         }
 
-        // ✅ Calcula quantos dias está atrasado
         function diasAtrasado(dataVencimento) {
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
@@ -287,14 +262,12 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // ✅ CARREGA E ORDENA: VENCIDOS PRIMEIRO, DEPOIS OS PRÓXIMOS
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
-
                 if (snapshot.empty) {
                     lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
@@ -303,31 +276,23 @@
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
 
-                // ✅ ORDENAÇÃO PERFEITA:
-                // 1. Vencidos mais antigos primeiro
-                // 2. Depois os que vencem em breve
-                // 3. Depois os que vencem mais tarde
+                // ORDENAÇÃO: SEMPRE USA A DATA MANUAL SE EXISTIR
                 alunos.sort((a, b) => {
-                    // Primeiro tenta usar vencimento direto se salvo no cadastro
                     let vencA, vencB;
+                    // ✅ PRIORIDADE 1: DATA QUE VOCÊ CADASTROU NO FORMULÁRIO
                     if (a.dados.vencimento) {
                         vencA = a.dados.vencimento.toDate ? a.dados.vencimento.toDate() : new Date(a.dados.vencimento);
                     } else {
-                        const dataA = 
-                            a.dados.dataPrimeiraAula?.toDate?.() || 
-                            new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || a.dados.dataCadastro || null);
-                        vencA = calcularVencimento(dataA, a.dados.periodoPlano || a.dados.periodo || 'Mensal');
+                        const dataA = a.dados.dataPrimeiraAula?.toDate?.() || new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || null);
+                        vencA = calcularVencimento(dataA, a.dados.periodoPlano || 'Mensal');
                     }
 
                     if (b.dados.vencimento) {
                         vencB = b.dados.vencimento.toDate ? b.dados.vencimento.toDate() : new Date(b.dados.vencimento);
                     } else {
-                        const dataB = 
-                            b.dados.dataPrimeiraAula?.toDate?.() || 
-                            new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || b.dados.dataCadastro || null);
-                        vencB = calcularVencimento(dataB, b.dados.periodoPlano || b.dados.periodo || 'Mensal');
+                        const dataB = b.dados.dataPrimeiraAula?.toDate?.() || new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || null);
+                        vencB = calcularVencimento(dataB, b.dados.periodoPlano || 'Mensal');
                     }
-
                     return vencA - vencB;
                 });
 
@@ -342,18 +307,15 @@
                     const periodoPlano = dados.periodoPlano || dados.periodo || '-';
                     const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
 
-                    // ✅ Usa vencimento direto se existir, senão calcula
+                    // ✅ USA EXATAMENTE A DATA QUE VOCÊ COLOCOU NO FORMULÁRIO
                     let dataVencimento;
                     if (dados.vencimento) {
                         dataVencimento = dados.vencimento.toDate ? dados.vencimento.toDate() : new Date(dados.vencimento);
                     } else {
-                        const dataInicio = 
-                            dados.dataPrimeiraAula?.toDate?.() || 
-                            new Date(dados.dataPrimeiraAula || dados.dataInicio || dados.dataCadastro || null);
+                        const dataInicio = dados.dataPrimeiraAula?.toDate?.() || new Date(dados.dataPrimeiraAula || dados.dataInicio || null);
                         dataVencimento = calcularVencimento(dataInicio, periodoPlano);
                     }
 
-                    // ✅ Formata e aplica cor na data
                     const vencFormatado = dataVencimento.toLocaleDateString('pt-BR');
                     let classeData = 'data-normal';
                     const statusPagamento = dados.statusPagamento || 'Pendente';
@@ -366,7 +328,6 @@
                         else if (proximo) classeData = 'data-proxima';
                     }
 
-                    // Define cor e texto do status
                     let classeStatus, textoStatus, classeBotao, textoBotao;
                     if (statusPagamento === 'Pago') {
                         classeStatus = 'status-pago';
@@ -390,7 +351,6 @@
                         textoBotao = 'Marcar Pago';
                     }
 
-                    // ✅ MOSTRA TUDO — só ignora valores zero pagos
                     if (valor <= 0 && statusPagamento === 'Pago') continue;
 
                     const linha = `
@@ -408,7 +368,6 @@
                             </button>
                         </td>
                     </tr>`;
-
                     lista.innerHTML += linha;
                 }
 
@@ -418,20 +377,16 @@
             }
         }
 
-        // Apenas altera o status no próprio cadastro do aluno
         async function alterarStatus(alunoId, statusAtual) {
             const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
             try {
-                await db.collection('alunos').doc(alunoId).update({
-                    statusPagamento: novoStatus
-                });
-                carregarLista(); // Atualiza a tela
+                await db.collection('alunos').doc(alunoId).update({ statusPagamento: novoStatus });
+                carregarLista();
             } catch (erro) {
                 alert('Erro ao alterar status: ' + erro.message);
             }
         }
 
-        // Filtro de busca
         document.getElementById('busca').addEventListener('input', () => {
             const termo = document.getElementById('busca').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -440,34 +395,17 @@
             });
         });
 
-        // Filtro por status atualizado
         document.getElementById('filtroStatus').addEventListener('change', () => {
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
-                if (!filtro) {
-                    linha.style.display = '';
-                    return;
-                }
-                const statusTexto = linha.querySelector('span').textContent;
-                if (filtro === 'Aviso') {
-                    linha.style.display = statusTexto.includes('Próximo') ? '' : 'none';
-                } else if (filtro === 'Atrasado') {
-                    linha.style.display = statusTexto.includes('Atrasado') ? '' : 'none';
-                } else {
-                    linha.style.display = statusTexto === filtro ? '' : 'none';
-                }
+                linha.style.display = !filtro ? '' : (linha.textContent.includes(filtro) ? '' : 'none');
             });
         });
 
-        // Inicializa
         auth.onAuthStateChanged(usuario => {
-            if (!usuario) {
-                window.location.href = 'login.html';
-            } else {
-                carregarTema();
-                carregarLista();
-            }
+            if (!usuario) window.location.href = 'login.html';
+            else { carregarTema(); carregarLista(); }
         });
 
         function sair() {
@@ -476,6 +414,5 @@
             }
         }
     </script>
-
 </body>
 </html>
