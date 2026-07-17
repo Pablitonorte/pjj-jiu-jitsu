@@ -218,26 +218,39 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ Calcula a data de vencimento com base no período do plano
+        // ✅ Calcula vencimento com fallback e tratamento de erros
         function calcularVencimento(dataInicio, periodo) {
-            if (!dataInicio || !periodo) return null;
+            if (!dataInicio) {
+                console.warn("Data de início não encontrada");
+                return null;
+            }
+            if (!periodo) {
+                console.warn("Período não informado, usando Mensal");
+                periodo = 'Mensal';
+            }
+
             const data = new Date(dataInicio);
+            if (isNaN(data.getTime())) {
+                console.error("Data inválida:", dataInicio);
+                return null;
+            }
             
-            switch(periodo) {
-                case 'Mensal':
+            switch(periodo.trim().toLowerCase()) {
+                case 'mensal':
                     data.setMonth(data.getMonth() + 1);
                     break;
-                case 'Trimestral':
+                case 'trimestral':
                     data.setMonth(data.getMonth() + 3);
                     break;
-                case 'Semestral':
+                case 'semestral':
                     data.setMonth(data.getMonth() + 6);
                     break;
-                case 'Anual':
+                case 'anual':
                     data.setFullYear(data.getFullYear() + 1);
                     break;
                 default:
-                    return null;
+                    console.warn("Período desconhecido:", periodo);
+                    data.setMonth(data.getMonth() + 1);
             }
             return data;
         }
@@ -273,13 +286,12 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // ✅ CARREGA TODOS OS DADOS (não esconde mais próximos ou vencidos)
+        // ✅ CARREGA TODOS OS DADOS, INCLUSIVE VENCIMENTOS ANTIGOS
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
 
             try {
-                // Busca todos os alunos SEM ordenação do Firebase
                 const snapshot = await db.collection('alunos').get();
 
                 if (snapshot.empty) {
@@ -287,25 +299,25 @@
                     return;
                 }
 
-                // Converte para array e ordena por data de vencimento (mais próximo primeiro)
                 const alunos = [];
-                snapshot.forEach(doc => {
-                    alunos.push({ id: doc.id, dados: doc.data() });
-                });
+                snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
+
+                // ✅ Ordena por VENCIMENTO: os mais antigos/vencidos aparecem primeiro
                 alunos.sort((a, b) => {
-                    const dataA = calcularVencimento(
-                        a.dados.dataPrimeiraAula ? 
-                            (a.dados.dataPrimeiraAula.toDate ? a.dados.dataPrimeiraAula.toDate() : new Date(a.dados.dataPrimeiraAula)) 
-                            : null,
-                        a.dados.periodoPlano || a.dados.periodo || 'Mensal'
-                    ) || new Date(0);
-                    const dataB = calcularVencimento(
-                        b.dados.dataPrimeiraAula ? 
-                            (b.dados.dataPrimeiraAula.toDate ? b.dados.dataPrimeiraAula.toDate() : new Date(b.dados.dataPrimeiraAula)) 
-                            : null,
-                        b.dados.periodoPlano || b.dados.periodo || 'Mensal'
-                    ) || new Date(0);
-                    return dataA - dataB;
+                    // Tenta TODOS os nomes possíveis de campo de data
+                    const dataA = 
+                        a.dados.dataPrimeiraAula?.toDate?.() || 
+                        new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || a.dados.dataCadastro || null);
+                    const periodoA = a.dados.periodoPlano || a.dados.periodo || 'Mensal';
+                    const vencA = calcularVencimento(dataA, periodoA) || new Date(0);
+
+                    const dataB = 
+                        b.dados.dataPrimeiraAula?.toDate?.() || 
+                        new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || b.dados.dataCadastro || null);
+                    const periodoB = b.dados.periodoPlano || b.dados.periodo || 'Mensal';
+                    const vencB = calcularVencimento(dataB, periodoB) || new Date(0);
+
+                    return vencA - vencB;
                 });
 
                 lista.innerHTML = '';
@@ -314,18 +326,19 @@
                     const dados = aluno.dados;
                     const alunoId = aluno.id;
 
-                    // Pega os dados exatos do cadastro
                     const nome = dados.nome || '-';
                     const tipoAluno = dados.tipoAluno || dados.tipo || '-';
                     const periodoPlano = dados.periodoPlano || dados.periodo || '-';
                     const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-                    const dataInicio = dados.dataPrimeiraAula ? 
-                        (dados.dataPrimeiraAula.toDate ? dados.dataPrimeiraAula.toDate() : new Date(dados.dataPrimeiraAula)) 
-                        : null;
 
-                    // Calcula vencimento e status
+                    // ✅ Busca data em todos os campos possíveis
+                    const dataInicio = 
+                        dados.dataPrimeiraAula?.toDate?.() || 
+                        new Date(dados.dataPrimeiraAula || dados.dataInicio || dados.dataCadastro || null);
+
+                    // ✅ Mostra vencimento mesmo que seja antigo
                     const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
-                    const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : '-';
+                    const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : 'Sem data';
                     const statusPagamento = dados.statusPagamento || 'Pendente';
                     const atrasado = estaAtrasado(dataVencimento, statusPagamento);
                     const proximo = estaProximoVencimento(dataVencimento, statusPagamento);
@@ -355,7 +368,7 @@
                         textoBotao = 'Marcar Pago';
                     }
 
-                    // Ignora só registros zerados e pagos (mantém os outros mesmo com valor baixo)
+                    // ✅ MOSTRA TUDO — só ignora valores zero pagos
                     if (valor <= 0 && statusPagamento === 'Pago') continue;
 
                     const linha = `
