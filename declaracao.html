@@ -188,18 +188,19 @@
             left: 50%;
             transform: translateX(-50%);
             background: white;
-            z-index: 2;
+            z-index: 1;
         }
         .img-assinatura {
-            height: 35px;
-            width: 60mm;
+            height: 45px;
+            width: auto;
+            max-width: 70mm;
             display: block;
-            margin: 0 auto 5px auto;
-            background: white;
+            margin: 0 auto 8px auto;
+            background: transparent;
             padding: 0;
             object-fit: contain;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
         .nome-assinatura { font-weight: bold; font-size: 12pt; margin: 0; position: relative; z-index: 3; }
         .cargo-assinatura { font-size: 11pt; margin: 0; position: relative; z-index: 3; }
@@ -264,6 +265,10 @@
                 box-shadow: none !important;
                 border: none !important;
                 page-break-after: avoid !important;
+            }
+            .img-assinatura {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
@@ -357,6 +362,7 @@
 
             <div class="assinatura-doc">
                 <div class="linha-assinatura"></div>
+                <!-- ✅ Assinatura adicionada corretamente -->
                 <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
                 <div class="nome-assinatura">Ricardo Candido Gomes</div>
                 <div class="cargo-assinatura">Presidente</div>
@@ -425,14 +431,19 @@
             select.innerHTML = '<option value="">Escolha um aluno...</option>';
 
             try {
-                const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
+                const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
                     select.innerHTML = '<option value="">Nenhum aluno cadastrado</option>';
                     return;
                 }
 
-                snapshot.docs.forEach(doc => {
-                    const dados = doc.data();
+                // Ordena manualmente por nome sem precisar de índice
+                const alunos = [];
+                snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
+                alunos.sort((a, b) => (a.dados.nome || '').localeCompare(b.dados.nome || ''));
+
+                alunos.forEach(aluno => {
+                    const dados = aluno.dados;
                     const opcao = document.createElement('option');
                     opcao.value = JSON.stringify({ nome: dados.nome, cpf: dados.cpf || '' });
                     opcao.textContent = dados.nome;
