@@ -133,6 +133,8 @@
         .info-vencimento { font-size: 13px; color: var(--texto-cinza); margin-top: 5px; }
         .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
         .btn-cancelar { background: var(--cinza); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-remover { background: var(--amarelo); color: #111; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-remover:hover { background: #FFD54F; }
         .btn-confirmar { background: var(--verde); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
         @media (max-width: 992px) {
@@ -232,6 +234,7 @@
             </div>
             <div class="modal-botoes">
                 <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-remover" onclick="removerPagamento()">Remover</button>
                 <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar</button>
             </div>
         </div>
@@ -270,7 +273,7 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ VERIFICA STATUS RESPEITANDO A DATA EXATA DO VENCIMENTO
+        // Verifica status respeitando a data exata do vencimento
         function verificarStatus(mesesPagos = [], dataVencimentoCadastrada = null) {
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
@@ -279,27 +282,22 @@
             const anoAtual = hoje.getFullYear();
             const mesAnoAtual = `${mesAtual}/${anoAtual}`;
 
-            // Se não tem data de vencimento, usa dia 1 do mês atual
             let diaVencimento = 1;
             if (dataVencimentoCadastrada) {
                 diaVencimento = dataVencimentoCadastrada.getDate();
             }
 
-            // Data exata do vencimento do mês atual
             const dataVencimentoMesAtual = new Date(anoAtual, hoje.getMonth(), diaVencimento);
             dataVencimentoMesAtual.setHours(0, 0, 0, 0);
 
-            // Se não tem nenhum pagamento
             if (!mesesPagos || mesesPagos.length === 0) {
                 return { texto: 'Sem pagamentos', classe: 'status-sem-pagamento' };
             }
 
-            // Se o mês atual já está pago
             if (mesesPagos.includes(mesAnoAtual)) {
                 return { texto: 'Em dia', classe: 'status-pago' };
             }
 
-            // Se ainda não chegou o dia do vencimento
             if (hoje < dataVencimentoMesAtual) {
                 const diasRestantes = Math.ceil((dataVencimentoMesAtual - hoje) / (1000 * 60 * 60 * 24));
                 const textoDias = diasRestantes === 1 ? 'dia' : 'dias';
@@ -309,7 +307,6 @@
                 };
             }
 
-            // Se já passou do vencimento
             return { texto: 'Atrasado', classe: 'status-atrasado' };
         }
 
@@ -327,7 +324,6 @@
                 let alunos = [];
                 snapshot.forEach(doc => {
                     const dadosAluno = doc.data();
-                    // Ignora bolsistas
                     if ((dadosAluno.tipo || '').trim().toLowerCase() !== 'bolsista') {
                         alunos.push({ id: doc.id, dados: dadosAluno });
                     }
@@ -381,7 +377,6 @@
             }
         }
 
-        // Gera lista de meses a partir da data de vencimento do aluno
         function gerarListaMeses(dataInicio) {
             const select = document.getElementById('mesPagamento');
             select.innerHTML = '';
@@ -461,6 +456,35 @@
                 carregarLista();
             } catch (erro) {
                 alert('Erro ao salvar: ' + erro.message);
+            }
+        }
+
+        async function removerPagamento() {
+            if (!alunoSelecionado) return;
+
+            const mesEscolhido = document.getElementById('mesPagamento').value;
+
+            if (!confirm(`Tem certeza que deseja REMOVER o pagamento do mês ${mesEscolhido}? Essa ação não pode ser desfeita!`)) {
+                return;
+            }
+
+            try {
+                const ref = db.collection('alunos').doc(alunoSelecionado);
+                const doc = await ref.get();
+                const meses = doc.data().mesesPagos || [];
+
+                if (!meses.includes(mesEscolhido)) {
+                    alert(`Esse mês não está marcado como pago!`);
+                } else {
+                    const novaLista = meses.filter(mes => mes !== mesEscolhido);
+                    await ref.update({ mesesPagos: novaLista });
+                    alert(`Pagamento do mês ${mesEscolhido} removido com sucesso!`);
+                }
+
+                fecharModal();
+                carregarLista();
+            } catch (erro) {
+                alert('Erro ao remover: ' + erro.message);
             }
         }
 
