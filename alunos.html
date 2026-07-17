@@ -10,7 +10,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
-        /* 🎨 Variáveis dos temas */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -20,7 +19,6 @@
             --cinza: #6B7280;
         }
 
-        /* 🌙 Tema Escuro */
         .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
@@ -30,7 +28,6 @@
             --fundo-input: #0C0C0E;
         }
 
-        /* ☀️ Tema Claro */
         .tema-claro {
             --fundo-escuro: #F8F9FA;
             --fundo-card: #FFFFFF;
@@ -102,7 +99,7 @@
         }
         .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
 
-        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
+        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; min-width: 900px; }
         .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
         .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
@@ -187,12 +184,9 @@
         }
     </style>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
-    <!-- ✅ Configuração centralizada -->
     <script src="js/config-firebase.js"></script>
 </head>
 <body class="tema-escuro">
@@ -261,7 +255,7 @@
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="9" class="vazio">Carregando alunos...</td></tr>
+                <tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -371,7 +365,6 @@
     </div>
 
     <script>
-        // ✅ Usa a configuração centralizada
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -383,7 +376,6 @@
             'Anual': 820.00
         };
 
-        // ✅ Carrega tema salvo do sistema
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -396,7 +388,6 @@
             }
         }
 
-        // ✅ Função para formatar CPF
         function formatarCPF(cpf) {
             cpf = cpf.replace(/\D/g, '');
             if (cpf.length <= 11) {
@@ -405,7 +396,6 @@
             return cpf;
         }
 
-        // ✅ Aplica máscara no campo de CPF
         document.getElementById('cpfAluno').addEventListener('input', function() {
             this.value = formatarCPF(this.value);
         });
@@ -421,7 +411,6 @@
             const campoValor = document.getElementById('valorFinalAluno');
             let valorBase = 0;
 
-            // ✅ Só calcula se os dois campos forem preenchidos
             if (!tipo || !periodo) {
                 campoValor.value = 'Selecione o tipo e o plano';
                 campoValor.classList.add('valor-vazio');
@@ -446,9 +435,10 @@
 
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="9" class="vazio">Carregando alunos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
+                await db.enablePersistence().catch(() => {});
                 const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
 
                 if (snapshot.empty) {
@@ -487,7 +477,7 @@
 
             } catch (erro) {
                 console.error('Erro ao carregar alunos:', erro);
-                lista.innerHTML = `<tr><td colspan="9" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="9" class="vazio">❌ Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -500,7 +490,6 @@
             document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
             document.getElementById('formAluno').reset();
             document.getElementById('vencimentoAluno').valueAsDate = new Date();
-            // ✅ Reseta o valor para a mensagem inicial
             document.getElementById('valorFinalAluno').value = 'Selecione o tipo e o plano';
             document.getElementById('valorFinalAluno').classList.add('valor-vazio');
             document.getElementById('valorFinalAluno').classList.remove('valor-gratis');
