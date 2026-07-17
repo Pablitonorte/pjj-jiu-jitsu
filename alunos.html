@@ -196,7 +196,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="js/config-firebase.js"></script>
 </head>
 <body class="tema-escuro">
 
@@ -373,8 +372,12 @@
         </div>
     </div>
 
+    <script src="js/config-firebase.js"></script>
     <script>
-        firebase.initializeApp(firebaseConfig);
+        // ✅ Inicialização garantida
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -429,12 +432,24 @@
             }
         }
 
+        // ✅ Carregamento com logs e tratamento total
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
+                console.log("🔍 Verificando usuário logado...");
+                const usuario = auth.currentUser;
+                if (!usuario) {
+                    lista.innerHTML = '<tr><td colspan="9" class="vazio">⚠️ Faça login novamente</td></tr>';
+                    window.location.href = 'login.html';
+                    return;
+                }
+                console.log("✅ Usuário confirmado:", usuario.email);
+
+                console.log("📡 Buscando dados no Firestore...");
                 const snapshot = await db.collection('alunos').get();
+                console.log(`✅ ${snapshot.size} registros encontrados`);
 
                 if (snapshot.empty) {
                     lista.innerHTML = '<tr><td colspan="9" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
@@ -470,9 +485,9 @@
                 });
 
             } catch (erro) {
-                console.error('ERRO NO CARREGAMENTO:', erro);
+                console.error('❌ ERRO NO SISTEMA:', erro);
                 let msg = erro.message;
-                if (erro.code === 'permission-denied') msg = '❌ Sem permissão: verifique as regras do Firebase';
+                if (erro.code === 'permission-denied') msg = '❌ Sem permissão: atualize as regras do Firestore';
                 if (erro.code === 'unavailable') msg = '❌ Sem conexão com a internet';
                 lista.innerHTML = `<tr><td colspan="9" class="vazio">${msg}</td></tr>`;
             }
@@ -514,7 +529,7 @@
                 document.getElementById('telefoneAluno').value = dados.telefone || '';
                 document.getElementById('emailAluno').value = dados.email || '';
 
-                // ✅ Compatibilidade total: pega o novo ou o antigo campo
+                // ✅ Compatibilidade total com campos antigos
                 const dataVenc = dados.dataVencimento || dados.dataInicioAula;
                 document.getElementById('vencimentoAluno').value = dataVenc ? dataVenc.toDate().toISOString().split('T')[0] : '';
 
@@ -566,7 +581,6 @@
 
             try {
                 if (id) {
-                    // ✅ Remove o campo antigo para não duplicar
                     dados.dataInicioAula = firebase.firestore.FieldValue.delete();
                     await db.collection('alunos').doc(id).update(dados);
                     alert('Aluno atualizado!');
@@ -608,6 +622,7 @@
             }
         }
 
+        // ✅ Execução garantida após confirmação do login
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
