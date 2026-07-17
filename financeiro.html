@@ -216,6 +216,34 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
+        // ✅ CONVERTE CORRETAMENTE DATA NO FORMATO dd/mm/aaaa
+        function converterDataBrasil(valor) {
+            if (!valor) return null;
+            
+            // Se já for objeto Date válido
+            if (valor instanceof Date && !isNaN(valor.getTime())) return valor;
+            
+            // Se for Timestamp do Firestore
+            if (typeof valor?.toDate === 'function') return valor.toDate();
+            
+            // Se for texto no formato dd/mm/aaaa
+            if (typeof valor === 'string') {
+                const partes = valor.trim().split('/');
+                if (partes.length === 3) {
+                    const dia = parseInt(partes[0], 10);
+                    const mes = parseInt(partes[1], 10) - 1; // mês começa em 0 no JS
+                    const ano = parseInt(partes[2], 10);
+                    
+                    const data = new Date(ano, mes, dia);
+                    // Verifica se é data válida e não é a data de erro 1970
+                    if (!isNaN(data.getTime()) && ano >= 2020) {
+                        return data;
+                    }
+                }
+            }
+            return null;
+        }
+
         // Apenas calcula se NÃO tiver data manual cadastrada
         function calcularVencimento(dataInicio, periodo) {
             if (!dataInicio || isNaN(new Date(dataInicio).getTime())) {
@@ -264,7 +292,7 @@
 
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando dados...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
@@ -276,22 +304,26 @@
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
 
-                // ORDENAÇÃO: SEMPRE USA A DATA MANUAL SE EXISTIR
+                // ORDENAÇÃO: SEMPRE USA A DATA MANUAL SE EXISTIR E FOR VÁLIDA
                 alunos.sort((a, b) => {
                     let vencA, vencB;
-                    // ✅ PRIORIDADE 1: DATA QUE VOCÊ CADASTROU NO FORMULÁRIO
-                    if (a.dados.vencimento) {
-                        vencA = a.dados.vencimento.toDate ? a.dados.vencimento.toDate() : new Date(a.dados.vencimento);
+                    
+                    // Converte e valida data do aluno A
+                    const dataAValidada = converterDataBrasil(a.dados.vencimento);
+                    if (dataAValidada) {
+                        vencA = dataAValidada;
                     } else {
-                        const dataA = a.dados.dataPrimeiraAula?.toDate?.() || new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || null);
-                        vencA = calcularVencimento(dataA, a.dados.periodoPlano || 'Mensal');
+                        const dataInicioA = a.dados.dataPrimeiraAula?.toDate?.() || new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || null);
+                        vencA = calcularVencimento(dataInicioA, a.dados.periodoPlano || 'Mensal');
                     }
 
-                    if (b.dados.vencimento) {
-                        vencB = b.dados.vencimento.toDate ? b.dados.vencimento.toDate() : new Date(b.dados.vencimento);
+                    // Converte e valida data do aluno B
+                    const dataBValidada = converterDataBrasil(b.dados.vencimento);
+                    if (dataBValidada) {
+                        vencB = dataBValidada;
                     } else {
-                        const dataB = b.dados.dataPrimeiraAula?.toDate?.() || new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || null);
-                        vencB = calcularVencimento(dataB, b.dados.periodoPlano || 'Mensal');
+                        const dataInicioB = b.dados.dataPrimeiraAula?.toDate?.() || new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || null);
+                        vencB = calcularVencimento(dataInicioB, b.dados.periodoPlano || 'Mensal');
                     }
                     return vencA - vencB;
                 });
@@ -307,11 +339,9 @@
                     const periodoPlano = dados.periodoPlano || dados.periodo || '-';
                     const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
 
-                    // ✅ USA EXATAMENTE A DATA QUE VOCÊ COLOCOU NO FORMULÁRIO
-                    let dataVencimento;
-                    if (dados.vencimento) {
-                        dataVencimento = dados.vencimento.toDate ? dados.vencimento.toDate() : new Date(dados.vencimento);
-                    } else {
+                    // ✅ USA EXATAMENTE A DATA QUE VOCÊ COLOCOU, COM CONVERSÃO CORRETA
+                    let dataVencimento = converterDataBrasil(dados.vencimento);
+                    if (!dataVencimento) {
                         const dataInicio = dados.dataPrimeiraAula?.toDate?.() || new Date(dados.dataPrimeiraAula || dados.dataInicio || null);
                         dataVencimento = calcularVencimento(dataInicio, periodoPlano);
                     }
