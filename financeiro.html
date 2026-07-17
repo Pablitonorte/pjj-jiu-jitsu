@@ -101,7 +101,7 @@
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
         .status-pago { color: var(--verde); font-weight: 600; }
-        .status-pendente { color: var(--amarelo); font-weight: 600; }
+        .status-aviso { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
         .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
         .btn-pago { background: var(--verde); color: white; }
@@ -163,6 +163,7 @@
                 <option value="">Todos os status</option>
                 <option value="Pago">Pago</option>
                 <option value="Pendente">Pendente</option>
+                <option value="Aviso">Próximo do vencimento</option>
                 <option value="Atrasado">Atrasado</option>
             </select>
         </div>
@@ -251,6 +252,17 @@
             return hoje > venc;
         }
 
+        // ✅ Verifica se faltam até 3 dias para vencer
+        function estaProximoVencimento(dataVencimento, statusPagamento) {
+            if (!dataVencimento || statusPagamento === 'Pago') return false;
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+            const venc = new Date(dataVencimento);
+            venc.setHours(0, 0, 0, 0);
+            const diffDias = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
+            return diffDias >= 0 && diffDias <= 3;
+        }
+
         // ✅ Calcula quantos dias está atrasado
         function diasAtrasado(dataVencimento) {
             const hoje = new Date();
@@ -261,7 +273,7 @@
             return Math.floor(diff / (1000 * 60 * 60 * 24));
         }
 
-        // ✅ CARREGA DADOS SEM ORDERBY (não precisa de índice, resolve o carregamento infinito)
+        // ✅ CARREGA TODOS OS DADOS (não esconde mais próximos ou vencidos)
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando...</td></tr>';
@@ -275,12 +287,26 @@
                     return;
                 }
 
-                // Converte para array e ordena por nome MANUALMENTE
+                // Converte para array e ordena por data de vencimento (mais próximo primeiro)
                 const alunos = [];
                 snapshot.forEach(doc => {
                     alunos.push({ id: doc.id, dados: doc.data() });
                 });
-                alunos.sort((a, b) => (a.dados.nome || '').localeCompare(b.dados.nome || ''));
+                alunos.sort((a, b) => {
+                    const dataA = calcularVencimento(
+                        a.dados.dataPrimeiraAula ? 
+                            (a.dados.dataPrimeiraAula.toDate ? a.dados.dataPrimeiraAula.toDate() : new Date(a.dados.dataPrimeiraAula)) 
+                            : null,
+                        a.dados.periodoPlano || a.dados.periodo || 'Mensal'
+                    ) || new Date(0);
+                    const dataB = calcularVencimento(
+                        b.dados.dataPrimeiraAula ? 
+                            (b.dados.dataPrimeiraAula.toDate ? b.dados.dataPrimeiraAula.toDate() : new Date(b.dados.dataPrimeiraAula)) 
+                            : null,
+                        b.dados.periodoPlano || b.dados.periodo || 'Mensal'
+                    ) || new Date(0);
+                    return dataA - dataB;
+                });
 
                 lista.innerHTML = '';
 
@@ -297,14 +323,15 @@
                         (dados.dataPrimeiraAula.toDate ? dados.dataPrimeiraAula.toDate() : new Date(dados.dataPrimeiraAula)) 
                         : null;
 
-                    // Calcula vencimento e atraso
+                    // Calcula vencimento e status
                     const dataVencimento = calcularVencimento(dataInicio, periodoPlano);
                     const vencFormatado = dataVencimento ? dataVencimento.toLocaleDateString('pt-BR') : '-';
                     const statusPagamento = dados.statusPagamento || 'Pendente';
                     const atrasado = estaAtrasado(dataVencimento, statusPagamento);
+                    const proximo = estaProximoVencimento(dataVencimento, statusPagamento);
                     const dias = atrasado ? diasAtrasado(dataVencimento) : 0;
 
-                    // Define aparência do status
+                    // Define cor e texto do status
                     let classeStatus, textoStatus, classeBotao, textoBotao;
                     if (statusPagamento === 'Pago') {
                         classeStatus = 'status-pago';
@@ -316,12 +343,20 @@
                         textoStatus = `Atrasado (${dias} dia${dias !== 1 ? 's' : ''})`;
                         classeBotao = 'btn-atrasado';
                         textoBotao = 'Marcar Pago';
+                    } else if (proximo) {
+                        classeStatus = 'status-aviso';
+                        textoStatus = 'Próximo do vencimento';
+                        classeBotao = 'btn-pago';
+                        textoBotao = 'Marcar Pago';
                     } else {
                         classeStatus = 'status-pendente';
                         textoStatus = 'Pendente';
                         classeBotao = 'btn-pago';
                         textoBotao = 'Marcar Pago';
                     }
+
+                    // Ignora só registros zerados e pagos (mantém os outros mesmo com valor baixo)
+                    if (valor <= 0 && statusPagamento === 'Pago') continue;
 
                     const linha = `
                     <tr>
@@ -370,7 +405,7 @@
             });
         });
 
-        // Filtro por status
+        // Filtro por status atualizado
         document.getElementById('filtroStatus').addEventListener('change', () => {
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -380,7 +415,9 @@
                     return;
                 }
                 const statusTexto = linha.querySelector('span').textContent;
-                if (filtro === 'Atrasado') {
+                if (filtro === 'Aviso') {
+                    linha.style.display = statusTexto.includes('Próximo') ? '' : 'none';
+                } else if (filtro === 'Atrasado') {
                     linha.style.display = statusTexto.includes('Atrasado') ? '' : 'none';
                 } else {
                     linha.style.display = statusTexto === filtro ? '' : 'none';
