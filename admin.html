@@ -329,6 +329,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="js/config-firebase.js"></script>
 </head>
 <body>
 
@@ -444,16 +445,6 @@
     </main>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
-            authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
-            projectId: "pjj-para-jiu-jitsu",
-            storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
-            messagingSenderId: "72563195814",
-            appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
-        };
-
-        firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -465,7 +456,6 @@
             return `R$ ${Number(valor).toFixed(2).replace('.', ',')}`;
         }
 
-        // Funções iguais à página Financeiro
         function calcularVencimento(dataInicio, periodo) {
             if (!dataInicio || !periodo) return null;
             const data = new Date(dataInicio);
@@ -492,7 +482,6 @@
                 const totalAlunos = alunosSnapshot.size;
                 document.getElementById('totalAlunos').textContent = totalAlunos;
 
-                // Contagem por tipo
                 let contagemTipos = { Kids: 0, "Baby Class": 0, Comercial: 0, Competidor: 0, Bolsista: 0 };
                 alunosSnapshot.forEach(doc => {
                     const tipo = doc.data().tipo || doc.data().tipoAluno;
@@ -505,7 +494,6 @@
                 document.querySelector('.badge-competidor').textContent = contagemTipos.Competidor;
                 document.querySelector('.badge-bolsista').textContent = contagemTipos.Bolsista;
 
-                // Últimos cadastros
                 const listaUltimos = document.getElementById('ultimosCadastros');
                 listaUltimos.innerHTML = '';
                 const alunosOrdenados = [];
@@ -529,53 +517,26 @@
                     });
                 }
 
-                // 🚀 Cálculo financeiro CORRIGIDO e mais robusto
                 let recebido = 0, pendente = 0, atrasado = 0;
-
                 alunosSnapshot.forEach(doc => {
                     const d = doc.data();
-                    
-                    // Busca valor em TODOS os campos possíveis e garante que é número
                     const valor = Number(d.valor || d.valorPlano || d.mensalidade || d.valorMensal || 0);
                     const tipo = (d.tipo || d.tipoAluno || '').trim();
                     const status = (d.statusPagamento || 'Pendente').trim();
 
-                    // Mostra no console para conferir o que está lendo
-                    console.log(`Aluno: ${d.nome} | Tipo: ${tipo} | Valor lido: ${valor} | Status: ${status}`);
+                    if (tipo === 'Bolsista' || valor <= 0) return;
 
-                    // Ignora apenas bolsistas confirmados e valores realmente zerados
-                    if (tipo === 'Bolsista' || valor <= 0) {
-                        console.log(`-> Ignorado: ${tipo === 'Bolsista' ? 'Bolsista' : 'Valor zero'}`);
-                        return;
-                    }
-
-                    // Busca data de início e período
                     const dataInicio = d.dataPrimeiraAula ? 
                         (d.dataPrimeiraAula.toDate ? d.dataPrimeiraAula.toDate() : new Date(d.dataPrimeiraAula)) 
                         : (d.dataCadastro ? (d.dataCadastro.toDate ? d.dataCadastro.toDate() : new Date(d.dataCadastro)) : new Date());
                     const periodo = d.periodoPlano || d.periodo || d.plano || 'Mensal';
                     const vencimento = calcularVencimento(dataInicio, periodo);
 
-                    // Soma os valores corretamente
-                    if (status === 'Pago') {
-                        recebido += valor;
-                        console.log(`-> Adicionado ao RECEBIDO: R$ ${valor.toFixed(2)}`);
-                    } else if (vencimento && estaAtrasado(vencimento, status)) {
-                        atrasado += valor;
-                        console.log(`-> Adicionado ao ATRASADO: R$ ${valor.toFixed(2)}`);
-                    } else {
-                        pendente += valor;
-                        console.log(`-> Adicionado ao PENDENTE: R$ ${valor.toFixed(2)}`);
-                    }
+                    if (status === 'Pago') recebido += valor;
+                    else if (vencimento && estaAtrasado(vencimento, status)) atrasado += valor;
+                    else pendente += valor;
                 });
 
-                // Mostra total no console
-                console.log(`\nTOTAIS FINAIS:`);
-                console.log(`Recebido: R$ ${recebido.toFixed(2)}`);
-                console.log(`Pendente: R$ ${pendente.toFixed(2)}`);
-                console.log(`Atrasado: R$ ${atrasado.toFixed(2)}`);
-
-                // Atualiza na tela
                 document.getElementById('valorRecebido').textContent = formatarValor(recebido);
                 document.getElementById('valorPendente').textContent = formatarValor(pendente);
                 document.getElementById('valorAtrasado').textContent = formatarValor(atrasado);
