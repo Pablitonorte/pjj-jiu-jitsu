@@ -27,6 +27,7 @@
             --texto-cinza: #B0B0B8;
             --borda: #29292E;
             --fundo-input: #0C0C0E;
+            --fundo-modal: rgba(0,0,0,0.8);
         }
 
         .tema-claro {
@@ -36,6 +37,7 @@
             --texto-cinza: #6B7280;
             --borda: #DEE2E6;
             --fundo-input: #FFFFFF;
+            --fundo-modal: rgba(0,0,0,0.5);
         }
 
         html, body { 
@@ -98,19 +100,37 @@
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
         .status-pago { color: var(--verde); font-weight: 600; }
-        .status-aviso { color: var(--amarelo); font-weight: 600; }
+        .status-pendente { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
-        .data-atrasada { color: var(--vermelho-atraso); font-weight: 500; }
-        .data-proxima { color: var(--amarelo); font-weight: 500; }
-        .data-normal { color: var(--texto-branco); }
 
-        .btn-acao { padding: 6px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
+        .btn-acao { padding: 8px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .btn-pago { background: var(--verde); color: white; }
         .btn-pago:hover { background: #00E05C; }
         .btn-pendente { background: var(--amarelo); color: #111; }
         .btn-pendente:hover { background: #FFD54F; }
         .btn-atrasado { background: var(--vermelho-atraso); color: white; }
         .btn-atrasado:hover { background: #FF6666; }
+
+        /* 📅 MODAL PARA ESCOLHER O MÊS */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--fundo-modal); z-index: 10000; align-items: center; justify-content: center;
+        }
+        .modal.aberto { display: flex; }
+        .modal-conteudo {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 12px;
+            padding: 30px; width: 90%; max-width: 450px;
+        }
+        .modal-titulo { font-size: 20px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+        .modal-grupo { margin-bottom: 15px; }
+        .modal-grupo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+        .modal-grupo select {
+            width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
+            border-radius: 6px; color: var(--texto-branco); font-size: 15px;
+        }
+        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
+        .btn-cancelar { background: var(--cinza); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .btn-confirmar { background: var(--verde); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
@@ -163,7 +183,6 @@
                 <option value="">Todos os status</option>
                 <option value="Pago">Pago</option>
                 <option value="Pendente">Pendente</option>
-                <option value="Aviso">Próximo do vencimento</option>
                 <option value="Atrasado">Atrasado</option>
             </select>
         </div>
@@ -173,18 +192,64 @@
                 <tr>
                     <th>Nome do Aluno</th>
                     <th>Tipo de Aluno</th>
-                    <th>Período do Plano</th>
-                    <th>Valor</th>
-                    <th>Vencimento</th>
-                    <th>Status do Pagamento</th>
+                    <th>Valor Mensal</th>
+                    <th>Último Pagamento</th>
+                    <th>Status Atual</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="6" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
+
+    <!-- 📅 MODAL PARA ESCOLHER O MÊS DO PAGAMENTO -->
+    <div class="modal" id="modalMes">
+        <div class="modal-conteudo">
+            <h3 class="modal-titulo">Marcar Pagamento do Mês</h3>
+            <div class="modal-grupo">
+                <label>Aluno:</label>
+                <span id="nomeAlunoModal" style="font-weight:600; font-size:15px;"></span>
+            </div>
+            <div class="modal-grupo">
+                <label>Selecione o Mês e Ano:</label>
+                <select id="mesPagamento">
+                    <option value="01/2025">Janeiro/2025</option>
+                    <option value="02/2025">Fevereiro/2025</option>
+                    <option value="03/2025">Março/2025</option>
+                    <option value="04/2025">Abril/2025</option>
+                    <option value="05/2025">Maio/2025</option>
+                    <option value="06/2025">Junho/2025</option>
+                    <option value="07/2025">Julho/2025</option>
+                    <option value="08/2025">Agosto/2025</option>
+                    <option value="09/2025">Setembro/2025</option>
+                    <option value="10/2025">Outubro/2025</option>
+                    <option value="11/2025">Novembro/2025</option>
+                    <option value="12/2025">Dezembro/2025</option>
+                    <option value="01/2026">Janeiro/2026</option>
+                    <option value="02/2026">Fevereiro/2026</option>
+                    <option value="03/2026">Março/2026</option>
+                    <option value="04/2026">Abril/2026</option>
+                    <option value="05/2026">Maio/2026</option>
+                    <option value="06/2026">Junho/2026</option>
+                    <option value="07/2026">Julho/2026</option>
+                    <option value="08/2026">Agosto/2026</option>
+                    <option value="09/2026">Setembro/2026</option>
+                    <option value="10/2026">Outubro/2026</option>
+                    <option value="11/2026">Novembro/2026</option>
+                    <option value="12/2026">Dezembro/2026</option>
+                    <option value="01/2027">Janeiro/2027</option>
+                    <option value="02/2027">Fevereiro/2027</option>
+                    <option value="03/2027">Março/2027</option>
+                </select>
+            </div>
+            <div class="modal-botoes">
+                <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar Pagamento</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const firebaseConfig = {
@@ -199,6 +264,8 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        let alunoSelecionado = null;
 
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
@@ -216,116 +283,69 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // ✅ CONVERTE CORRETAMENTE DATA NO FORMATO dd/mm/aaaa
-        function converterDataBrasil(valor) {
-            if (!valor) return null;
-            
-            // Se já for objeto Date válido
-            if (valor instanceof Date && !isNaN(valor.getTime())) return valor;
-            
-            // Se for Timestamp do Firestore
-            if (typeof valor?.toDate === 'function') return valor.toDate();
-            
-            // Se for texto no formato dd/mm/aaaa
-            if (typeof valor === 'string') {
-                const partes = valor.trim().split('/');
-                if (partes.length === 3) {
-                    const dia = parseInt(partes[0], 10);
-                    const mes = parseInt(partes[1], 10) - 1; // mês começa em 0 no JS
-                    const ano = parseInt(partes[2], 10);
-                    
-                    const data = new Date(ano, mes, dia);
-                    // Verifica se é data válida e não é a data de erro 1970
-                    if (!isNaN(data.getTime()) && ano >= 2020) {
-                        return data;
-                    }
+        // 📌 Verifica o status do aluno com base nos meses pagos
+        function verificarStatusAluno(mesesPagos) {
+            if (!mesesPagos || mesesPagos.length === 0) return { texto: 'Sem pagamentos', classe: 'status-atrasado' };
+
+            const hoje = new Date();
+            const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
+            const anoAtual = hoje.getFullYear();
+            const dataAtual = `${mesAtual}/${anoAtual}`;
+
+            // Converte os meses pagos para datas e ordena
+            const datasPagas = mesesPagos.map(mes => {
+                const [m, a] = mes.split('/');
+                return new Date(a, m - 1, 1);
+            }).sort((a, b) => b - a);
+
+            const ultimoPagamento = datasPagas[0];
+            const ultimoMesAno = `${String(ultimoPagamento.getMonth() + 1).padStart(2, '0')}/${ultimoPagamento.getFullYear()}`;
+
+            // Verifica se tem meses atrasados
+            let temAtrasado = false;
+            for (let i = 0; i < mesesPagos.length; i++) {
+                const [m, a] = mesesPagos[i].split('/');
+                const dataMes = new Date(a, m - 1, 1);
+                if (dataMes < new Date(anoAtual, mesAtual - 1, 1) && !mesesPagos.includes(`${String(dataMes.getMonth() + 1).padStart(2, '0')}/${dataMes.getFullYear()}`)) {
+                    temAtrasado = true;
+                    break;
                 }
             }
-            return null;
-        }
 
-        // Apenas calcula se NÃO tiver data manual cadastrada
-        function calcularVencimento(dataInicio, periodo) {
-            if (!dataInicio || isNaN(new Date(dataInicio).getTime())) {
-                dataInicio = new Date();
+            // Se o mês atual não foi pago e tem meses anteriores não pagos = Atrasado
+            if (!mesesPagos.includes(dataAtual) && temAtrasado) {
+                return { texto: 'Atrasado', classe: 'status-atrasado', ultimo: ultimoMesAno };
             }
-            if (!periodo) periodo = 'Mensal';
-
-            const data = new Date(dataInicio);
-            switch(periodo.trim().toLowerCase()) {
-                case 'mensal': data.setMonth(data.getMonth() + 1); break;
-                case 'trimestral': data.setMonth(data.getMonth() + 3); break;
-                case 'semestral': data.setMonth(data.getMonth() + 6); break;
-                case 'anual': data.setFullYear(data.getFullYear() + 1); break;
-                default: data.setMonth(data.getMonth() + 1);
+            // Se o mês atual foi pago = Pago
+            else if (mesesPagos.includes(dataAtual)) {
+                return { texto: 'Em dia', classe: 'status-pago', ultimo: ultimoMesAno };
             }
-            return data;
-        }
-
-        function estaAtrasado(dataVencimento, statusPagamento) {
-            if (!dataVencimento || statusPagamento === 'Pago') return false;
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const venc = new Date(dataVencimento);
-            venc.setHours(0, 0, 0, 0);
-            return hoje > venc;
-        }
-
-        function estaProximoVencimento(dataVencimento, statusPagamento) {
-            if (!dataVencimento || statusPagamento === 'Pago') return false;
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const venc = new Date(dataVencimento);
-            venc.setHours(0, 0, 0, 0);
-            const diffDias = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
-            return diffDias >= 0 && diffDias <= 3;
-        }
-
-        function diasAtrasado(dataVencimento) {
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-            const venc = new Date(dataVencimento);
-            venc.setHours(0, 0, 0, 0);
-            const diff = hoje - venc;
-            return Math.floor(diff / (1000 * 60 * 60 * 24));
+            // Se só falta o mês atual = Pendente
+            else {
+                return { texto: 'Pendente', classe: 'status-pendente', ultimo: ultimoMesAno };
+            }
         }
 
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando dados...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="6" class="vazio">Carregando dados...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
                 }
 
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
 
-                // ORDENAÇÃO: SEMPRE USA A DATA MANUAL SE EXISTIR E FOR VÁLIDA
+                // Ordena por status: Atrasado primeiro, depois Pendente, depois Pago
                 alunos.sort((a, b) => {
-                    let vencA, vencB;
-                    
-                    // Converte e valida data do aluno A
-                    const dataAValidada = converterDataBrasil(a.dados.vencimento);
-                    if (dataAValidada) {
-                        vencA = dataAValidada;
-                    } else {
-                        const dataInicioA = a.dados.dataPrimeiraAula?.toDate?.() || new Date(a.dados.dataPrimeiraAula || a.dados.dataInicio || null);
-                        vencA = calcularVencimento(dataInicioA, a.dados.periodoPlano || 'Mensal');
-                    }
-
-                    // Converte e valida data do aluno B
-                    const dataBValidada = converterDataBrasil(b.dados.vencimento);
-                    if (dataBValidada) {
-                        vencB = dataBValidada;
-                    } else {
-                        const dataInicioB = b.dados.dataPrimeiraAula?.toDate?.() || new Date(b.dados.dataPrimeiraAula || b.dados.dataInicio || null);
-                        vencB = calcularVencimento(dataInicioB, b.dados.periodoPlano || 'Mensal');
-                    }
-                    return vencA - vencB;
+                    const statusA = verificarStatusAluno(a.dados.mesesPagos || []);
+                    const statusB = verificarStatusAluno(b.dados.mesesPagos || []);
+                    const ordem = { 'status-atrasado': 0, 'status-pendente': 1, 'status-pago': 2 };
+                    return ordem[statusA.classe] - ordem[statusB.classe];
                 });
 
                 lista.innerHTML = '';
@@ -335,66 +355,21 @@
                     const alunoId = aluno.id;
 
                     const nome = dados.nome || '-';
-                    const tipoAluno = dados.tipoAluno || dados.tipo || '-';
-                    const periodoPlano = dados.periodoPlano || dados.periodo || '-';
+                    const tipoAluno = dados.tipoAluno || '-';
                     const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-
-                    // ✅ USA EXATAMENTE A DATA QUE VOCÊ COLOCOU, COM CONVERSÃO CORRETA
-                    let dataVencimento = converterDataBrasil(dados.vencimento);
-                    if (!dataVencimento) {
-                        const dataInicio = dados.dataPrimeiraAula?.toDate?.() || new Date(dados.dataPrimeiraAula || dados.dataInicio || null);
-                        dataVencimento = calcularVencimento(dataInicio, periodoPlano);
-                    }
-
-                    const vencFormatado = dataVencimento.toLocaleDateString('pt-BR');
-                    let classeData = 'data-normal';
-                    const statusPagamento = dados.statusPagamento || 'Pendente';
-                    const atrasado = estaAtrasado(dataVencimento, statusPagamento);
-                    const proximo = estaProximoVencimento(dataVencimento, statusPagamento);
-                    const dias = atrasado ? diasAtrasado(dataVencimento) : 0;
-
-                    if (statusPagamento !== 'Pago') {
-                        if (atrasado) classeData = 'data-atrasada';
-                        else if (proximo) classeData = 'data-proxima';
-                    }
-
-                    let classeStatus, textoStatus, classeBotao, textoBotao;
-                    if (statusPagamento === 'Pago') {
-                        classeStatus = 'status-pago';
-                        textoStatus = 'Pago';
-                        classeBotao = 'btn-pendente';
-                        textoBotao = 'Marcar Pendente';
-                    } else if (atrasado) {
-                        classeStatus = 'status-atrasado';
-                        textoStatus = `Atrasado (${dias} dia${dias !== 1 ? 's' : ''})`;
-                        classeBotao = 'btn-atrasado';
-                        textoBotao = 'Marcar Pago';
-                    } else if (proximo) {
-                        classeStatus = 'status-aviso';
-                        textoStatus = 'Próximo do vencimento';
-                        classeBotao = 'btn-pago';
-                        textoBotao = 'Marcar Pago';
-                    } else {
-                        classeStatus = 'status-pendente';
-                        textoStatus = 'Pendente';
-                        classeBotao = 'btn-pago';
-                        textoBotao = 'Marcar Pago';
-                    }
-
-                    if (valor <= 0 && statusPagamento === 'Pago') continue;
+                    const mesesPagos = dados.mesesPagos || [];
+                    const status = verificarStatusAluno(mesesPagos);
 
                     const linha = `
                     <tr>
                         <td>${nome}</td>
                         <td>${tipoAluno}</td>
-                        <td>${periodoPlano}</td>
                         <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td class="${classeData}">${vencFormatado}</td>
-                        <td><span class="${classeStatus}">${textoStatus}</span></td>
+                        <td>${status.ultimo || 'Nenhum'}</td>
+                        <td><span class="${status.classe}">${status.texto}</span></td>
                         <td>
-                            <button class="btn-acao ${classeBotao}" 
-                                onclick="alterarStatus('${alunoId}', '${statusPagamento}')">
-                                ${textoBotao}
+                            <button class="btn-acao btn-pago" onclick="abrirModalPagamento('${alunoId}', '${nome}')">
+                                Marcar Mês Pago
                             </button>
                         </td>
                     </tr>`;
@@ -403,20 +378,50 @@
 
             } catch (erro) {
                 console.error('Erro ao carregar:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        async function alterarStatus(alunoId, statusAtual) {
-            const novoStatus = statusAtual === 'Pago' ? 'Pendente' : 'Pago';
+        // 📅 Abre o modal para escolher o mês
+        function abrirModalPagamento(id, nome) {
+            alunoSelecionado = id;
+            document.getElementById('nomeAlunoModal').textContent = nome;
+            document.getElementById('modalMes').classList.add('aberto');
+        }
+
+        function fecharModal() {
+            document.getElementById('modalMes').classList.remove('aberto');
+            alunoSelecionado = null;
+        }
+
+        // ✅ Confirma e salva o mês como pago
+        async function confirmarPagamento() {
+            if (!alunoSelecionado) return;
+
+            const mesEscolhido = document.getElementById('mesPagamento').value;
+
             try {
-                await db.collection('alunos').doc(alunoId).update({ statusPagamento: novoStatus });
+                const alunoRef = db.collection('alunos').doc(alunoSelecionado);
+                const alunoAtual = await alunoRef.get();
+                const mesesPagos = alunoAtual.data().mesesPagos || [];
+
+                // Adiciona só se ainda não estiver pago
+                if (!mesesPagos.includes(mesEscolhido)) {
+                    mesesPagos.push(mesEscolhido);
+                    await alunoRef.update({ mesesPagos: mesesPagos });
+                    alert(`Mês ${mesEscolhido} marcado como PAGO com sucesso!`);
+                } else {
+                    alert(`Esse mês já está marcado como pago para esse aluno!`);
+                }
+
+                fecharModal();
                 carregarLista();
             } catch (erro) {
-                alert('Erro ao alterar status: ' + erro.message);
+                alert('Erro ao marcar pagamento: ' + erro.message);
             }
         }
 
+        // Filtros
         document.getElementById('busca').addEventListener('input', () => {
             const termo = document.getElementById('busca').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -429,7 +434,8 @@
             const filtro = document.getElementById('filtroStatus').value;
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
-                linha.style.display = !filtro ? '' : (linha.textContent.includes(filtro) ? '' : 'none');
+                const statusTexto = linha.querySelector('span').textContent;
+                linha.style.display = !filtro ? '' : (statusTexto.includes(filtro) ? '' : 'none');
             });
         });
 
