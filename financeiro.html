@@ -93,7 +93,7 @@
             border-radius: 6px; color: var(--texto-branco); font-size: 14px;
         }
 
-        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; min-width: 800px; }
+        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; min-width: 700px; }
         .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
         .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
@@ -110,13 +110,8 @@
         .status-pendente { color: var(--amarelo); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
 
-        .btn-acao { padding: 8px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .btn-pago { background: var(--verde); color: white; }
-        .btn-pago:hover { background: #00E05C; }
-        .btn-pendente { background: var(--amarelo); color: #111; }
-        .btn-pendente:hover { background: #FFD54F; }
-        .btn-atrasado { background: var(--vermelho-atraso); color: white; }
-        .btn-atrasado:hover { background: #FF6666; }
+        .btn-acao { padding: 10px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; background: var(--verde); color: white; }
+        .btn-acao:hover { background: #00E05C; }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -192,7 +187,6 @@
                 <option value="Baby Class">Baby Class</option>
                 <option value="Comercial">Comercial</option>
                 <option value="Competidor">Competidor</option>
-                <option value="Bolsista">Bolsista</option>
             </select>
             <select id="filtroStatus">
                 <option value="">Todos os Status</option>
@@ -210,13 +204,12 @@
                     <th>Plano</th>
                     <th>Valor Mensal</th>
                     <th>Vencimento Cadastrado</th>
-                    <th>Último Pagamento</th>
                     <th>Status Atual</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="8" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
@@ -283,7 +276,7 @@
             const dataAtual = `${mesAtual}/${anoAtual}`;
 
             if (mesesPagos.length === 0) {
-                return { texto: 'Sem pagamentos', classe: 'status-atrasado', ultimo: 'Nenhum' };
+                return { texto: 'Sem pagamentos', classe: 'status-atrasado' };
             }
 
             const datasOrdenadas = mesesPagos
@@ -292,8 +285,6 @@
                     return { mes: m, ano: a, data: new Date(a, m - 1, 1) };
                 })
                 .sort((a, b) => b.data - a.data);
-
-            const ultimo = datasOrdenadas[0].mes + '/' + datasOrdenadas[0].ano;
 
             let temAtraso = false;
             for (let i = 1; i <= hoje.getMonth(); i++) {
@@ -305,27 +296,38 @@
             }
 
             if (mesesPagos.includes(dataAtual)) {
-                return { texto: 'Em dia', classe: 'status-pago', ultimo };
+                return { texto: 'Em dia', classe: 'status-pago' };
             } else if (temAtraso) {
-                return { texto: 'Atrasado', classe: 'status-atrasado', ultimo };
+                return { texto: 'Atrasado', classe: 'status-atrasado' };
             } else {
-                return { texto: 'Pendente', classe: 'status-pendente', ultimo };
+                return { texto: 'Pendente', classe: 'status-pendente' };
             }
         }
 
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando dados...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando dados...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
                 }
 
                 let alunos = [];
-                snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
+                snapshot.forEach(doc => {
+                    const dadosAluno = doc.data();
+                    // ✅ IGNORA COMPLETAMENTE ALUNOS BOLSISTAS
+                    if ((dadosAluno.tipo || '').trim().toLowerCase() !== 'bolsista') {
+                        alunos.push({ id: doc.id, dados: dadosAluno });
+                    }
+                });
+
+                if (alunos.length === 0) {
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno não bolsista encontrado</td></tr>';
+                    return;
+                }
 
                 alunos.sort((a, b) => {
                     const statusA = verificarStatus(a.dados.mesesPagos);
@@ -353,10 +355,9 @@
                         <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
                         <td>${dataVenc}</td>
-                        <td>${status.ultimo}</td>
                         <td><span class="${status.classe}">${status.texto}</span></td>
                         <td>
-                            <button class="btn-acao btn-pago" onclick="abrirModal('${aluno.id}', '${d.nome}', ${dataVencObj ? `new Date(${dataVencObj.getTime()})` : 'null'})">
+                            <button class="btn-acao" onclick="abrirModal('${aluno.id}', '${d.nome}', ${dataVencObj ? `new Date(${dataVencObj.getTime()})` : 'null'})">
                                 Marcar Mês Pago
                             </button>
                         </td>
@@ -366,21 +367,19 @@
 
             } catch (erro) {
                 console.error('Erro:', erro);
-                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        // ✅ Gera lista de meses SOMENTE a partir da data de vencimento do aluno
+        // Gera lista de meses SOMENTE a partir da data de vencimento do aluno
         function gerarListaMeses(dataInicio) {
             const select = document.getElementById('mesPagamento');
             select.innerHTML = '';
 
             if (!dataInicio) {
-                // Se não tiver data cadastrada, usa o mês atual como início
                 dataInicio = new Date();
                 dataInicio.setDate(1);
             } else {
-                // Garante que começa no primeiro dia do mês da data informada
                 dataInicio.setDate(1);
             }
 
@@ -389,7 +388,6 @@
                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
             ];
 
-            // Gera meses da data de início até 2 anos à frente
             const dataFim = new Date(dataInicio);
             dataFim.setFullYear(dataFim.getFullYear() + 2);
 
@@ -408,7 +406,6 @@
                 dataAtual.setMonth(dataAtual.getMonth() + 1);
             }
 
-            // Já seleciona automaticamente o mês da data de vencimento
             const mesInicio = String(dataInicio.getMonth() + 1).padStart(2, '0');
             const anoInicio = dataInicio.getFullYear();
             select.value = `${mesInicio}/${anoInicio}`;
@@ -422,9 +419,7 @@
             const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada (usando mês atual)';
             document.getElementById('dataVencimentoModal').textContent = textoVenc;
 
-            // Gera a lista personalizada para esse aluno
             gerarListaMeses(dataVenc ? new Date(dataVenc.getTime()) : null);
-
             document.getElementById('modalMes').classList.add('aberto');
         }
 
