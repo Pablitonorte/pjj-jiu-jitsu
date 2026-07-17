@@ -229,28 +229,12 @@
                 <span id="nomeAlunoModal" style="font-weight:600; font-size:15px;"></span>
             </div>
             <div class="modal-grupo">
-                <label>Data de Vencimento Cadastrada:</label>
+                <label>Data de início/vencimento:</label>
                 <span id="dataVencimentoModal" class="info-vencimento"></span>
             </div>
             <div class="modal-grupo">
                 <label>Selecione o Mês/Ano:</label>
-                <select id="mesPagamento">
-                    <option value="01/2026">Janeiro/2026</option>
-                    <option value="02/2026">Fevereiro/2026</option>
-                    <option value="03/2026">Março/2026</option>
-                    <option value="04/2026">Abril/2026</option>
-                    <option value="05/2026">Maio/2026</option>
-                    <option value="06/2026">Junho/2026</option>
-                    <option value="07/2026">Julho/2026</option>
-                    <option value="08/2026">Agosto/2026</option>
-                    <option value="09/2026">Setembro/2026</option>
-                    <option value="10/2026">Outubro/2026</option>
-                    <option value="11/2026">Novembro/2026</option>
-                    <option value="12/2026">Dezembro/2026</option>
-                    <option value="01/2027">Janeiro/2027</option>
-                    <option value="02/2027">Fevereiro/2027</option>
-                    <option value="03/2027">Março/2027</option>
-                </select>
+                <select id="mesPagamento"></select>
             </div>
             <div class="modal-botoes">
                 <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
@@ -274,7 +258,7 @@
         const db = firebase.firestore();
 
         let alunoSelecionado = null;
-        let dataVencimentoAluno = null;
+        let dataInicioAluno = null;
 
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
@@ -359,8 +343,8 @@
                     const classeTipo = `tipo-${(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
                     
-                    // Formata a data de vencimento cadastrada
                     const dataVenc = d.dataVencimento ? d.dataVencimento.toDate().toLocaleDateString('pt-BR') : 'Não informada';
+                    const dataVencObj = d.dataVencimento ? new Date(d.dataVencimento.toDate().getTime()) : null;
 
                     const linha = `
                     <tr>
@@ -372,7 +356,7 @@
                         <td>${status.ultimo}</td>
                         <td><span class="${status.classe}">${status.texto}</span></td>
                         <td>
-                            <button class="btn-acao btn-pago" onclick="abrirModal('${aluno.id}', '${d.nome}', ${d.dataVencimento ? `new Date(${d.dataVencimento.toDate().getTime()})` : 'null'})">
+                            <button class="btn-acao btn-pago" onclick="abrirModal('${aluno.id}', '${d.nome}', ${dataVencObj ? `new Date(${dataVencObj.getTime()})` : 'null'})">
                                 Marcar Mês Pago
                             </button>
                         </td>
@@ -386,23 +370,60 @@
             }
         }
 
-        // ✅ Abre o modal e já seleciona o mês da data de vencimento
+        // ✅ Gera lista de meses SOMENTE a partir da data de vencimento do aluno
+        function gerarListaMeses(dataInicio) {
+            const select = document.getElementById('mesPagamento');
+            select.innerHTML = '';
+
+            if (!dataInicio) {
+                // Se não tiver data cadastrada, usa o mês atual como início
+                dataInicio = new Date();
+                dataInicio.setDate(1);
+            } else {
+                // Garante que começa no primeiro dia do mês da data informada
+                dataInicio.setDate(1);
+            }
+
+            const nomesMes = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+
+            // Gera meses da data de início até 2 anos à frente
+            const dataFim = new Date(dataInicio);
+            dataFim.setFullYear(dataFim.getFullYear() + 2);
+
+            let dataAtual = new Date(dataInicio);
+            while (dataAtual <= dataFim) {
+                const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+                const ano = dataAtual.getFullYear();
+                const valor = `${mes}/${ano}`;
+                const texto = `${nomesMes[dataAtual.getMonth()]}/${ano}`;
+
+                const opcao = document.createElement('option');
+                opcao.value = valor;
+                opcao.textContent = texto;
+                select.appendChild(opcao);
+
+                dataAtual.setMonth(dataAtual.getMonth() + 1);
+            }
+
+            // Já seleciona automaticamente o mês da data de vencimento
+            const mesInicio = String(dataInicio.getMonth() + 1).padStart(2, '0');
+            const anoInicio = dataInicio.getFullYear();
+            select.value = `${mesInicio}/${anoInicio}`;
+        }
+
         function abrirModal(id, nome, dataVenc) {
             alunoSelecionado = id;
-            dataVencimentoAluno = dataVenc;
+            dataInicioAluno = dataVenc;
             document.getElementById('nomeAlunoModal').textContent = nome;
             
-            // Mostra a data de vencimento cadastrada
-            const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada';
+            const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada (usando mês atual)';
             document.getElementById('dataVencimentoModal').textContent = textoVenc;
 
-            // Seleciona automaticamente o mês e ano da data de vencimento
-            if (dataVenc) {
-                const mes = String(dataVenc.getMonth() + 1).padStart(2, '0');
-                const ano = dataVenc.getFullYear();
-                const valorMes = `${mes}/${ano}`;
-                document.getElementById('mesPagamento').value = valorMes;
-            }
+            // Gera a lista personalizada para esse aluno
+            gerarListaMeses(dataVenc ? new Date(dataVenc.getTime()) : null);
 
             document.getElementById('modalMes').classList.add('aberto');
         }
@@ -410,7 +431,7 @@
         function fecharModal() {
             document.getElementById('modalMes').classList.remove('aberto');
             alunoSelecionado = null;
-            dataVencimentoAluno = null;
+            dataInicioAluno = null;
         }
 
         async function confirmarPagamento() {
