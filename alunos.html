@@ -379,21 +379,12 @@
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
-            if (temaSalvo === 'claro') {
-                corpo.classList.remove('tema-escuro');
-                corpo.classList.add('tema-claro');
-            } else {
-                corpo.classList.remove('tema-claro');
-                corpo.classList.add('tema-escuro');
-            }
+            corpo.classList.toggle('tema-claro', temaSalvo === 'claro');
+            corpo.classList.toggle('tema-escuro', temaSalvo !== 'claro');
         }
 
         function formatarCPF(cpf) {
-            cpf = cpf.replace(/\D/g, '');
-            if (cpf.length <= 11) {
-                return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-            }
-            return cpf;
+            return cpf.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
         }
 
         document.getElementById('cpfAluno').addEventListener('input', function() {
@@ -409,26 +400,22 @@
             const periodo = document.getElementById('periodoAluno').value;
             const desconto = parseFloat(document.getElementById('descontoAluno').value) || 0;
             const campoValor = document.getElementById('valorFinalAluno');
-            let valorBase = 0;
 
             if (!tipo || !periodo) {
                 campoValor.value = 'Selecione o tipo e o plano';
-                campoValor.classList.add('valor-vazio');
-                campoValor.classList.remove('valor-gratis');
+                campoValor.className = 'valor-final valor-vazio';
                 campoValor.removeAttribute('data-valor');
                 return;
             }
 
             if (tipo === 'Bolsista') {
-                valorBase = 0;
                 campoValor.value = 'GRÁTIS';
-                campoValor.classList.add('valor-gratis');
-                campoValor.classList.remove('valor-vazio');
+                campoValor.className = 'valor-final valor-gratis';
             } else {
-                valorBase = valoresPlanos[periodo] || 0;
+                const valorBase = valoresPlanos[periodo] || 0;
                 const valorFinal = valorBase - (valorBase * desconto / 100);
                 campoValor.value = `R$ ${valorFinal.toFixed(2).replace('.', ',')}`;
-                campoValor.classList.remove('valor-gratis', 'valor-vazio');
+                campoValor.className = 'valor-final';
                 campoValor.dataset.valor = valorFinal;
             }
         }
@@ -438,7 +425,14 @@
             lista.innerHTML = '<tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
-                await db.enablePersistence().catch(() => {});
+                // Verifica login primeiro
+                const usuario = auth.currentUser;
+                if (!usuario) {
+                    lista.innerHTML = '<tr><td colspan="9" class="vazio">⚠️ Faça login novamente</td></tr>
+                    return;
+                }
+
+                // Busca direta sem persistência para evitar travar
                 const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
 
                 if (snapshot.empty) {
@@ -456,7 +450,7 @@
                     const nascimento = dados.dataNascimento ? dados.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
                     const cpf = dados.cpf ? formatarCPF(dados.cpf) : '-';
 
-                    const linha = `
+                    lista.innerHTML += `
                     <tr>
                         <td><strong>${dados.nome || '-'}</strong></td>
                         <td>${cpf}</td>
@@ -472,12 +466,14 @@
                             <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
                         </td>
                     </tr>`;
-                    lista.innerHTML += linha;
                 });
 
             } catch (erro) {
-                console.error('Erro ao carregar alunos:', erro);
-                lista.innerHTML = `<tr><td colspan="9" class="vazio">❌ Erro: ${erro.message}</td></tr>`;
+                console.error('Erro:', erro);
+                let msg = erro.message;
+                if (erro.code === 'permission-denied') msg = '❌ Sem permissão: verifique as regras do Firebase';
+                if (erro.code === 'unavailable') msg = '❌ Sem conexão com a internet';
+                lista.innerHTML = `<tr><td colspan="9" class="vazio">${msg}</td></tr>`;
             }
         }
 
@@ -491,8 +487,7 @@
             document.getElementById('formAluno').reset();
             document.getElementById('vencimentoAluno').valueAsDate = new Date();
             document.getElementById('valorFinalAluno').value = 'Selecione o tipo e o plano';
-            document.getElementById('valorFinalAluno').classList.add('valor-vazio');
-            document.getElementById('valorFinalAluno').classList.remove('valor-gratis');
+            document.getElementById('valorFinalAluno').className = 'valor-final valor-vazio';
             document.getElementById('modalCadastro').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -527,18 +522,16 @@
                 document.body.style.overflow = 'hidden';
 
             } catch (erro) {
-                console.error('Erro ao carregar dados:', erro);
-                alert('Não foi possível carregar os dados: ' + erro.message);
+                alert('Erro ao carregar: ' + erro.message);
             }
         }
 
         async function excluirAluno(id) {
-            if (!confirm('Tem certeza que deseja excluir este aluno? Essa ação não pode ser desfeita.')) return;
+            if (!confirm('Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
             try {
                 await db.collection('alunos').doc(id).delete();
                 carregarAlunos();
             } catch (erro) {
-                console.error('Erro ao excluir:', erro);
                 alert('Erro ao excluir: ' + erro.message);
             }
         }
@@ -569,15 +562,14 @@
             try {
                 if (id) {
                     await db.collection('alunos').doc(id).update(dados);
-                    alert('Aluno atualizado com sucesso!');
+                    alert('Aluno atualizado!');
                 } else {
                     await db.collection('alunos').add(dados);
-                    alert('Aluno cadastrado com sucesso!');
+                    alert('Aluno cadastrado!');
                 }
                 fecharModalCadastro();
                 carregarAlunos();
             } catch (erro) {
-                console.error('Erro ao salvar:', erro);
                 alert('Erro ao salvar: ' + erro.message);
             }
         });
@@ -604,7 +596,7 @@
         });
 
         function sair() {
-            if (confirm('Deseja sair do sistema?')) {
+            if (confirm('Deseja sair?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
