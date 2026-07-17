@@ -99,20 +99,29 @@
         }
         .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
 
-        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; min-width: 900px; }
-        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
-        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
+        .tabela { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: var(--fundo-card); 
+            border: 1px solid var(--borda); 
+            border-radius: 10px; 
+            overflow: hidden; 
+            min-width: 900px;
+            table-layout: auto;
+        }
+        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
+        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); word-break: break-word; }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
         .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
         .tipo-baby-class { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
         .tipo-comercial { background: #FF980020; color: #FF9800; border: 1px solid #FF980040; }
         .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
         .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
 
-        .faixa { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .faixa { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         .faixa-branca { background: #FFFFFF; color: #121214; border: 1px solid #ddd; }
         .faixa-cinza { background: #888888; color: #FFFFFF; }
         .faixa-amarela { background: #FFD700; color: #121214; }
@@ -123,7 +132,7 @@
         .faixa-marrom { background: #8B4513; color: #FFFFFF; }
         .faixa-preta { background: #000000; color: #FFFFFF; border: 1px solid #555; }
 
-        .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; }
+        .btn-acao { padding: 8px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 5px; transition: 0.2s; white-space: nowrap; }
         .btn-editar { background: var(--azul); color: white; }
         .btn-editar:hover { background: #3b82f6; }
         .btn-excluir { background: var(--vermelho-principal); color: white; }
@@ -425,15 +434,7 @@
             lista.innerHTML = '<tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
-                // Verifica login primeiro
-                const usuario = auth.currentUser;
-                if (!usuario) {
-                    lista.innerHTML = '<tr><td colspan="9" class="vazio">⚠️ Faça login novamente</td></tr>';
-                    return;
-                }
-
-                // Busca direta sem persistência para evitar travar
-                const snapshot = await db.collection('alunos').orderBy('nome', 'asc').get();
+                const snapshot = await db.collection('alunos').get();
 
                 if (snapshot.empty) {
                     lista.innerHTML = '<tr><td colspan="9" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
@@ -469,7 +470,7 @@
                 });
 
             } catch (erro) {
-                console.error('Erro:', erro);
+                console.error('ERRO NO CARREGAMENTO:', erro);
                 let msg = erro.message;
                 if (erro.code === 'permission-denied') msg = '❌ Sem permissão: verifique as regras do Firebase';
                 if (erro.code === 'unavailable') msg = '❌ Sem conexão com a internet';
@@ -512,7 +513,11 @@
                 document.getElementById('responsavelAluno').value = dados.responsavel || '';
                 document.getElementById('telefoneAluno').value = dados.telefone || '';
                 document.getElementById('emailAluno').value = dados.email || '';
-                document.getElementById('vencimentoAluno').value = dados.dataVencimento ? dados.dataVencimento.toDate().toISOString().split('T')[0] : '';
+
+                // ✅ Compatibilidade total: pega o novo ou o antigo campo
+                const dataVenc = dados.dataVencimento || dados.dataInicioAula;
+                document.getElementById('vencimentoAluno').value = dataVenc ? dataVenc.toDate().toISOString().split('T')[0] : '';
+
                 document.getElementById('periodoAluno').value = dados.periodo || '';
                 document.getElementById('descontoAluno').value = dados.desconto || 0;
                 document.getElementById('faixaAluno').value = dados.faixa || '';
@@ -561,6 +566,8 @@
 
             try {
                 if (id) {
+                    // ✅ Remove o campo antigo para não duplicar
+                    dados.dataInicioAula = firebase.firestore.FieldValue.delete();
                     await db.collection('alunos').doc(id).update(dados);
                     alert('Aluno atualizado!');
                 } else {
