@@ -93,11 +93,18 @@
             border-radius: 6px; color: var(--texto-branco); font-size: 14px;
         }
 
-        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; }
-        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; min-width: 800px; }
+        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
         .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
+
+        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
+        .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
+        .tipo-baby-class { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
+        .tipo-comercial { background: #FF980020; color: #FF9800; border: 1px solid #FF980040; }
+        .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
+        .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
 
         .status-pago { color: var(--verde); font-weight: 600; }
         .status-pendente { color: var(--amarelo); font-weight: 600; }
@@ -111,7 +118,7 @@
         .btn-atrasado { background: var(--vermelho-atraso); color: white; }
         .btn-atrasado:hover { background: #FF6666; }
 
-        /* 📅 MODAL PARA ESCOLHER O MÊS */
+        /* MODAL PARA ESCOLHER O MÊS */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--fundo-modal); z-index: 10000; align-items: center; justify-content: center;
@@ -121,7 +128,7 @@
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 12px;
             padding: 30px; width: 90%; max-width: 450px;
         }
-        .modal-titulo { font-size: 20px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+        .modal-titulo { font-size: 20px; font-weight: 700; margin-bottom: 20px; text-align: center; color: var(--vermelho-principal); }
         .modal-grupo { margin-bottom: 15px; }
         .modal-grupo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
         .modal-grupo select {
@@ -178,9 +185,17 @@
         </div>
 
         <div class="card-filtro">
-            <input type="text" id="busca" placeholder="🔍 Buscar por nome...">
+            <input type="text" id="busca" placeholder="🔍 Buscar por nome, CPF ou responsável...">
+            <select id="filtroTipo">
+                <option value="">Todos os Tipos</option>
+                <option value="Kids">Kids</option>
+                <option value="Baby Class">Baby Class</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Competidor">Competidor</option>
+                <option value="Bolsista">Bolsista</option>
+            </select>
             <select id="filtroStatus">
-                <option value="">Todos os status</option>
+                <option value="">Todos os Status</option>
                 <option value="Pago">Pago</option>
                 <option value="Pendente">Pendente</option>
                 <option value="Atrasado">Atrasado</option>
@@ -191,7 +206,8 @@
             <thead>
                 <tr>
                     <th>Nome do Aluno</th>
-                    <th>Tipo de Aluno</th>
+                    <th>Tipo</th>
+                    <th>Plano</th>
                     <th>Valor Mensal</th>
                     <th>Último Pagamento</th>
                     <th>Status Atual</th>
@@ -199,12 +215,12 @@
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="6" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
 
-    <!-- 📅 MODAL PARA ESCOLHER O MÊS DO PAGAMENTO -->
+    <!-- MODAL PARA MARCAR PAGAMENTO -->
     <div class="modal" id="modalMes">
         <div class="modal-conteudo">
             <h3 class="modal-titulo">Marcar Pagamento do Mês</h3>
@@ -213,20 +229,8 @@
                 <span id="nomeAlunoModal" style="font-weight:600; font-size:15px;"></span>
             </div>
             <div class="modal-grupo">
-                <label>Selecione o Mês e Ano:</label>
+                <label>Selecione o Mês/Ano:</label>
                 <select id="mesPagamento">
-                    <option value="01/2025">Janeiro/2025</option>
-                    <option value="02/2025">Fevereiro/2025</option>
-                    <option value="03/2025">Março/2025</option>
-                    <option value="04/2025">Abril/2025</option>
-                    <option value="05/2025">Maio/2025</option>
-                    <option value="06/2025">Junho/2025</option>
-                    <option value="07/2025">Julho/2025</option>
-                    <option value="08/2025">Agosto/2025</option>
-                    <option value="09/2025">Setembro/2025</option>
-                    <option value="10/2025">Outubro/2025</option>
-                    <option value="11/2025">Novembro/2025</option>
-                    <option value="12/2025">Dezembro/2025</option>
                     <option value="01/2026">Janeiro/2026</option>
                     <option value="02/2026">Fevereiro/2026</option>
                     <option value="03/2026">Março/2026</option>
@@ -246,7 +250,7 @@
             </div>
             <div class="modal-botoes">
                 <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
-                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar Pagamento</button>
+                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar</button>
             </div>
         </div>
     </div>
@@ -283,107 +287,102 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // 📌 Verifica o status do aluno com base nos meses pagos
-        function verificarStatusAluno(mesesPagos) {
-            if (!mesesPagos || mesesPagos.length === 0) return { texto: 'Sem pagamentos', classe: 'status-atrasado' };
-
+        // ✅ Verifica status usando os dados do cadastro
+        function verificarStatus(mesesPagos = []) {
             const hoje = new Date();
             const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
             const anoAtual = hoje.getFullYear();
             const dataAtual = `${mesAtual}/${anoAtual}`;
 
-            // Converte os meses pagos para datas e ordena
-            const datasPagas = mesesPagos.map(mes => {
-                const [m, a] = mes.split('/');
-                return new Date(a, m - 1, 1);
-            }).sort((a, b) => b - a);
+            if (mesesPagos.length === 0) {
+                return { texto: 'Sem pagamentos', classe: 'status-atrasado', ultimo: 'Nenhum' };
+            }
 
-            const ultimoPagamento = datasPagas[0];
-            const ultimoMesAno = `${String(ultimoPagamento.getMonth() + 1).padStart(2, '0')}/${ultimoPagamento.getFullYear()}`;
+            // Ordena os meses pagos
+            const datasOrdenadas = mesesPagos
+                .map(mes => {
+                    const [m, a] = mes.split('/');
+                    return { mes: m, ano: a, data: new Date(a, m - 1, 1) };
+                })
+                .sort((a, b) => b.data - a.data);
 
-            // Verifica se tem meses atrasados
-            let temAtrasado = false;
-            for (let i = 0; i < mesesPagos.length; i++) {
-                const [m, a] = mesesPagos[i].split('/');
-                const dataMes = new Date(a, m - 1, 1);
-                if (dataMes < new Date(anoAtual, mesAtual - 1, 1) && !mesesPagos.includes(`${String(dataMes.getMonth() + 1).padStart(2, '0')}/${dataMes.getFullYear()}`)) {
-                    temAtrasado = true;
+            const ultimo = datasOrdenadas[0].mes + '/' + datasOrdenadas[0].ano;
+
+            // Verifica se tem meses anteriores não pagos
+            let temAtraso = false;
+            for (let i = 1; i <= hoje.getMonth(); i++) {
+                const mesVerificar = String(i).padStart(2, '0') + '/' + anoAtual;
+                if (!mesesPagos.includes(mesVerificar)) {
+                    temAtraso = true;
                     break;
                 }
             }
 
-            // Se o mês atual não foi pago e tem meses anteriores não pagos = Atrasado
-            if (!mesesPagos.includes(dataAtual) && temAtrasado) {
-                return { texto: 'Atrasado', classe: 'status-atrasado', ultimo: ultimoMesAno };
-            }
-            // Se o mês atual foi pago = Pago
-            else if (mesesPagos.includes(dataAtual)) {
-                return { texto: 'Em dia', classe: 'status-pago', ultimo: ultimoMesAno };
-            }
-            // Se só falta o mês atual = Pendente
-            else {
-                return { texto: 'Pendente', classe: 'status-pendente', ultimo: ultimoMesAno };
+            // Define status final
+            if (mesesPagos.includes(dataAtual)) {
+                return { texto: 'Em dia', classe: 'status-pago', ultimo };
+            } else if (temAtraso) {
+                return { texto: 'Atrasado', classe: 'status-atrasado', ultimo };
+            } else {
+                return { texto: 'Pendente', classe: 'status-pendente', ultimo };
             }
         }
 
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="6" class="vazio">Carregando dados...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando dados...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
                 }
 
-                const alunos = [];
+                let alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
 
-                // Ordena por status: Atrasado primeiro, depois Pendente, depois Pago
+                // Ordena por status: Atrasado > Pendente > Pago
                 alunos.sort((a, b) => {
-                    const statusA = verificarStatusAluno(a.dados.mesesPagos || []);
-                    const statusB = verificarStatusAluno(b.dados.mesesPagos || []);
+                    const statusA = verificarStatus(a.dados.mesesPagos);
+                    const statusB = verificarStatus(b.dados.mesesPagos);
                     const ordem = { 'status-atrasado': 0, 'status-pendente': 1, 'status-pago': 2 };
                     return ordem[statusA.classe] - ordem[statusB.classe];
                 });
 
                 lista.innerHTML = '';
 
-                for (const aluno of alunos) {
-                    const dados = aluno.dados;
-                    const alunoId = aluno.id;
-
-                    const nome = dados.nome || '-';
-                    const tipoAluno = dados.tipoAluno || '-';
-                    const valor = dados.valor || dados.valorPlano || dados.mensalidade || 0;
-                    const mesesPagos = dados.mesesPagos || [];
-                    const status = verificarStatusAluno(mesesPagos);
+                alunos.forEach(aluno => {
+                    const d = aluno.dados;
+                    const status = verificarStatus(d.mesesPagos);
+                    const valor = d.valorPlano || 0;
+                    const classeTipo = `tipo-${(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
+                    const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
 
                     const linha = `
                     <tr>
-                        <td>${nome}</td>
-                        <td>${tipoAluno}</td>
-                        <td>R$ ${valor.toFixed(2).replace('.', ',')}</td>
-                        <td>${status.ultimo || 'Nenhum'}</td>
+                        <td><strong>${d.nome || '-'}</strong></td>
+                        <td><span class="tipo-aluno ${classeTipo}">${d.tipo || '-'}</span></td>
+                        <td>${d.periodo || '-'}</td>
+                        <td>${valorTexto}</td>
+                        <td>${status.ultimo}</td>
                         <td><span class="${status.classe}">${status.texto}</span></td>
                         <td>
-                            <button class="btn-acao btn-pago" onclick="abrirModalPagamento('${alunoId}', '${nome}')">
+                            <button class="btn-acao btn-pago" onclick="abrirModal('${aluno.id}', '${d.nome}')">
                                 Marcar Mês Pago
                             </button>
                         </td>
                     </tr>`;
                     lista.innerHTML += linha;
-                }
+                });
 
             } catch (erro) {
-                console.error('Erro ao carregar:', erro);
-                lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
+                console.error('Erro:', erro);
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        // 📅 Abre o modal para escolher o mês
-        function abrirModalPagamento(id, nome) {
+        function abrirModal(id, nome) {
             alunoSelecionado = id;
             document.getElementById('nomeAlunoModal').textContent = nome;
             document.getElementById('modalMes').classList.add('aberto');
@@ -394,54 +393,58 @@
             alunoSelecionado = null;
         }
 
-        // ✅ Confirma e salva o mês como pago
         async function confirmarPagamento() {
             if (!alunoSelecionado) return;
 
             const mesEscolhido = document.getElementById('mesPagamento').value;
 
             try {
-                const alunoRef = db.collection('alunos').doc(alunoSelecionado);
-                const alunoAtual = await alunoRef.get();
-                const mesesPagos = alunoAtual.data().mesesPagos || [];
+                const ref = db.collection('alunos').doc(alunoSelecionado);
+                const doc = await ref.get();
+                const meses = doc.data().mesesPagos || [];
 
-                // Adiciona só se ainda não estiver pago
-                if (!mesesPagos.includes(mesEscolhido)) {
-                    mesesPagos.push(mesEscolhido);
-                    await alunoRef.update({ mesesPagos: mesesPagos });
-                    alert(`Mês ${mesEscolhido} marcado como PAGO com sucesso!`);
+                if (meses.includes(mesEscolhido)) {
+                    alert(`Esse mês já está pago para esse aluno!`);
                 } else {
-                    alert(`Esse mês já está marcado como pago para esse aluno!`);
+                    meses.push(mesEscolhido);
+                    await ref.update({ mesesPagos: meses });
+                    alert(`Mês ${mesEscolhido} marcado como pago com sucesso!`);
                 }
 
                 fecharModal();
                 carregarLista();
             } catch (erro) {
-                alert('Erro ao marcar pagamento: ' + erro.message);
+                alert('Erro ao salvar: ' + erro.message);
             }
         }
 
         // Filtros
         document.getElementById('busca').addEventListener('input', () => {
-            const termo = document.getElementById('busca').value.toLowerCase().trim();
-            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                if (linha.classList.contains('vazio')) return;
-                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+            const termo = document.getElementById('busca').value.toLowerCase();
+            document.querySelectorAll('#listaAlunos tr').forEach(l => {
+                if (!l.classList.contains('vazio')) {
+                    l.style.display = l.textContent.toLowerCase().includes(termo) ? '' : 'none';
+                }
+            });
+        });
+
+        document.getElementById('filtroTipo').addEventListener('change', () => {
+            const filtro = document.getElementById('filtroTipo').value.toLowerCase();
+            document.querySelectorAll('#listaAlunos tr').forEach(l => {
+                if (!l.classList.contains('vazio')) {
+                    l.style.display = !filtro || l.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+                }
             });
         });
 
         document.getElementById('filtroStatus').addEventListener('change', () => {
             const filtro = document.getElementById('filtroStatus').value;
-            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                if (linha.classList.contains('vazio')) return;
-                const statusTexto = linha.querySelector('span').textContent;
-                linha.style.display = !filtro ? '' : (statusTexto.includes(filtro) ? '' : 'none');
+            document.querySelectorAll('#listaAlunos tr').forEach(l => {
+                if (!l.classList.contains('vazio')) {
+                    const statusTexto = l.querySelector('span:last-child').textContent;
+                    l.style.display = !filtro || statusTexto.includes(filtro) ? '' : 'none';
+                }
             });
-        });
-
-        auth.onAuthStateChanged(usuario => {
-            if (!usuario) window.location.href = 'login.html';
-            else { carregarTema(); carregarLista(); }
         });
 
         function sair() {
@@ -449,6 +452,11 @@
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
+
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) window.location.href = 'login.html';
+            else { carregarTema(); carregarLista(); }
+        });
     </script>
 </body>
 </html>
