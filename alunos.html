@@ -372,12 +372,18 @@
         </div>
     </div>
 
-    <script src="js/config-firebase.js"></script>
     <script>
-        // ✅ Inicialização garantida
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        // ✅ MESMA CONFIGURAÇÃO DO FINANCEIRO (não depende de arquivo externo)
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
@@ -391,8 +397,13 @@
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
-            corpo.classList.toggle('tema-claro', temaSalvo === 'claro');
-            corpo.classList.toggle('tema-escuro', temaSalvo !== 'claro');
+            if (temaSalvo === 'claro') {
+                corpo.classList.remove('tema-escuro');
+                corpo.classList.add('tema-claro');
+            } else {
+                corpo.classList.remove('tema-claro');
+                corpo.classList.add('tema-escuro');
+            }
         }
 
         function formatarCPF(cpf) {
@@ -432,33 +443,29 @@
             }
         }
 
-        // ✅ Carregamento com logs e tratamento total
+        // ✅ Carregamento igual ao financeiro, sem erros
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
-                console.log("🔍 Verificando usuário logado...");
-                const usuario = auth.currentUser;
-                if (!usuario) {
-                    lista.innerHTML = '<tr><td colspan="9" class="vazio">⚠️ Faça login novamente</td></tr>';
-                    window.location.href = 'login.html';
-                    return;
-                }
-                console.log("✅ Usuário confirmado:", usuario.email);
-
-                console.log("📡 Buscando dados no Firestore...");
                 const snapshot = await db.collection('alunos').get();
-                console.log(`✅ ${snapshot.size} registros encontrados`);
 
                 if (snapshot.empty) {
                     lista.innerHTML = '<tr><td colspan="9" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     return;
                 }
 
-                lista.innerHTML = '';
+                // Ordena manualmente por nome
+                const alunos = [];
                 snapshot.forEach(doc => {
-                    const dados = doc.data();
+                    alunos.push({ id: doc.id, dados: doc.data() });
+                });
+                alunos.sort((a, b) => (a.dados.nome || '').localeCompare(b.dados.nome || ''));
+
+                lista.innerHTML = '';
+                alunos.forEach(aluno => {
+                    const dados = aluno.dados;
                     const valorPlano = dados.valorPlano || 0;
                     const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
                     const classeTipo = `tipo-${(dados.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
@@ -477,19 +484,16 @@
                         <td>${valorTexto}</td>
                         <td><span class="faixa ${classeFaixa}">${dados.faixa || '-'}</span></td>
                         <td>
-                            <button class="btn-acao btn-editar" onclick="editarAluno('${doc.id}')">Editar</button>
+                            <button class="btn-acao btn-editar" onclick="editarAluno('${aluno.id}')">Editar</button>
                             <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${dados.nome}', '${dados.cpf || ''}')">Declaração</button>
-                            <button class="btn-acao btn-excluir" onclick="excluirAluno('${doc.id}')">Excluir</button>
+                            <button class="btn-acao btn-excluir" onclick="excluirAluno('${aluno.id}')">Excluir</button>
                         </td>
                     </tr>`;
                 });
 
             } catch (erro) {
-                console.error('❌ ERRO NO SISTEMA:', erro);
-                let msg = erro.message;
-                if (erro.code === 'permission-denied') msg = '❌ Sem permissão: atualize as regras do Firestore';
-                if (erro.code === 'unavailable') msg = '❌ Sem conexão com a internet';
-                lista.innerHTML = `<tr><td colspan="9" class="vazio">${msg}</td></tr>`;
+                console.error('ERRO NO CARREGAMENTO:', erro);
+                lista.innerHTML = `<tr><td colspan="9" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -581,6 +585,7 @@
 
             try {
                 if (id) {
+                    // Remove campo antigo se existir
                     dados.dataInicioAula = firebase.firestore.FieldValue.delete();
                     await db.collection('alunos').doc(id).update(dados);
                     alert('Aluno atualizado!');
@@ -598,6 +603,7 @@
         document.getElementById('buscaAluno').addEventListener('input', () => {
             const termo = document.getElementById('buscaAluno').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (linha.classList.contains('vazio')) return;
                 linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
             });
         });
@@ -605,6 +611,7 @@
         document.getElementById('filtroTipo').addEventListener('change', () => {
             const tipo = document.getElementById('filtroTipo').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (linha.classList.contains('vazio')) return;
                 linha.style.display = !tipo || linha.textContent.toLowerCase().includes(tipo) ? '' : 'none';
             });
         });
@@ -612,17 +619,18 @@
         document.getElementById('filtroPeriodo').addEventListener('change', () => {
             const periodo = document.getElementById('filtroPeriodo').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
+                if (linha.classList.contains('vazio')) return;
                 linha.style.display = !periodo || linha.textContent.toLowerCase().includes(periodo) ? '' : 'none';
             });
         });
 
         function sair() {
-            if (confirm('Deseja sair?')) {
+            if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
-        // ✅ Execução garantida após confirmação do login
+        // ✅ MESMA INICIALIZAÇÃO DO FINANCEIRO
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
