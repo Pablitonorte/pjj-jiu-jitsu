@@ -15,9 +15,9 @@
             --vermelho-claro: #FF3B3B;
             --verde: #00C853;
             --amarelo: #FFC107;
-            --azul: #2563eb;
             --cinza: #6B7280;
             --vermelho-atraso: #ff4444;
+            --azul-info: #3b82f6;
         }
 
         .tema-escuro {
@@ -107,8 +107,9 @@
         .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
 
         .status-pago { color: var(--verde); font-weight: 600; }
-        .status-pendente { color: var(--amarelo); font-weight: 600; }
+        .status-pendente { color: var(--azul-info); font-weight: 600; }
         .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
+        .status-sem-pagamento { color: var(--vermelho-atraso); font-weight: 600; }
 
         .btn-acao { padding: 10px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; background: var(--verde); color: white; }
         .btn-acao:hover { background: #00E05C; }
@@ -269,39 +270,47 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        function verificarStatus(mesesPagos = []) {
+        // ✅ VERIFICA STATUS RESPEITANDO A DATA EXATA DO VENCIMENTO
+        function verificarStatus(mesesPagos = [], dataVencimentoCadastrada = null) {
             const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
             const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
             const anoAtual = hoje.getFullYear();
-            const dataAtual = `${mesAtual}/${anoAtual}`;
+            const mesAnoAtual = `${mesAtual}/${anoAtual}`;
 
-            if (mesesPagos.length === 0) {
-                return { texto: 'Sem pagamentos', classe: 'status-atrasado' };
+            // Se não tem data de vencimento, usa dia 1 do mês atual
+            let diaVencimento = 1;
+            if (dataVencimentoCadastrada) {
+                diaVencimento = dataVencimentoCadastrada.getDate();
             }
 
-            const datasOrdenadas = mesesPagos
-                .map(mes => {
-                    const [m, a] = mes.split('/');
-                    return { mes: m, ano: a, data: new Date(a, m - 1, 1) };
-                })
-                .sort((a, b) => b.data - a.data);
+            // Data exata do vencimento do mês atual
+            const dataVencimentoMesAtual = new Date(anoAtual, hoje.getMonth(), diaVencimento);
+            dataVencimentoMesAtual.setHours(0, 0, 0, 0);
 
-            let temAtraso = false;
-            for (let i = 1; i <= hoje.getMonth(); i++) {
-                const mesVerificar = String(i).padStart(2, '0') + '/' + anoAtual;
-                if (!mesesPagos.includes(mesVerificar)) {
-                    temAtraso = true;
-                    break;
-                }
+            // Se não tem nenhum pagamento
+            if (!mesesPagos || mesesPagos.length === 0) {
+                return { texto: 'Sem pagamentos', classe: 'status-sem-pagamento' };
             }
 
-            if (mesesPagos.includes(dataAtual)) {
+            // Se o mês atual já está pago
+            if (mesesPagos.includes(mesAnoAtual)) {
                 return { texto: 'Em dia', classe: 'status-pago' };
-            } else if (temAtraso) {
-                return { texto: 'Atrasado', classe: 'status-atrasado' };
-            } else {
-                return { texto: 'Pendente', classe: 'status-pendente' };
             }
+
+            // Se ainda não chegou o dia do vencimento
+            if (hoje < dataVencimentoMesAtual) {
+                const diasRestantes = Math.ceil((dataVencimentoMesAtual - hoje) / (1000 * 60 * 60 * 24));
+                const textoDias = diasRestantes === 1 ? 'dia' : 'dias';
+                return { 
+                    texto: `Pendente (${diasRestantes} ${textoDias} para vencimento)`, 
+                    classe: 'status-pendente' 
+                };
+            }
+
+            // Se já passou do vencimento
+            return { texto: 'Atrasado', classe: 'status-atrasado' };
         }
 
         async function carregarLista() {
@@ -318,7 +327,7 @@
                 let alunos = [];
                 snapshot.forEach(doc => {
                     const dadosAluno = doc.data();
-                    // ✅ IGNORA COMPLETAMENTE ALUNOS BOLSISTAS
+                    // Ignora bolsistas
                     if ((dadosAluno.tipo || '').trim().toLowerCase() !== 'bolsista') {
                         alunos.push({ id: doc.id, dados: dadosAluno });
                     }
@@ -330,9 +339,11 @@
                 }
 
                 alunos.sort((a, b) => {
-                    const statusA = verificarStatus(a.dados.mesesPagos);
-                    const statusB = verificarStatus(b.dados.mesesPagos);
-                    const ordem = { 'status-atrasado': 0, 'status-pendente': 1, 'status-pago': 2 };
+                    const dataVencA = a.dados.dataVencimento ? new Date(a.dados.dataVencimento.toDate()) : null;
+                    const dataVencB = b.dados.dataVencimento ? new Date(b.dados.dataVencimento.toDate()) : null;
+                    const statusA = verificarStatus(a.dados.mesesPagos, dataVencA);
+                    const statusB = verificarStatus(b.dados.mesesPagos, dataVencB);
+                    const ordem = { 'status-atrasado': 0, 'status-sem-pagamento': 1, 'status-pendente': 2, 'status-pago': 3 };
                     return ordem[statusA.classe] - ordem[statusB.classe];
                 });
 
@@ -340,13 +351,12 @@
 
                 alunos.forEach(aluno => {
                     const d = aluno.dados;
-                    const status = verificarStatus(d.mesesPagos);
+                    const dataVencObj = d.dataVencimento ? new Date(d.dataVencimento.toDate()) : null;
+                    const status = verificarStatus(d.mesesPagos, dataVencObj);
                     const valor = d.valorPlano || 0;
                     const classeTipo = `tipo-${(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
-                    
-                    const dataVenc = d.dataVencimento ? d.dataVencimento.toDate().toLocaleDateString('pt-BR') : 'Não informada';
-                    const dataVencObj = d.dataVencimento ? new Date(d.dataVencimento.toDate().getTime()) : null;
+                    const dataVenc = dataVencObj ? dataVencObj.toLocaleDateString('pt-BR') : 'Não informada';
 
                     const linha = `
                     <tr>
@@ -371,7 +381,7 @@
             }
         }
 
-        // Gera lista de meses SOMENTE a partir da data de vencimento do aluno
+        // Gera lista de meses a partir da data de vencimento do aluno
         function gerarListaMeses(dataInicio) {
             const select = document.getElementById('mesPagamento');
             select.innerHTML = '';
@@ -416,7 +426,7 @@
             dataInicioAluno = dataVenc;
             document.getElementById('nomeAlunoModal').textContent = nome;
             
-            const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada (usando mês atual)';
+            const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada (usando dia 1 do mês)';
             document.getElementById('dataVencimentoModal').textContent = textoVenc;
 
             gerarListaMeses(dataVenc ? new Date(dataVenc.getTime()) : null);
