@@ -535,7 +535,6 @@
                 document.getElementById('telefoneAluno').value = dados.telefone || '';
                 document.getElementById('emailAluno').value = dados.email || '';
 
-                // ✅ Prioriza a NOVA dataMatricula, se não existir usa a antiga como referência
                 let dataMatricula = null;
                 if (dados.dataMatricula) {
                     dataMatricula = dados.dataMatricula.toDate();
@@ -583,9 +582,7 @@
                 responsavel: document.getElementById('responsavelAluno').value.trim(),
                 telefone: document.getElementById('telefoneAluno').value.trim(),
                 email: document.getElementById('emailAluno').value.trim(),
-                // ✅ NOVA LÓGICA: Data de Matrícula é a base de TODOS os vencimentos
                 dataMatricula: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('matriculaAluno').value)),
-                qtdPagamentos: dadosAntigos.qtdPagamentos || 0, // mantém se já existir
                 periodo: document.getElementById('periodoAluno').value,
                 desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
                 valorPlano: valorFinal,
@@ -595,13 +592,14 @@
 
             try {
                 if (id) {
-                    // ✅ Remove campos ANTIGOS para não confundir
+                    const docAntigo = await db.collection('alunos').doc(id).get();
+                    const dadosAntigos = docAntigo.data();
+                    dados.qtdPagamentos = dadosAntigos.qtdPagamentos || 0;
                     dados.dataVencimento = firebase.firestore.FieldValue.delete();
                     dados.dataInicioAula = firebase.firestore.FieldValue.delete();
                     await db.collection('alunos').doc(id).update(dados);
                     alert('✅ Aluno atualizado! Data de matrícula salva como base do vencimento.');
                 } else {
-                    // ✅ Novo aluno: começa com ZERO pagamentos
                     dados.qtdPagamentos = 0;
                     await db.collection('alunos').add(dados);
                     alert('✅ Aluno cadastrado! O vencimento sempre será no mesmo dia da matrícula.');
