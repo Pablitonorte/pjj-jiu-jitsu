@@ -10,34 +10,21 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
+        /* 🎨 Variáveis dos temas */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
             --verde: #00C853;
             --amarelo: #FFC107;
+            --laranja: #FF9800;
+            --azul: #2563eb;
             --cinza: #6B7280;
-            --vermelho-atraso: #ff4444;
-            --azul-info: #3b82f6;
-        }
-
-        .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
             --texto-branco: #FFFFFF;
             --texto-cinza: #B0B0B8;
             --borda: #29292E;
             --fundo-input: #0C0C0E;
-            --fundo-modal: rgba(0,0,0,0.8);
-        }
-
-        .tema-claro {
-            --fundo-escuro: #F8F9FA;
-            --fundo-card: #FFFFFF;
-            --texto-branco: #121214;
-            --texto-cinza: #6B7280;
-            --borda: #DEE2E6;
-            --fundo-input: #FFFFFF;
-            --fundo-modal: rgba(0,0,0,0.5);
         }
 
         html, body { 
@@ -45,7 +32,6 @@
             color: var(--texto-branco); 
             min-height: 100vh; 
             overflow-y: auto;
-            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .btn-menu {
@@ -60,12 +46,12 @@
             padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
             transition: transform 0.3s ease; overflow-y: auto;
         }
-        .menu-lateral.aberto { transform: translateX(0); }
         .menu-lateral.fechado { transform: translateX(-100%); }
+        .menu-lateral.aberto { transform: translateX(0); }
 
         .logo { text-align: center; margin-bottom: 40px; }
         .logo img { width: 90px; margin-bottom: 10px; }
-        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--texto-branco); }
 
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
@@ -73,77 +59,122 @@
             color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+        .menu-navegacao li a.sair { color: #FF4D4D; margin-top: 20px; }
 
         .conteudo { 
             margin-left: 240px; 
-            padding: 35px 45px; 
+            padding: 25px 30px; 
             min-height: 100vh;
             width: calc(100% - 240px);
         }
 
-        .cabecalho {
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
-        }
-        .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
-        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
+        .cabecalho { margin-bottom: 25px; }
+        .titulo-pagina { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
+        .subtitulo { color: var(--texto-cinza); font-size: 14px; }
 
-        .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+        /* 📊 CARDS DE ESTATÍSTICAS */
+        .grade-cards {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px;
+        }
+        @media (max-width: 1200px) { .grade-cards { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .grade-cards { grid-template-columns: repeat(2, 1fr); } }
+
+        .card-info {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
+            padding: 18px; transition: 0.2s;
+        }
+        .card-info:hover { border-color: var(--vermelho-principal); }
+        .card-info .icone { font-size: 20px; margin-bottom: 8px; }
+        .card-info .valor { font-size: 28px; font-weight: 800; margin-bottom: 3px; }
+        .card-info .rotulo { font-size: 12px; color: var(--texto-cinza); }
+        .card-info .detalhe { font-size: 11px; color: var(--texto-cinza); margin-top: 4px; }
+
+        .card-total .icone { color: var(--azul); }
+        .card-emdia .icone { color: var(--verde); }
+        .card-semana .icone { color: var(--amarelo); }
+        .card-atrasados .icone { color: var(--vermelho-principal); }
+        .card-receita .icone { color: var(--azul); }
+        .card-recebido .icone { color: var(--verde); }
+
+        .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
-            padding: 10px; background: var(--fundo-input); border: 1px solid var(--borda);
-            border-radius: 6px; color: var(--texto-branco); font-size: 14px;
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
+            border-radius: 6px; color: var(--texto-branco); font-size: 14px; outline: none;
         }
+        .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
 
-        .tabela { width: 100%; border-collapse: collapse; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; overflow: hidden; min-width: 700px; }
-        .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
-        .tabela td { padding: 15px; border-bottom: 1px solid var(--borda); font-size: 14px; }
-        .tabela tr:hover { background: rgba(255,255,255,0.03); }
+        .tabela { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background: var(--fundo-card); 
+            border: 1px solid var(--borda); 
+            border-radius: 10px; 
+            overflow: hidden; 
+        }
+        .tabela th { background: rgba(255,255,255,0.05); padding: 14px; text-align: left; font-size: 12px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; }
+        .tabela td { padding: 14px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
+        .tabela tr:hover { background: rgba(255,255,255,0.02); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
-        .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
-        .tipo-baby-class { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
-        .tipo-comercial { background: #FF980020; color: #FF9800; border: 1px solid #FF980040; }
-        .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
-        .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
+        /* 🟢🟡🔴 STATUS */
+        .status { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; }
+        .status-emdia { background: rgba(0,200,83,0.15); color: var(--verde); border: 1px solid rgba(0,200,83,0.3); }
+        .status-hoje { background: rgba(255,152,0,0.15); color: var(--laranja); border: 1px solid rgba(255,152,0,0.3); }
+        .status-semana { background: rgba(255,193,7,0.15); color: var(--amarelo); border: 1px solid rgba(255,193,7,0.3); }
+        .status-atrasado { background: rgba(209,0,0,0.15); color: var(--vermelho-claro); border: 1px solid rgba(209,0,0,0.3); }
 
-        .status-pago { color: var(--verde); font-weight: 600; }
-        .status-pendente { color: var(--azul-info); font-weight: 600; }
-        .status-atrasado { color: var(--vermelho-atraso); font-weight: 700; }
-        .status-sem-pagamento { color: var(--vermelho-atraso); font-weight: 600; }
+        .dias-contador { font-size: 12px; color: var(--texto-cinza); white-space: nowrap; }
+        .dias-atrasado { color: var(--vermelho-claro); }
+        .dias-emdia { color: var(--verde); }
 
-        .btn-acao { padding: 10px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; background: var(--verde); color: white; }
-        .btn-acao:hover { background: #00E05C; }
+        .btn-acao { padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+        .btn-pago { background: var(--verde); color: white; }
+        .btn-pago:hover { background: #00b348; }
+        .btn-ver { background: transparent; color: var(--texto-cinza); border: 1px solid var(--borda); padding: 6px 10px; }
+        .btn-ver:hover { border-color: var(--azul); color: var(--azul); }
 
-        .modal {
+        .vencimento-data { font-weight: 600; }
+        .vencimento-semana { font-size: 12px; color: var(--texto-cinza); margin-top: 2px; }
+        .dia-fixo { font-weight: 700; font-size: 16px; }
+
+        .legenda {
+            margin-top: 20px; padding: 15px; background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 8px;
+            display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: var(--texto-cinza);
+        }
+        .legenda-item { display: flex; align-items: center; gap: 6px; }
+        .bolinha { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .bolinha-emdia { background: var(--verde); }
+        .bolinha-hoje { background: var(--laranja); }
+        .bolinha-semana { background: var(--amarelo); }
+        .bolinha-atrasado { background: var(--vermelho-claro); }
+
+        .fundo-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--fundo-modal); z-index: 10000; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.85); z-index: 2000;
+            justify-content: center; align-items: flex-start;
+            padding: 20px; overflow-y: auto;
         }
-        .modal.aberto { display: flex; }
-        .modal-conteudo {
-            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 12px;
-            padding: 30px; width: 90%; max-width: 480px;
+        .modal {
+            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
+            padding: 25px; width: 100%; max-width: 450px; margin: 50px auto;
         }
-        .modal-titulo { font-size: 20px; font-weight: 700; margin-bottom: 20px; text-align: center; color: var(--vermelho-principal); }
-        .modal-grupo { margin-bottom: 15px; }
-        .modal-grupo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
-        .modal-grupo select {
-            width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
-            border-radius: 6px; color: var(--texto-branco); font-size: 15px;
-        }
-        .info-vencimento { font-size: 13px; color: var(--texto-cinza); margin-top: 5px; line-height: 1.5; }
-        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; flex-wrap: wrap; }
-        .btn-cancelar { background: var(--cinza); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .btn-remover { background: var(--amarelo); color: #111; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .btn-remover:hover { background: #FFD54F; }
-        .btn-confirmar { background: var(--verde); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .modal h3 { color: var(--vermelho-principal); margin-bottom: 20px; }
+        .opcao-mes { padding: 10px; margin: 5px 0; background: rgba(255,255,255,0.03); border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+        .opcao-mes:hover { border-color: var(--vermelho-principal); }
+        .opcao-mes.pago { border-left: 4px solid var(--verde); opacity: 0.7; }
+        .opcao-mes.atrasado { border-left: 4px solid var(--vermelho-principal); }
+        .opcao-mes.pendente { border-left: 4px solid var(--amarelo); }
+        .botoes-modal { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-cancelar { flex:1; padding:10px; background: var(--borda); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
+        .btn-remover { flex:1; padding:10px; background: var(--vermelho-principal); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
+        .btn-confirmar { flex:1; padding:10px; background: var(--verde); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
 
         @media (max-width: 992px) {
-            .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
+            .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 15px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
         }
-
         @media (max-width: 600px) {
             .tabela { display: block; overflow-x: auto; }
         }
@@ -153,7 +184,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
-<body class="tema-escuro">
+<body>
 
     <button class="btn-menu" onclick="abrirFecharMenu()">
         <i class="fas fa-bars"></i>
@@ -172,7 +203,7 @@
                 <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
                 <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
-                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+                <li><a href="#" class="sair" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
         </nav>
     </aside>
@@ -180,10 +211,50 @@
     <main class="conteudo">
         <div class="cabecalho">
             <h1 class="titulo-pagina">Controle Financeiro</h1>
+            <p class="subtitulo">Gerencie os pagamentos e vencimentos dos alunos</p>
+        </div>
+
+        <!-- 📊 CARDS DE ESTATÍSTICAS -->
+        <div class="grade-cards">
+            <div class="card-info card-total">
+                <div class="icone"><i class="fas fa-users"></i></div>
+                <div class="valor" id="cardTotal">0</div>
+                <div class="rotulo">Total de Alunos</div>
+            </div>
+            <div class="card-info card-emdia">
+                <div class="icone"><i class="fas fa-check-circle"></i></div>
+                <div class="valor" id="cardEmDia">0</div>
+                <div class="rotulo">Em dia</div>
+                <div class="detalhe" id="pctEmDia">0%</div>
+            </div>
+            <div class="card-info card-semana">
+                <div class="icone"><i class="fas fa-calendar-week"></i></div>
+                <div class="valor" id="cardSemana">0</div>
+                <div class="rotulo">Vencem esta semana</div>
+                <div class="detalhe" id="pctSemana">0%</div>
+            </div>
+            <div class="card-info card-atrasados">
+                <div class="icone"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="valor" id="cardAtrasados">0</div>
+                <div class="rotulo">Atrasados</div>
+                <div class="detalhe" id="pctAtrasados">0%</div>
+            </div>
+            <div class="card-info card-receita">
+                <div class="icone"><i class="fas fa-coins"></i></div>
+                <div class="valor" id="cardReceita">R$ 0,00</div>
+                <div class="rotulo">Receita Prevista</div>
+                <div class="detalhe">Próximos 30 dias</div>
+            </div>
+            <div class="card-info card-recebido">
+                <div class="icone"><i class="fas fa-wallet"></i></div>
+                <div class="valor" id="cardRecebido">R$ 0,00</div>
+                <div class="rotulo">Recebido este mês</div>
+                <div class="detalhe" id="pctRecebido">0%</div>
+            </div>
         </div>
 
         <div class="card-filtro">
-            <input type="text" id="busca" placeholder="🔍 Buscar por nome, CPF ou responsável...">
+            <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome, CPF ou responsável...">
             <select id="filtroTipo">
                 <option value="">Todos os Tipos</option>
                 <option value="Kids">Kids</option>
@@ -193,50 +264,50 @@
             </select>
             <select id="filtroStatus">
                 <option value="">Todos os Status</option>
-                <option value="Pago">Pago</option>
-                <option value="Pendente">Pendente</option>
-                <option value="Atrasado">Atrasado</option>
+                <option value="emdia">Em dia</option>
+                <option value="hoje">Vence hoje</option>
+                <option value="semana">Vence esta semana</option>
+                <option value="atrasado">Atrasado</option>
             </select>
         </div>
 
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Nome do Aluno</th>
-                    <th>Tipo</th>
+                    <th>Aluno</th>
                     <th>Plano</th>
-                    <th>Valor Mensal</th>
-                    <th>Matrícula</th>
+                    <th>Dia Venc.</th>
                     <th>Próximo Vencimento</th>
                     <th>Status</th>
+                    <th>Dias</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="8" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>
             </tbody>
         </table>
+
+        <!-- 📋 LEGENDA -->
+        <div class="legenda">
+            <span class="legenda-item"><span class="bolinha bolinha-emdia"></span> Em dia</span>
+            <span class="legenda-item"><span class="bolinha bolinha-hoje"></span> Vence hoje</span>
+            <span class="legenda-item"><span class="bolinha bolinha-semana"></span> Vence esta semana</span>
+            <span class="legenda-item"><span class="bolinha bolinha-atrasado"></span> Atrasado</span>
+            <span style="margin-left:auto; font-size:11px; color:var(--texto-cinza)">O vencimento é calculado automaticamente com base na data de matrícula</span>
+        </div>
     </main>
 
-    <div class="modal" id="modalMes">
-        <div class="modal-conteudo">
-            <h3 class="modal-titulo">Marcar Pagamento</h3>
-            <div class="modal-grupo">
-                <label>Aluno:</label>
-                <span id="nomeAlunoModal" style="font-weight:600; font-size:15px;"></span>
-            </div>
-            <div class="modal-grupo">
-                <label>Data de Matrícula:</label>
-                <span id="dataMatriculaModal" class="info-vencimento"></span>
-            </div>
-            <div class="modal-grupo">
-                <label>Próximo Vencimento:</label>
-                <span id="proximoVencimentoModal" class="info-vencimento" style="font-weight:bold; color:var(--vermelho-claro);"></span>
-            </div>
-            <div class="modal-botoes">
-                <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
-                <button class="btn-remover" onclick="removerPagamento()">Remover</button>
-                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar Pagamento</button>
+    <!-- MODAL MARCAR PAGAMENTO -->
+    <div id="modalPagamento" class="fundo-modal">
+        <div class="modal">
+            <h3 id="nomeAlunoPagamento">Marcar Pagamento</h3>
+            <p style="color:var(--texto-cinza); margin-bottom:15px;">Selecione o mês para marcar como pago:</p>
+            <div id="listaMeses"></div>
+            <div class="botoes-modal">
+                <button class="btn-cancelar" onclick="fecharModalPagamento()">Cancelar</button>
+                <button class="btn-remover" id="btnRemoverPagamento" style="display:none;" onclick="removerPagamento()">Remover</button>
+                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar</button>
             </div>
         </div>
     </div>
@@ -255,274 +326,304 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let alunoSelecionado = null;
+        let alunosCarregados = [];
+        let alunoAtual = null;
+        let mesSelecionado = null;
 
-        // ✅ Calcula o PRÓXIMO VENCIMENTO baseado na DATA DE MATRÍCULA + quantidade de pagamentos
-        function calcularProximoVencimento(dataMatricula, qtdPagamentos = 0) {
-            const data = new Date(dataMatricula);
-            const diaFixo = data.getDate(); // ✅ GUARDA O DIA DA MATRÍCULA PARA SEMPRE
-            data.setMonth(data.getMonth() + qtdPagamentos + 1); // ✅ Soma os meses pagos + 1
-
-            // Ajusta caso o dia não exista no mês (ex: 31/04 → 30/04)
-            const ultimoDiaDoMes = new Date(data.getFullYear(), data.getMonth() + 1, 0).getDate();
-            data.setDate(Math.min(diaFixo, ultimoDiaDoMes));
-
-            return data;
-        }
-
-        // ✅ Verifica status usando o PRÓXIMO VENCIMENTO calculado
-        function verificarStatus(dataMatricula, qtdPagamentos = 0) {
-            if (!dataMatricula) {
-                return { texto: 'Sem matrícula', classe: 'status-sem-pagamento' };
-            }
-
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-
-            const proximoVenc = calcularProximoVencimento(dataMatricula, qtdPagamentos);
-            proximoVenc.setHours(0, 0, 0, 0);
-
-            // Se nunca pagou → vencimento é o mês da matrícula
-            if (qtdPagamentos === 0) {
-                const primeiroVenc = new Date(dataMatricula);
-                primeiroVenc.setHours(0, 0, 0, 0);
-                if (hoje < primeiroVenc) {
-                    const diasRestantes = Math.ceil((primeiroVenc - hoje) / (1000 * 60 * 60 * 24));
-                    return { texto: `Aguardando início (${diasRestantes} dias)`, classe: 'status-pendente', vencimento: primeiroVenc };
-                } else if (hoje.getTime() === primeiroVenc.getTime()) {
-                    return { texto: 'Vence HOJE', classe: 'status-pendente', vencimento: primeiroVenc };
-                } else {
-                    return { texto: 'Atrasado', classe: 'status-atrasado', vencimento: primeiroVenc };
-                }
-            }
-
-            // Se já pagou → verifica o PRÓXIMO vencimento
-            if (hoje < proximoVenc) {
-                const diasRestantes = Math.ceil((proximoVenc - hoje) / (1000 * 60 * 60 * 24));
-                const textoDias = diasRestantes === 1 ? 'dia' : 'dias';
-                return { 
-                    texto: `Pendente (${diasRestantes} ${textoDias} para vencer)`, 
-                    classe: 'status-pendente',
-                    vencimento: proximoVenc
-                };
-            } else if (hoje.getTime() === proximoVenc.getTime()) {
-                return { texto: 'Vence HOJE', classe: 'status-pendente', vencimento: proximoVenc };
-            } else {
-                return { texto: 'Atrasado', classe: 'status-atrasado', vencimento: proximoVenc };
-            }
-        }
-
-        function carregarTema() {
-            const temaSalvo = localStorage.getItem('tema') || 'escuro';
-            const corpo = document.body;
-            if (temaSalvo === 'claro') {
-                corpo.classList.remove('tema-escuro');
-                corpo.classList.add('tema-claro');
-            } else {
-                corpo.classList.remove('tema-claro');
-                corpo.classList.add('tema-escuro');
-            }
-        }
+        const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+        const diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
 
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        async function carregarLista() {
+        // 📅 Calcula o próximo vencimento com base no dia fixo da matrícula
+        function calcularProximoVencimento(diaFixo, qtdPagamentos) {
+            const hoje = new Date();
+            let mesBase = hoje.getMonth();
+            let anoBase = hoje.getFullYear();
+
+            // Se já passou o dia hoje, começa do mês seguinte
+            if (hoje.getDate() > diaFixo) {
+                mesBase++;
+                if (mesBase > 11) { mesBase = 0; anoBase++; }
+            }
+
+            // Avança conforme os pagamentos feitos
+            let mesVenc = mesBase;
+            let anoVenc = anoBase;
+            if (qtdPagamentos && qtdPagamentos > 0) {
+                mesVenc += qtdPagamentos;
+                while (mesVenc > 11) { mesVenc -= 12; anoVenc++; }
+            }
+
+            return new Date(anoVenc, mesVenc, diaFixo);
+        }
+
+        // 🟢🟡🔴 Define cor e status
+        function definirStatus(dataVenc) {
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+            const venc = new Date(dataVenc); venc.setHours(0,0,0,0);
+            const diff = Math.ceil((venc - hoje) / (1000*60*60*24));
+
+            if (diff < 0) return { classe: 'status-atrasado', texto: 'Atrasado', dias: diff, diasClasse: 'dias-atrasado' };
+            if (diff === 0) return { classe: 'status-hoje', texto: 'Vence hoje', dias: 0, diasClasse: '' };
+            if (diff <= 7) return { classe: 'status-semana', texto: 'Vence esta semana', dias: diff, diasClasse: '' };
+            return { classe: 'status-emdia', texto: 'Em dia', dias: diff, diasClasse: 'dias-emdia' };
+        }
+
+        // ✅ Carrega alunos e calcula tudo
+        async function carregarFinanceiro() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando dados...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
-                const snapshot = await db.collection('alunos').get();
+                const snapshot = await db.collection('alunos').where('tipo','!=','Bolsista').get();
+
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno encontrado</td></tr>';
                     return;
                 }
 
-                let alunos = [];
+                alunosCarregados = [];
                 snapshot.forEach(doc => {
-                    const dadosAluno = doc.data();
-                    if ((dadosAluno.tipo || '').trim().toLowerCase() !== 'bolsista') {
-                        alunos.push({ id: doc.id, dados: dadosAluno });
+                    const d = doc.data();
+                    if (d.tipo === 'Bolsista') return;
+
+                    // ✅ Pega o DIA FIXO da matrícula
+                    let diaFixo = null;
+                    if (d.dataMatricula) diaFixo = d.dataMatricula.toDate().getDate();
+                    else if (d.dataVencimento) diaFixo = d.dataVencimento.toDate().getDate();
+                    else if (d.dataInicioAula) diaFixo = d.dataInicioAula.toDate().getDate();
+
+                    if (!diaFixo) return; // sem dia fixo = não mostra
+
+                    const qtdPag = d.qtdPagamentos || 0;
+                    const proxVenc = calcularProximoVencimento(diaFixo, qtdPag);
+                    const status = definirStatus(proxVenc);
+
+                    alunosCarregados.push({
+                        id: doc.id,
+                        dados: d,
+                        diaFixo,
+                        qtdPagamentos: qtdPag,
+                        proxVencimento: proxVenc,
+                        status
+                    });
+                });
+
+                // ✅ Ordena: atrasados primeiro, depois os próximos
+                alunosCarregados.sort((a,b) => a.proxVencimento - b.proxVencimento);
+
+                // ✅ Calcula estatísticas
+                const total = alunosCarregados.length;
+                let emdia = 0, semana = 0, atrasados = 0;
+                let receitaPrevista = 0, recebidoMes = 0;
+                const hoje = new Date();
+                const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+
+                alunosCarregados.forEach(a => {
+                    receitaPrevista += (a.dados.valorPlano || 0);
+                    if (a.status.dias < 0) atrasados++;
+                    else if (a.status.dias === 0) semana++;
+                    else if (a.status.dias <= 7) semana++;
+                    else emdia++;
+
+                    // Recebido do mês atual
+                    if (a.qtdPagamentos > 0) {
+                        const mesUltimo = (mesAtual - 1 + a.qtdPagamentos) % 12;
+                        if (mesUltimo === mesAtual) recebidoMes += (a.dados.valorPlano || 0);
                     }
                 });
 
-                if (alunos.length === 0) {
-                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno não bolsista encontrado</td></tr>';
-                    return;
-                }
+                // ✅ Atualiza cards
+                document.getElementById('cardTotal').textContent = total;
+                document.getElementById('cardEmDia').textContent = emdia;
+                document.getElementById('pctEmDia').textContent = total ? `${Math.round(emdia/total*100)}%` : '0%';
+                document.getElementById('cardSemana').textContent = semana;
+                document.getElementById('pctSemana').textContent = total ? `${Math.round(semana/total*100)}%` : '0%';
+                document.getElementById('cardAtrasados').textContent = atrasados;
+                document.getElementById('pctAtrasados').textContent = total ? `${Math.round(atrasados/total*100)}%` : '0%';
+                document.getElementById('cardReceita').textContent = `R$ ${receitaPrevista.toFixed(2).replace('.',',')}`;
+                document.getElementById('cardRecebido').textContent = `R$ ${recebidoMes.toFixed(2).replace('.',',')}`;
+                document.getElementById('pctRecebido').textContent = receitaPrevista ? `${Math.round(recebidoMes/receitaPrevista*100)}%` : '0%';
 
-                // Ordena: Atrasados primeiro → Pendentes → Em dia
-                alunos.sort((a, b) => {
-                    const dataMatA = a.dados.dataMatricula ? new Date(a.dados.dataMatricula.toDate()) : null;
-                    const dataMatB = b.dados.dataMatricula ? new Date(b.dados.dataMatricula.toDate()) : null;
-                    const qtdA = a.dados.qtdPagamentos || 0;
-                    const qtdB = b.dados.qtdPagamentos || 0;
-                    const statusA = verificarStatus(dataMatA, qtdA);
-                    const statusB = verificarStatus(dataMatB, qtdB);
-                    const ordem = { 'status-atrasado': 0, 'status-sem-pagamento': 1, 'status-pendente': 2, 'status-pago': 3 };
-                    return ordem[statusA.classe] - ordem[statusB.classe];
-                });
-
-                lista.innerHTML = '';
-
-                alunos.forEach(aluno => {
-                    const d = aluno.dados;
-                    const dataMatricula = d.dataMatricula ? new Date(d.dataMatricula.toDate()) : null;
-                    const qtdPagamentos = d.qtdPagamentos || 0;
-                    const status = verificarStatus(dataMatricula, qtdPagamentos);
-                    const valor = d.valorPlano || 0;
-                    const classeTipo = `tipo-${(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
-                    const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
-                    const matriculaTexto = dataMatricula ? dataMatricula.toLocaleDateString('pt-BR') : 'Não informada';
-                    const proximoVencTexto = status.vencimento ? status.vencimento.toLocaleDateString('pt-BR') : '—';
-
-                    const linha = `
-                    <tr>
-                        <td><strong>${d.nome || '-'}</strong></td>
-                        <td><span class="tipo-aluno ${classeTipo}">${d.tipo || '-'}</span></td>
-                        <td>${d.periodo || '-'}</td>
-                        <td>${valorTexto}</td>
-                        <td>${matriculaTexto}</td>
-                        <td>${proximoVencTexto}</td>
-                        <td><span class="${status.classe}">${status.texto}</span></td>
-                        <td>
-                            <button class="btn-acao" onclick="abrirModal('${aluno.id}', ${dataMatricula ? `new Date(${dataMatricula.getTime()})` : 'null'}, ${qtdPagamentos})">
-                                Marcar Pago
-                            </button>
-                        </td>
-                    </tr>`;
-                    lista.innerHTML += linha;
-                });
+                // ✅ Renderiza tabela
+                renderizarLista(alunosCarregados);
 
             } catch (erro) {
-                console.error('Erro:', erro);
-                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
+                console.error('ERRO:', erro);
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        function abrirModal(id, dataMatricula, qtdPagamentos) {
-            alunoSelecionado = { id, dataMatricula, qtdPagamentos };
-            document.getElementById('nomeAlunoModal').textContent = ''; // preenche abaixo
+        function renderizarLista(lista) {
+            const tb = document.getElementById('listaAlunos');
+            tb.innerHTML = '';
 
-            if (dataMatricula) {
-                document.getElementById('dataMatriculaModal').textContent = 
-                    `Data: ${dataMatricula.toLocaleDateString('pt-BR')} | Dia fixo: ${dataMatricula.getDate()}`;
-                const proximoVenc = calcularProximoVencimento(dataMatricula, qtdPagamentos);
-                document.getElementById('proximoVencimentoModal').textContent = proximoVenc.toLocaleDateString('pt-BR');
-            } else {
-                document.getElementById('dataMatriculaModal').textContent = '⚠️ Data de matrícula não cadastrada';
-                document.getElementById('proximoVencimentoModal').textContent = '—';
-            }
+            lista.forEach(a => {
+                const d = a.dados;
+                const dataStr = `${a.proxVencimento.getDate().toString().padStart(2,'0')}/${(a.proxVencimento.getMonth()+1).toString().padStart(2,'0')}/${a.proxVencimento.getFullYear()}`;
+                const diaSem = diasSemana[a.proxVencimento.getDay()];
+                const diasTxt = a.status.dias === 0 ? '0 dia' : 
+                    a.status.dias < 0 ? `${a.status.dias} dias` : `${a.status.dias} dias para vencer`;
 
-            // Busca o nome do aluno
-            db.collection('alunos').doc(id).get().then(doc => {
-                document.getElementById('nomeAlunoModal').textContent = doc.data().nome;
+                tb.innerHTML += `
+                <tr>
+                    <td>
+                        <div style="font-weight:600;">${d.nome || '-'}</div>
+                        <div style="font-size:12px; color:var(--texto-cinza);">${d.telefone || ''}</div>
+                    </td>
+                    <td>${d.periodo || '-'}<br><span style="font-size:12px;">R$ ${(d.valorPlano||0).toFixed(2).replace('.',',')}</span></td>
+                    <td class="dia-fixo">${a.diaFixo}</td>
+                    <td>
+                        <div class="vencimento-data">${dataStr}</div>
+                        <div class="vencimento-semana">(${diaSem})</div>
+                    </td>
+                    <td><span class="status ${a.status.classe}">${a.status.texto}</span></td>
+                    <td class="dias-contador ${a.status.diasClasse}">${diasTxt}</td>
+                    <td><button class="btn-acao btn-pago" onclick="abrirModalPagamento('${a.id}')">Marcar Pago</button></td>
+                </tr>`;
+            });
+        }
+
+        // 🔍 Filtros
+        document.getElementById('buscaAluno').addEventListener('input', aplicarFiltros);
+        document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
+        document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
+
+        function aplicarFiltros() {
+            const termo = document.getElementById('buscaAluno').value.toLowerCase();
+            const tipoFiltro = document.getElementById('filtroTipo').value;
+            const statusFiltro = document.getElementById('filtroStatus').value;
+
+            let filtrado = alunosCarregados.filter(a => {
+                const d = a.dados;
+                const texto = `${d.nome||''}${d.responsavel||''}${d.cpf||''}`.toLowerCase();
+                if (termo && !texto.includes(termo)) return false;
+                if (tipoFiltro && (d.tipo||'') !== tipoFiltro) return false;
+
+                if (statusFiltro) {
+                    if (statusFiltro === 'atrasado' && a.status.dias >= 0) return false;
+                    if (statusFiltro === 'hoje' && a.status.dias !== 0) return false;
+                    if (statusFiltro === 'semana' && (a.status.dias < 1 || a.status.dias > 7)) return false;
+                    if (statusFiltro === 'emdia' && a.status.dias < 1) return false;
+                }
+                return true;
             });
 
-            document.getElementById('modalMes').classList.add('aberto');
+            renderizarLista(filtrado);
         }
 
-        function fecharModal() {
-            document.getElementById('modalMes').classList.remove('aberto');
-            alunoSelecionado = null;
+        // 💳 MODAL DE PAGAMENTO
+        async function abrirModalPagamento(idAluno) {
+            alunoAtual = alunosCarregados.find(a => a.id === idAluno);
+            if (!alunoAtual) return;
+
+            document.getElementById('nomeAlunoPagamento').textContent = `Pagamentos — ${alunoAtual.dados.nome}`;
+            const listaMeses = document.getElementById('listaMeses');
+            listaMeses.innerHTML = '';
+
+            const diaFixo = alunoAtual.diaFixo;
+            const qtdPag = alunoAtual.qtdPagamentos;
+            const hoje = new Date();
+            const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+
+            // Gera os meses desde a matrícula até +3 meses
+            let dataMat = null;
+            if (alunoAtual.dados.dataMatricula) dataMat = alunoAtual.dados.dataMatricula.toDate();
+            else if (alunoAtual.dados.dataVencimento) dataMat = alunoAtual.dados.dataVencimento.toDate();
+            else if (alunoAtual.dados.dataInicioAula) dataMat = alunoAtual.dados.dataInicioAula.toDate();
+
+            if (!dataMat) { alert('Data de matrícula não cadastrada!'); return; }
+
+            const mesInicio = dataMat.getMonth();
+            const anoInicio = dataMat.getFullYear();
+            const totalMeses = (anoAtual - anoInicio)*12 + (mesAtual - mesInicio) + 4;
+
+            for (let i = 0; i < totalMeses; i++) {
+                const m = mesInicio + i;
+                let ano = anoInicio + Math.floor(m/12);
+                let mes = m % 12;
+                const dataVenc = new Date(ano, mes, diaFixo);
+                const statusPag = definirStatus(dataVenc);
+
+                const jaPago = i < qtdPag;
+                const ehAtual = i === qtdPag;
+
+                let classe = '';
+                if (jaPago) classe = 'pago';
+                else if (statusPag.dias < 0) classe = 'atrasado';
+                else classe = 'pendente';
+
+                const idMes = `${ano}-${mes}`;
+                listaMeses.innerHTML += `
+                <div class="opcao-mes ${classe}" data-id="${idMes}" data-indice="${i}" 
+                     onclick="selecionarMes(this, ${i})">
+                    <strong>${nomesMeses[mes]} de ${ano}</strong> — ${diaFixo.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}
+                    ${jaPago ? ' ✅ PAGO' : statusPag.dias < 0 ? ' ⚠️ ATRASADO' : ''}
+                    ${ehAtual ? ' ← PRÓXIMO' : ''}
+                </div>`;
+            }
+
+            document.getElementById('btnRemoverPagamento').style.display = qtdPag > 0 ? 'block' : 'none';
+            mesSelecionado = null;
+            document.getElementById('modalPagamento').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function selecionarMes(el, indice) {
+            document.querySelectorAll('.opcao-mes').forEach(e => e.style.outline = '');
+            el.style.outline = '2px solid var(--vermelho-principal)';
+            mesSelecionado = indice;
+        }
+
+        function fecharModalPagamento() {
+            document.getElementById('modalPagamento').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            alunoAtual = null;
+            mesSelecionado = null;
         }
 
         async function confirmarPagamento() {
-            if (!alunoSelecionado || !alunoSelecionado.dataMatricula) {
-                alert('⚠️ Data de matrícula não cadastrada para este aluno!');
-                return;
-            }
-
-            const { id, dataMatricula, qtdPagamentos } = alunoSelecionado;
-            const proximoVenc = calcularProximoVencimento(dataMatricula, qtdPagamentos);
-            const proximoVencTexto = proximoVenc.toLocaleDateString('pt-BR');
-
-            if (!confirm(`Confirmar pagamento?\n\n✅ Quita o vencimento atual\n➡️ Próximo vencimento será: ${proximoVencTexto}\n⚠️ O dia ${dataMatricula.getDate()} será mantido para sempre!`)) {
-                return;
-            }
+            if (!alunoAtual) return;
+            const novoQtd = (mesSelecionado !== null ? mesSelecionado + 1 : alunoAtual.qtdPagamentos + 1);
 
             try {
-                const ref = db.collection('alunos').doc(id);
-                await ref.update({
-                    qtdPagamentos: qtdPagamentos + 1
+                await db.collection('alunos').doc(alunoAtual.id).update({
+                    qtdPagamentos: novoQtd
                 });
-
-                alert(`✅ Pagamento registrado!\nPróximo vencimento: ${proximoVencTexto}`);
-                fecharModal();
-                carregarLista();
-            } catch (erro) {
-                alert('Erro ao salvar: ' + erro.message);
+                alert('✅ Pagamento registrado!');
+                fecharModalPagamento();
+                carregarFinanceiro();
+            } catch (e) {
+                alert('Erro: ' + e.message);
             }
         }
 
         async function removerPagamento() {
-            if (!alunoSelecionado) return;
-
-            const { id, dataMatricula, qtdPagamentos } = alunoSelecionado;
-
-            if (qtdPagamentos === 0) {
-                alert('⚠️ Nenhum pagamento registrado para remover!');
-                return;
-            }
-
-            const vencimentoAnterior = calcularProximoVencimento(dataMatricula, qtdPagamentos - 1);
-
-            if (!confirm(`Tem CERTEZA que deseja REMOVER o último pagamento?\n\nVencimento voltará para: ${vencimentoAnterior.toLocaleDateString('pt-BR')}\nEssa ação não pode ser desfeita!`)) {
-                return;
-            }
+            if (!alunoAtual || !confirm('Remover o último pagamento?')) return;
+            const novoQtd = Math.max(0, alunoAtual.qtdPagamentos - 1);
 
             try {
-                const ref = db.collection('alunos').doc(id);
-                await ref.update({
-                    qtdPagamentos: qtdPagamentos - 1
-                });
-
-                alert(`✅ Pagamento removido!\nVencimento voltou para: ${vencimentoAnterior.toLocaleDateString('pt-BR')}`);
-                fecharModal();
-                carregarLista();
-            } catch (erro) {
-                alert('Erro ao remover: ' + erro.message);
+                await db.collection('alunos').doc(alunoAtual.id).update({ qtdPagamentos: novoQtd });
+                alert('✅ Pagamento removido!');
+                fecharModalPagamento();
+                carregarFinanceiro();
+            } catch (e) {
+                alert('Erro: ' + e.message);
             }
         }
 
-        document.getElementById('busca').addEventListener('input', () => {
-            const termo = document.getElementById('busca').value.toLowerCase();
-            document.querySelectorAll('#listaAlunos tr').forEach(l => {
-                if (!l.classList.contains('vazio')) {
-                    l.style.display = l.textContent.toLowerCase().includes(termo) ? '' : 'none';
-                }
-            });
-        });
-
-        document.getElementById('filtroTipo').addEventListener('change', () => {
-            const filtro = document.getElementById('filtroTipo').value.toLowerCase();
-            document.querySelectorAll('#listaAlunos tr').forEach(l => {
-                if (!l.classList.contains('vazio')) {
-                    l.style.display = !filtro || l.textContent.toLowerCase().includes(filtro) ? '' : 'none';
-                }
-            });
-        });
-
-        document.getElementById('filtroStatus').addEventListener('change', () => {
-            const filtro = document.getElementById('filtroStatus').value;
-            document.querySelectorAll('#listaAlunos tr').forEach(l => {
-                if (!l.classList.contains('vazio')) {
-                    const statusTexto = l.querySelector('span:last-child').textContent;
-                    l.style.display = !filtro || statusTexto.includes(filtro) ? '' : 'none';
-                }
-            });
-        });
-
         function sair() {
-            if (confirm('Deseja sair do sistema?')) {
+            if (confirm('Deseja sair?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
-        auth.onAuthStateChanged(usuario => {
-            if (!usuario) window.location.href = 'login.html';
-            else { carregarTema(); carregarLista(); }
+        auth.onAuthStateChanged(u => {
+            if (!u) window.location.href = 'login.html';
+            else carregarFinanceiro();
         });
     </script>
 </body>
