@@ -72,7 +72,6 @@
             border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
         }
 
-        /* 📊 CARDS DO TOPO */
         .cards-topo {
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px;
         }
@@ -84,7 +83,6 @@
         .card-resumo .rotulo { font-size: 13px; color: var(--texto-cinza); }
         .card-resumo .destaque { font-size: 11px; margin-top: 4px; }
 
-        /* 🔍 FILTROS */
         .area-filtros {
             display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 20px;
         }
@@ -98,7 +96,6 @@
             border-radius: 6px; cursor: pointer; font-weight: 600;
         }
 
-        /* 📑 TABELA */
         .tabela { 
             width: 100%; border-collapse: collapse; background: var(--fundo-card);
             border: 1px solid var(--borda); border-radius: 10px; overflow: hidden;
@@ -111,7 +108,6 @@
         .tabela tr:hover { background: rgba(255,255,255,0.02); }
         .vazio { text-align: center; padding: 50px !important; color: var(--texto-cinza); }
 
-        /* 🟢 STATUS */
         .status { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
         .status-emdia { background: #00C85320; color: #00C853; }
         .status-avencer { background: #FFC10720; color: #FFC107; }
@@ -131,7 +127,6 @@
 
         .info-venc { font-size: 12px; margin-top: 2px; }
 
-        /* MODAL */
         .fundo-modal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000;
             justify-content: center; align-items: flex-start; padding: 20px; overflow-y: auto;
@@ -204,7 +199,6 @@
             </button>
         </div>
 
-        <!-- 📊 CARDS DO TOPO -->
         <div class="cards-topo">
             <div class="card-resumo">
                 <div class="valor" id="cardTotal">0</div>
@@ -233,7 +227,6 @@
             </div>
         </div>
 
-        <!-- 🔍 FILTROS -->
         <div class="area-filtros">
             <input type="text" id="buscaAluno" placeholder="Buscar por nome, CPF ou responsável...">
             <select id="filtroTipo">
@@ -260,7 +253,6 @@
             <button class="btn-exportar"><i class="fas fa-download"></i> Exportar</button>
         </div>
 
-        <!-- 📑 TABELA -->
         <table class="tabela">
             <thead>
                 <tr>
@@ -282,7 +274,6 @@
         </table>
     </main>
 
-    <!-- 📝 MODAL CADASTRO -->
     <div id="modalCadastro" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalCadastro()">&times;</button>
@@ -401,35 +392,51 @@
         document.getElementById('cpfAluno').addEventListener('input', function() {
             let n = this.value.replace(/\D/g, '');
             if (n.length > 11) n = n.slice(0,11);
-            if (n.length >= 4) n = n.slice(0,3)+'.'+n.slice(3);
-            if (n.length >= 8) n = n.slice(0,7)+'.'+n.slice(7);
-            if (n.length >= 12) n = n.slice(0,11)+'-'+n.slice(11,13);
+            if (n.length >= 4) n = n.slice(0,3) + '.' + n.slice(3);
+            if (n.length >= 8) n = n.slice(0,7) + '.' + n.slice(7);
+            if (n.length >= 12) n = n.slice(0,11) + '-' + n.slice(11,13);
             this.value = n;
         });
 
-        function abrirFecharMenu() { document.getElementById('menuLateral').classList.toggle('aberto'); }
+        function abrirFecharMenu() { 
+            document.getElementById('menuLateral').classList.toggle('aberto'); 
+        }
 
         function atualizarValorPlano() {
             const tipo = document.getElementById('tipoAluno').value;
             const periodo = document.getElementById('periodoAluno').value;
             const desc = parseFloat(document.getElementById('descontoAluno').value) || 0;
             const campo = document.getElementById('valorFinalAluno');
-            if (!tipo || !periodo) { campo.value='Selecione...'; campo.className='valor-final valor-vazio'; return; }
-            if (tipo === 'Bolsista') { campo.value='GRÁTIS'; campo.className='valor-final valor-gratis'; }
-            else {
-                const val = valoresPlanos[periodo] - (valoresPlanos[periodo] * desc / 100);
-                campo.value = `R$ ${val.toFixed(2).replace('.',',')}`;
+            
+            if (!tipo || !periodo) { 
+                campo.value = 'Selecione...'; 
+                campo.className = 'valor-final valor-vazio'; 
+                campo.removeAttribute('data-valor');
+                return; 
+            }
+            
+            if (tipo === 'Bolsista') { 
+                campo.value = 'GRÁTIS'; 
+                campo.className = 'valor-final valor-gratis'; 
+                campo.dataset.valor = '0';
+            } else {
+                const valorBase = valoresPlanos[periodo] || 0;
+                const valorFinal = valorBase - (valorBase * desc / 100);
+                campo.value = `R$ ${valorFinal.toFixed(2).replace('.',',')}`;
                 campo.className = 'valor-final';
-                campo.dataset.valor = val;
+                campo.dataset.valor = valorFinal;
             }
         }
 
-        // 🧮 Calcula status e dias para vencer
         function calcularStatus(vencimento) {
-            if (!vencimento) return { classe: 'avencer', texto: 'Sem data', dias: null };
+            if (!vencimento || isNaN(new Date(vencimento).getTime())) { 
+                return { classe: 'avencer', texto: 'Sem data definida', dias: null }; 
+            }
             const hoje = new Date(); hoje.setHours(0,0,0,0);
             const ven = new Date(vencimento); ven.setHours(0,0,0,0);
             const dias = Math.ceil((ven - hoje) / (1000*60*60*24));
+            
+            if (isNaN(dias)) return { classe: 'avencer', texto: 'Data inválida', dias: null };
             if (dias < 0) return { classe: 'atrasado', texto: `Atrasado há ${Math.abs(dias)} dias`, dias };
             if (dias === 0) return { classe: 'avencer', texto: 'Vence HOJE', dias };
             if (dias <= 5) return { classe: 'avencer', texto: `Vence em ${dias} dia${dias>1?'s':''}`, dias };
@@ -439,28 +446,38 @@
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="10" class="vazio">🔄 Carregando...</td></tr>';
+            
             try {
                 const snap = await db.collection('alunos').get();
-                if (snap.empty) { lista.innerHTML='<tr><td colspan="10" class="vazio">Nenhum aluno cadastrado</td></tr>'; return; }
+                if (snap.empty) { 
+                    lista.innerHTML = '<tr><td colspan="10" class="vazio">Nenhum aluno cadastrado</td></tr>'; 
+                    return; 
+                }
 
                 let alunos = [];
-                snap.forEach(d => alunos.push({id:d.id, dados:d.data()}));
-                alunos.sort((a,b) => ((a.dados.nome||'').toLowerCase()).localeCompare((b.dados.nome||'').toLowerCase()));
+                snap.forEach(d => alunos.push({id: d.id, dados: d.data()}));
+                alunos.sort((a, b) => {
+                    const nomeA = String((a.dados.nome || '')).toLowerCase();
+                    const nomeB = String((b.dados.nome || '')).toLowerCase();
+                    return nomeA.localeCompare(nomeB);
+                });
 
-                // 📊 Calcula cards
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 const fimSemana = new Date(hoje); fimSemana.setDate(fimSemana.getDate() + 7);
-                let total=0, emDia=0, estaSemana=0, atrasados=0, receita=0;
+                let total = 0, emDia = 0, estaSemana = 0, atrasados = 0, receita = 0;
+
                 alunos.forEach(a => {
                     total++;
-                    const venc = a.dados.dataVencimento ? a.dados.dataVencimento.toDate() : (a.dados.dataMatricula ? a.dados.dataMatricula.toDate() : null);
-                    if (venc) {
-                        const st = calcularStatus(venc);
-                        if (st.classe==='emdia') emDia++;
-                        if (st.classe==='atrasado') atrasados++;
-                        if (st.dias!==null && st.dias >=0 && st.dias <=7) estaSemana++;
-                    }
-                    receita += (a.dados.valorPlano || 0);
+                    let venc = null;
+                    if (a.dados.dataVencimento) venc = a.dados.dataVencimento.toDate();
+                    else if (a.dados.dataMatricula) venc = a.dados.dataMatricula.toDate();
+                    
+                    const status = calcularStatus(venc);
+                    if (status.classe === 'emdia') emDia++;
+                    if (status.classe === 'atrasado') atrasados++;
+                    if (status.dias !== null && status.dias >= 0 && status.dias <= 7) estaSemana++;
+                    
+                    receita += Number(a.dados.valorPlano) || 0;
                 });
 
                 document.getElementById('cardTotal').textContent = total;
@@ -468,129 +485,197 @@
                 document.getElementById('cardEstaSemana').textContent = estaSemana;
                 document.getElementById('cardAtrasados').textContent = atrasados;
                 document.getElementById('cardReceita').textContent = `R$ ${receita.toFixed(2).replace('.',',')}`;
-                document.getElementById('cardPctEmDia').textContent = total>0 ? `${Math.round(emDia/total*100)}% do total` : '—';
-                document.getElementById('cardPctSemana').textContent = total>0 ? `${Math.round(estaSemana/total*100)}% do total` : '—';
-                document.getElementById('cardPctAtrasados').textContent = total>0 ? `${Math.round(atrasados/total*100)}% do total` : '—';
+                document.getElementById('cardPctEmDia').textContent = total > 0 ? `${Math.round((emDia / total) * 100)}% do total` : '—';
+                document.getElementById('cardPctSemana').textContent = total > 0 ? `${Math.round((estaSemana / total) * 100)}% do total` : '—';
+                document.getElementById('cardPctAtrasados').textContent = total > 0 ? `${Math.round((atrasados / total) * 100)}% do total` : '—';
 
-                // 📋 Monta tabela
                 lista.innerHTML = '';
                 alunos.forEach(aluno => {
                     const d = aluno.dados;
-                    const valorTexto = (d.valorPlano||0)===0 ? 'GRÁTIS' : `R$ ${(d.valorPlano||0).toFixed(2).replace('.',',')}`;
-                    const classeTipo = `tipo-aluno tipo-${(d.tipo||'comercial').toLowerCase().replace(/\s/g,'-')}`;
+                    const valorPlano = Number(d.valorPlano) || 0;
+                    const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.',',')}`;
+                    const tipoAluno = String(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-');
+                    const classeTipo = `tipo-aluno tipo-${tipoAluno}`;
                     const nasc = d.dataNascimento ? d.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
                     const cpf = formatarCPF(d.cpf);
+                    
                     let venc = null, vencTexto = '-';
-                    if (d.dataVencimento) { venc = d.dataVencimento.toDate(); vencTexto = venc.toLocaleDateString('pt-BR'); }
-                    else if (d.dataMatricula) { venc = d.dataMatricula.toDate(); vencTexto = venc.toLocaleDateString('pt-BR'); }
+                    if (d.dataVencimento) { 
+                        venc = d.dataVencimento.toDate(); 
+                        vencTexto = venc.toLocaleDateString('pt-BR'); 
+                    } else if (d.dataMatricula) { 
+                        venc = d.dataMatricula.toDate(); 
+                        vencTexto = venc.toLocaleDateString('pt-BR'); 
+                    }
                     const status = calcularStatus(venc);
+                    const statusTexto = status.classe === 'emdia' ? 'Em dia' : status.classe === 'avencer' ? 'A vencer' : 'Atrasado';
+                    const nomeSeguro = (d.nome || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
+                    const cpfSeguro = (d.cpf || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
 
                     lista.innerHTML += `
-                    <tr data-status="${status.classe}" data-plano="${d.periodo||''}" data-tipo="${d.tipo||''}">
-                        <td><strong>${d.nome||'-'}</strong><br><small style="color:var(--texto-cinza)">${d.responsavel||'—'}</small></td>
+                    <tr data-status="${status.classe}" data-plano="${d.periodo || ''}" data-tipo="${d.tipo || ''}">
+                        <td><strong>${d.nome || '-'}</strong><br><small style="color:var(--texto-cinza)">${d.responsavel || '—'}</small></td>
                         <td>${cpf}</td>
-                        <td><span class="${classeTipo}">${d.tipo||'-'}</span></td>
+                        <td><span class="${classeTipo}">${d.tipo || '-'}</span></td>
                         <td>${nasc}</td>
                         <td>${vencTexto}</td>
-                        <td>${d.periodo||'-'}</td>
+                        <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
                         <td class="info-venc">${status.texto}</td>
-                        <td><span class="status status-${status.classe}">${status.classe==='emdia'?'Em dia':status.classe==='avencer'?'A vencer':'Atrasado'}</span></td>
+                        <td><span class="status status-${status.classe}">${statusTexto}</span></td>
                         <td>
                             <button class="btn-acao btn-editar" onclick="editarAluno('${aluno.id}')">Editar</button>
-                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${d.nome||'','${d.cpf||''}')">Declaração</button>
+                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${nomeSeguro}','${cpfSeguro}')">Declaração</button>
                             <button class="btn-acao btn-excluir" onclick="excluirAluno('${aluno.id}')">Excluir</button>
                         </td>
                     </tr>`;
                 });
 
-            } catch (e) { lista.innerHTML = `<tr><td colspan="10" class="vazio">Erro: ${e.message}</td></tr>`; }
+            } catch (e) { 
+                console.error('Erro ao carregar alunos:', e);
+                lista.innerHTML = `<tr><td colspan="10" class="vazio">Erro: ${e.message}</td></tr>`; 
+            }
         }
 
-        function abrirDeclaracao(nome,cpf) { window.open(`declaracao.html?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`,'_blank'); }
-        function abrirModalCadastro() {
-            document.getElementById('idAluno').value=''; document.getElementById('tituloModal').textContent='Cadastrar Novo Aluno';
-            document.getElementById('formAluno').reset(); document.getElementById('matriculaAluno').valueAsDate=new Date();
-            document.getElementById('valorFinalAluno').value='Selecione...'; document.getElementById('valorFinalAluno').className='valor-final valor-vazio';
-            document.getElementById('modalCadastro').style.display='flex'; document.body.style.overflow='hidden';
+        function abrirDeclaracao(nome, cpf) { 
+            window.open(`declaracao.html?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`, '_blank'); 
         }
-        function fecharModalCadastro() { document.getElementById('modalCadastro').style.display='none'; document.body.style.overflow='auto'; }
+
+        function abrirModalCadastro() {
+            document.getElementById('idAluno').value = ''; 
+            document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
+            document.getElementById('formAluno').reset(); 
+            document.getElementById('matriculaAluno').valueAsDate = new Date();
+            document.getElementById('valorFinalAluno').value = 'Selecione...'; 
+            document.getElementById('valorFinalAluno').className = 'valor-final valor-vazio';
+            document.getElementById('modalCadastro').style.display = 'flex'; 
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fecharModalCadastro() { 
+            document.getElementById('modalCadastro').style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+        }
 
         async function editarAluno(id) {
-            const doc = await db.collection('alunos').doc(id).get();
-            if (!doc.exists) return;
-            const d = doc.data();
-            document.getElementById('idAluno').value = id;
-            document.getElementById('tituloModal').textContent = 'Editar Aluno';
-            document.getElementById('nomeAluno').value = d.nome || '';
-            document.getElementById('cpfAluno').value = formatarCPF(d.cpf || '');
-            document.getElementById('tipoAluno').value = d.tipo || '';
-            document.getElementById('nascimentoAluno').value = d.dataNascimento ? d.dataNascimento.toDate().toISOString().split('T')[0] : '';
-            document.getElementById('responsavelAluno').value = d.responsavel || '';
-            let dtVenc = d.dataVencimento ? d.dataVencimento.toDate() : (d.dataMatricula ? d.dataMatricula.toDate() : null);
-            document.getElementById('matriculaAluno').value = dtVenc ? dtVenc.toISOString().split('T')[0] : '';
-            document.getElementById('periodoAluno').value = d.periodo || '';
-            document.getElementById('descontoAluno').value = d.desconto || 0;
-            document.getElementById('faixaAluno').value = d.faixa || '';
-            atualizarValorPlano();
-            document.getElementById('modalCadastro').style.display='flex'; document.body.style.overflow='hidden';
+            try {
+                const doc = await db.collection('alunos').doc(id).get();
+                if (!doc.exists) return;
+                const d = doc.data();
+                
+                document.getElementById('idAluno').value = id;
+                document.getElementById('tituloModal').textContent = 'Editar Aluno';
+                document.getElementById('nomeAluno').value = d.nome || '';
+                document.getElementById('cpfAluno').value = formatarCPF(d.cpf || '');
+                document.getElementById('tipoAluno').value = d.tipo || '';
+                document.getElementById('nascimentoAluno').value = d.dataNascimento ? d.dataNascimento.toDate().toISOString().split('T')[0] : '';
+                document.getElementById('responsavelAluno').value = d.responsavel || '';
+                
+                let dtVenc = null;
+                if (d.dataVencimento) dtVenc = d.dataVencimento.toDate();
+                else if (d.dataMatricula) dtVenc = d.dataMatricula.toDate();
+                document.getElementById('matriculaAluno').value = dtVenc ? dtVenc.toISOString().split('T')[0] : '';
+                
+                document.getElementById('periodoAluno').value = d.periodo || '';
+                document.getElementById('descontoAluno').value = d.desconto || 0;
+                document.getElementById('faixaAluno').value = d.faixa || '';
+                
+                atualizarValorPlano();
+                document.getElementById('modalCadastro').style.display = 'flex'; 
+                document.body.style.overflow = 'hidden';
+            } catch (e) {
+                alert('Erro ao carregar dados: ' + e.message);
+            }
         }
 
         async function excluirAluno(id) {
-            if (!confirm('Tem certeza?')) return;
-            await db.collection('alunos').doc(id).delete();
-            carregarAlunos();
+            if (!confirm('Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
+            try {
+                await db.collection('alunos').doc(id).delete();
+                await carregarAlunos();
+            } catch (e) {
+                alert('Erro ao excluir: ' + e.message);
+            }
         }
 
         document.getElementById('formAluno').addEventListener('submit', async e => {
             e.preventDefault();
             const id = document.getElementById('idAluno').value;
             const valorFinal = parseFloat(document.getElementById('valorFinalAluno').dataset.valor) || 0;
-            const cpfSem = document.getElementById('cpfAluno').value.replace(/\D/g,'');
-            const dados = {
-                nome: document.getElementById('nomeAluno').value.trim(),
-                cpf: cpfSem,
-                tipo: document.getElementById('tipoAluno').value,
-                dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
-                responsavel: document.getElementById('responsavelAluno').value.trim(),
-                dataVencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('matriculaAluno').value)),
-                periodo: document.getElementById('periodoAluno').value,
-                desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
-                valorPlano: valorFinal,
-                faixa: document.getElementById('faixaAluno').value,
-                dataCadastro: firebase.firestore.Timestamp.now()
-            };
-            if (id) { await db.collection('alunos').doc(id).update(dados); alert('✅ Atualizado!'); }
-            else { dados.qtdPagamentos=0; await db.collection('alunos').add(dados); alert('✅ Cadastrado!'); }
-            fecharModalCadastro(); carregarAlunos();
+            const cpfSem = document.getElementById('cpfAluno').value.replace(/\D/g, '');
+            
+            try {
+                const dados = {
+                    nome: document.getElementById('nomeAluno').value.trim(),
+                    cpf: cpfSem,
+                    tipo: document.getElementById('tipoAluno').value,
+                    dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
+                    responsavel: document.getElementById('responsavelAluno').value.trim(),
+                    dataVencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('matriculaAluno').value)),
+                    periodo: document.getElementById('periodoAluno').value,
+                    desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
+                    valorPlano: valorFinal,
+                    faixa: document.getElementById('faixaAluno').value,
+                    dataCadastro: firebase.firestore.Timestamp.now()
+                };
+
+                if (id) { 
+                    await db.collection('alunos').doc(id).update(dados); 
+                    alert('✅ Aluno atualizado com sucesso!');
+                } else { 
+                    dados.qtdPagamentos = 0;
+                    await db.collection('alunos').add(dados); 
+                    alert('✅ Aluno cadastrado com sucesso!');
+                }
+                
+                fecharModalCadastro(); 
+                await carregarAlunos();
+            } catch (erro) {
+                alert('Erro ao salvar: ' + erro.message);
+            }
         });
 
-        // 🔍 Filtros
         function aplicarFiltros() {
-            const termo = document.getElementById('buscaAluno').value.toLowerCase();
+            const termo = document.getElementById('buscaAluno').value.toLowerCase().trim();
             const filtroTipo = document.getElementById('filtroTipo').value;
             const filtroPlano = document.getElementById('filtroPlano').value;
             const filtroStatus = document.getElementById('filtroStatus').value;
+
             document.querySelectorAll('#listaAlunos tr').forEach(tr => {
                 if (tr.classList.contains('vazio')) return;
-                const txt = tr.textContent.toLowerCase();
-                const st = tr.dataset.status;
-                const pl = tr.dataset.plano;
-                const tp = tr.dataset.tipo;
-                const okBusca = !termo || txt.includes(termo);
-                const okTipo = !filtroTipo || tp.includes(filtroTipo.toLowerCase());
-                const okPlano = !filtroPlano || pl.toLowerCase().includes(filtroPlano.toLowerCase());
-                const okStatus = !filtroStatus || st === filtroStatus;
+                
+                const textoLinha = (tr.textContent || '').toLowerCase();
+                const statusLinha = tr.dataset.status || '';
+                const planoLinha = (tr.dataset.plano || '').toLowerCase();
+                const tipoLinha = (tr.dataset.tipo || '').toLowerCase();
+
+                const okBusca = !termo || textoLinha.includes(termo);
+                const okTipo = !filtroTipo || tipoLinha.includes(filtroTipo.toLowerCase());
+                const okPlano = !filtroPlano || planoLinha.includes(filtroPlano.toLowerCase());
+                const okStatus = !filtroStatus || statusLinha === filtroStatus;
+
                 tr.style.display = (okBusca && okTipo && okPlano && okStatus) ? '' : 'none';
             });
         }
+
         document.getElementById('buscaAluno').addEventListener('input', aplicarFiltros);
         document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
         document.getElementById('filtroPlano').addEventListener('change', aplicarFiltros);
         document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
 
-        function sair() { if (confirm('Sair?')) auth.signOut().then(()=>window.location.href='login.html'); }
-        auth.onAuthStateChanged(u => { if (!u) window.location.href='login.html'; else carregarAlunos(); });
+        function sair() { 
+            if (confirm('Deseja sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
+            }
+        }
+
+        auth.onAuthStateChanged(u => { 
+            if (!u) {
+                window.location.href = 'login.html';
+            } else {
+                carregarAlunos();
+            }
+        });
     </script>
 </body>
 </html>
