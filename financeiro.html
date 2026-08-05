@@ -121,7 +121,7 @@
         .modal.aberto { display: flex; }
         .modal-conteudo {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 12px;
-            padding: 30px; width: 90%; max-width: 450px;
+            padding: 30px; width: 90%; max-width: 480px;
         }
         .modal-titulo { font-size: 20px; font-weight: 700; margin-bottom: 20px; text-align: center; color: var(--vermelho-principal); }
         .modal-grupo { margin-bottom: 15px; }
@@ -130,8 +130,8 @@
             width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
             border-radius: 6px; color: var(--texto-branco); font-size: 15px;
         }
-        .info-vencimento { font-size: 13px; color: var(--texto-cinza); margin-top: 5px; }
-        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
+        .info-vencimento { font-size: 13px; color: var(--texto-cinza); margin-top: 5px; line-height: 1.5; }
+        .modal-botoes { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; flex-wrap: wrap; }
         .btn-cancelar { background: var(--cinza); color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .btn-remover { background: var(--amarelo); color: #111; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .btn-remover:hover { background: #FFD54F; }
@@ -206,36 +206,37 @@
                     <th>Tipo</th>
                     <th>Plano</th>
                     <th>Valor Mensal</th>
-                    <th>Vencimento Cadastrado</th>
-                    <th>Status Atual</th>
+                    <th>Matrícula</th>
+                    <th>Próximo Vencimento</th>
+                    <th>Status</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">Carregando dados...</td></tr>
+                <tr><td colspan="8" class="vazio">Carregando dados...</td></tr>
             </tbody>
         </table>
     </main>
 
     <div class="modal" id="modalMes">
         <div class="modal-conteudo">
-            <h3 class="modal-titulo">Marcar Pagamento do Mês</h3>
+            <h3 class="modal-titulo">Marcar Pagamento</h3>
             <div class="modal-grupo">
                 <label>Aluno:</label>
                 <span id="nomeAlunoModal" style="font-weight:600; font-size:15px;"></span>
             </div>
             <div class="modal-grupo">
-                <label>Data de início/vencimento:</label>
-                <span id="dataVencimentoModal" class="info-vencimento"></span>
+                <label>Data de Matrícula:</label>
+                <span id="dataMatriculaModal" class="info-vencimento"></span>
             </div>
             <div class="modal-grupo">
-                <label>Selecione o Mês/Ano:</label>
-                <select id="mesPagamento"></select>
+                <label>Próximo Vencimento:</label>
+                <span id="proximoVencimentoModal" class="info-vencimento" style="font-weight:bold; color:var(--vermelho-claro);"></span>
             </div>
             <div class="modal-botoes">
                 <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
                 <button class="btn-remover" onclick="removerPagamento()">Remover</button>
-                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar</button>
+                <button class="btn-confirmar" onclick="confirmarPagamento()">Confirmar Pagamento</button>
             </div>
         </div>
     </div>
@@ -255,7 +256,61 @@
         const db = firebase.firestore();
 
         let alunoSelecionado = null;
-        let dataInicioAluno = null;
+
+        // ✅ Calcula o PRÓXIMO VENCIMENTO baseado na DATA DE MATRÍCULA + quantidade de pagamentos
+        function calcularProximoVencimento(dataMatricula, qtdPagamentos = 0) {
+            const data = new Date(dataMatricula);
+            const diaFixo = data.getDate(); // ✅ GUARDA O DIA DA MATRÍCULA PARA SEMPRE
+            data.setMonth(data.getMonth() + qtdPagamentos + 1); // ✅ Soma os meses pagos + 1
+
+            // Ajusta caso o dia não exista no mês (ex: 31/04 → 30/04)
+            const ultimoDiaDoMes = new Date(data.getFullYear(), data.getMonth() + 1, 0).getDate();
+            data.setDate(Math.min(diaFixo, ultimoDiaDoMes));
+
+            return data;
+        }
+
+        // ✅ Verifica status usando o PRÓXIMO VENCIMENTO calculado
+        function verificarStatus(dataMatricula, qtdPagamentos = 0) {
+            if (!dataMatricula) {
+                return { texto: 'Sem matrícula', classe: 'status-sem-pagamento' };
+            }
+
+            const hoje = new Date();
+            hoje.setHours(0, 0, 0, 0);
+
+            const proximoVenc = calcularProximoVencimento(dataMatricula, qtdPagamentos);
+            proximoVenc.setHours(0, 0, 0, 0);
+
+            // Se nunca pagou → vencimento é o mês da matrícula
+            if (qtdPagamentos === 0) {
+                const primeiroVenc = new Date(dataMatricula);
+                primeiroVenc.setHours(0, 0, 0, 0);
+                if (hoje < primeiroVenc) {
+                    const diasRestantes = Math.ceil((primeiroVenc - hoje) / (1000 * 60 * 60 * 24));
+                    return { texto: `Aguardando início (${diasRestantes} dias)`, classe: 'status-pendente', vencimento: primeiroVenc };
+                } else if (hoje.getTime() === primeiroVenc.getTime()) {
+                    return { texto: 'Vence HOJE', classe: 'status-pendente', vencimento: primeiroVenc };
+                } else {
+                    return { texto: 'Atrasado', classe: 'status-atrasado', vencimento: primeiroVenc };
+                }
+            }
+
+            // Se já pagou → verifica o PRÓXIMO vencimento
+            if (hoje < proximoVenc) {
+                const diasRestantes = Math.ceil((proximoVenc - hoje) / (1000 * 60 * 60 * 24));
+                const textoDias = diasRestantes === 1 ? 'dia' : 'dias';
+                return { 
+                    texto: `Pendente (${diasRestantes} ${textoDias} para vencer)`, 
+                    classe: 'status-pendente',
+                    vencimento: proximoVenc
+                };
+            } else if (hoje.getTime() === proximoVenc.getTime()) {
+                return { texto: 'Vence HOJE', classe: 'status-pendente', vencimento: proximoVenc };
+            } else {
+                return { texto: 'Atrasado', classe: 'status-atrasado', vencimento: proximoVenc };
+            }
+        }
 
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
@@ -273,51 +328,14 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Verifica status respeitando a data exata do vencimento
-        function verificarStatus(mesesPagos = [], dataVencimentoCadastrada = null) {
-            const hoje = new Date();
-            hoje.setHours(0, 0, 0, 0);
-
-            const mesAtual = String(hoje.getMonth() + 1).padStart(2, '0');
-            const anoAtual = hoje.getFullYear();
-            const mesAnoAtual = `${mesAtual}/${anoAtual}`;
-
-            let diaVencimento = 1;
-            if (dataVencimentoCadastrada) {
-                diaVencimento = dataVencimentoCadastrada.getDate();
-            }
-
-            const dataVencimentoMesAtual = new Date(anoAtual, hoje.getMonth(), diaVencimento);
-            dataVencimentoMesAtual.setHours(0, 0, 0, 0);
-
-            if (!mesesPagos || mesesPagos.length === 0) {
-                return { texto: 'Sem pagamentos', classe: 'status-sem-pagamento' };
-            }
-
-            if (mesesPagos.includes(mesAnoAtual)) {
-                return { texto: 'Em dia', classe: 'status-pago' };
-            }
-
-            if (hoje < dataVencimentoMesAtual) {
-                const diasRestantes = Math.ceil((dataVencimentoMesAtual - hoje) / (1000 * 60 * 60 * 24));
-                const textoDias = diasRestantes === 1 ? 'dia' : 'dias';
-                return { 
-                    texto: `Pendente (${diasRestantes} ${textoDias} para vencimento)`, 
-                    classe: 'status-pendente' 
-                };
-            }
-
-            return { texto: 'Atrasado', classe: 'status-atrasado' };
-        }
-
         async function carregarLista() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">Carregando dados...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="8" class="vazio">Carregando dados...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno cadastrado</td></tr>';
                     return;
                 }
 
@@ -330,15 +348,18 @@
                 });
 
                 if (alunos.length === 0) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno não bolsista encontrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="8" class="vazio">Nenhum aluno não bolsista encontrado</td></tr>';
                     return;
                 }
 
+                // Ordena: Atrasados primeiro → Pendentes → Em dia
                 alunos.sort((a, b) => {
-                    const dataVencA = a.dados.dataVencimento ? new Date(a.dados.dataVencimento.toDate()) : null;
-                    const dataVencB = b.dados.dataVencimento ? new Date(b.dados.dataVencimento.toDate()) : null;
-                    const statusA = verificarStatus(a.dados.mesesPagos, dataVencA);
-                    const statusB = verificarStatus(b.dados.mesesPagos, dataVencB);
+                    const dataMatA = a.dados.dataMatricula ? new Date(a.dados.dataMatricula.toDate()) : null;
+                    const dataMatB = b.dados.dataMatricula ? new Date(b.dados.dataMatricula.toDate()) : null;
+                    const qtdA = a.dados.qtdPagamentos || 0;
+                    const qtdB = b.dados.qtdPagamentos || 0;
+                    const statusA = verificarStatus(dataMatA, qtdA);
+                    const statusB = verificarStatus(dataMatB, qtdB);
                     const ordem = { 'status-atrasado': 0, 'status-sem-pagamento': 1, 'status-pendente': 2, 'status-pago': 3 };
                     return ordem[statusA.classe] - ordem[statusB.classe];
                 });
@@ -347,12 +368,14 @@
 
                 alunos.forEach(aluno => {
                     const d = aluno.dados;
-                    const dataVencObj = d.dataVencimento ? new Date(d.dataVencimento.toDate()) : null;
-                    const status = verificarStatus(d.mesesPagos, dataVencObj);
+                    const dataMatricula = d.dataMatricula ? new Date(d.dataMatricula.toDate()) : null;
+                    const qtdPagamentos = d.qtdPagamentos || 0;
+                    const status = verificarStatus(dataMatricula, qtdPagamentos);
                     const valor = d.valorPlano || 0;
                     const classeTipo = `tipo-${(d.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
                     const valorTexto = valor === 0 ? 'GRÁTIS' : `R$ ${valor.toFixed(2).replace('.', ',')}`;
-                    const dataVenc = dataVencObj ? dataVencObj.toLocaleDateString('pt-BR') : 'Não informada';
+                    const matriculaTexto = dataMatricula ? dataMatricula.toLocaleDateString('pt-BR') : 'Não informada';
+                    const proximoVencTexto = status.vencimento ? status.vencimento.toLocaleDateString('pt-BR') : '—';
 
                     const linha = `
                     <tr>
@@ -360,11 +383,12 @@
                         <td><span class="tipo-aluno ${classeTipo}">${d.tipo || '-'}</span></td>
                         <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
-                        <td>${dataVenc}</td>
+                        <td>${matriculaTexto}</td>
+                        <td>${proximoVencTexto}</td>
                         <td><span class="${status.classe}">${status.texto}</span></td>
                         <td>
-                            <button class="btn-acao" onclick="abrirModal('${aluno.id}', '${d.nome}', ${dataVencObj ? `new Date(${dataVencObj.getTime()})` : 'null'})">
-                                Marcar Mês Pago
+                            <button class="btn-acao" onclick="abrirModal('${aluno.id}', ${dataMatricula ? `new Date(${dataMatricula.getTime()})` : 'null'}, ${qtdPagamentos})">
+                                Marcar Pago
                             </button>
                         </td>
                     </tr>`;
@@ -373,85 +397,58 @@
 
             } catch (erro) {
                 console.error('Erro:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="8" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
-        function gerarListaMeses(dataInicio) {
-            const select = document.getElementById('mesPagamento');
-            select.innerHTML = '';
+        function abrirModal(id, dataMatricula, qtdPagamentos) {
+            alunoSelecionado = { id, dataMatricula, qtdPagamentos };
+            document.getElementById('nomeAlunoModal').textContent = ''; // preenche abaixo
 
-            if (!dataInicio) {
-                dataInicio = new Date();
-                dataInicio.setDate(1);
+            if (dataMatricula) {
+                document.getElementById('dataMatriculaModal').textContent = 
+                    `Data: ${dataMatricula.toLocaleDateString('pt-BR')} | Dia fixo: ${dataMatricula.getDate()}`;
+                const proximoVenc = calcularProximoVencimento(dataMatricula, qtdPagamentos);
+                document.getElementById('proximoVencimentoModal').textContent = proximoVenc.toLocaleDateString('pt-BR');
             } else {
-                dataInicio.setDate(1);
+                document.getElementById('dataMatriculaModal').textContent = '⚠️ Data de matrícula não cadastrada';
+                document.getElementById('proximoVencimentoModal').textContent = '—';
             }
 
-            const nomesMes = [
-                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-            ];
+            // Busca o nome do aluno
+            db.collection('alunos').doc(id).get().then(doc => {
+                document.getElementById('nomeAlunoModal').textContent = doc.data().nome;
+            });
 
-            const dataFim = new Date(dataInicio);
-            dataFim.setFullYear(dataFim.getFullYear() + 2);
-
-            let dataAtual = new Date(dataInicio);
-            while (dataAtual <= dataFim) {
-                const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-                const ano = dataAtual.getFullYear();
-                const valor = `${mes}/${ano}`;
-                const texto = `${nomesMes[dataAtual.getMonth()]}/${ano}`;
-
-                const opcao = document.createElement('option');
-                opcao.value = valor;
-                opcao.textContent = texto;
-                select.appendChild(opcao);
-
-                dataAtual.setMonth(dataAtual.getMonth() + 1);
-            }
-
-            const mesInicio = String(dataInicio.getMonth() + 1).padStart(2, '0');
-            const anoInicio = dataInicio.getFullYear();
-            select.value = `${mesInicio}/${anoInicio}`;
-        }
-
-        function abrirModal(id, nome, dataVenc) {
-            alunoSelecionado = id;
-            dataInicioAluno = dataVenc;
-            document.getElementById('nomeAlunoModal').textContent = nome;
-            
-            const textoVenc = dataVenc ? dataVenc.toLocaleDateString('pt-BR') : 'Não informada (usando dia 1 do mês)';
-            document.getElementById('dataVencimentoModal').textContent = textoVenc;
-
-            gerarListaMeses(dataVenc ? new Date(dataVenc.getTime()) : null);
             document.getElementById('modalMes').classList.add('aberto');
         }
 
         function fecharModal() {
             document.getElementById('modalMes').classList.remove('aberto');
             alunoSelecionado = null;
-            dataInicioAluno = null;
         }
 
         async function confirmarPagamento() {
-            if (!alunoSelecionado) return;
+            if (!alunoSelecionado || !alunoSelecionado.dataMatricula) {
+                alert('⚠️ Data de matrícula não cadastrada para este aluno!');
+                return;
+            }
 
-            const mesEscolhido = document.getElementById('mesPagamento').value;
+            const { id, dataMatricula, qtdPagamentos } = alunoSelecionado;
+            const proximoVenc = calcularProximoVencimento(dataMatricula, qtdPagamentos);
+            const proximoVencTexto = proximoVenc.toLocaleDateString('pt-BR');
+
+            if (!confirm(`Confirmar pagamento?\n\n✅ Quita o vencimento atual\n➡️ Próximo vencimento será: ${proximoVencTexto}\n⚠️ O dia ${dataMatricula.getDate()} será mantido para sempre!`)) {
+                return;
+            }
 
             try {
-                const ref = db.collection('alunos').doc(alunoSelecionado);
-                const doc = await ref.get();
-                const meses = doc.data().mesesPagos || [];
+                const ref = db.collection('alunos').doc(id);
+                await ref.update({
+                    qtdPagamentos: qtdPagamentos + 1
+                });
 
-                if (meses.includes(mesEscolhido)) {
-                    alert(`Esse mês já está pago para esse aluno!`);
-                } else {
-                    meses.push(mesEscolhido);
-                    await ref.update({ mesesPagos: meses });
-                    alert(`Mês ${mesEscolhido} marcado como pago com sucesso!`);
-                }
-
+                alert(`✅ Pagamento registrado!\nPróximo vencimento: ${proximoVencTexto}`);
                 fecharModal();
                 carregarLista();
             } catch (erro) {
@@ -462,25 +459,26 @@
         async function removerPagamento() {
             if (!alunoSelecionado) return;
 
-            const mesEscolhido = document.getElementById('mesPagamento').value;
+            const { id, dataMatricula, qtdPagamentos } = alunoSelecionado;
 
-            if (!confirm(`Tem certeza que deseja REMOVER o pagamento do mês ${mesEscolhido}? Essa ação não pode ser desfeita!`)) {
+            if (qtdPagamentos === 0) {
+                alert('⚠️ Nenhum pagamento registrado para remover!');
+                return;
+            }
+
+            const vencimentoAnterior = calcularProximoVencimento(dataMatricula, qtdPagamentos - 1);
+
+            if (!confirm(`Tem CERTEZA que deseja REMOVER o último pagamento?\n\nVencimento voltará para: ${vencimentoAnterior.toLocaleDateString('pt-BR')}\nEssa ação não pode ser desfeita!`)) {
                 return;
             }
 
             try {
-                const ref = db.collection('alunos').doc(alunoSelecionado);
-                const doc = await ref.get();
-                const meses = doc.data().mesesPagos || [];
+                const ref = db.collection('alunos').doc(id);
+                await ref.update({
+                    qtdPagamentos: qtdPagamentos - 1
+                });
 
-                if (!meses.includes(mesEscolhido)) {
-                    alert(`Esse mês não está marcado como pago!`);
-                } else {
-                    const novaLista = meses.filter(mes => mes !== mesEscolhido);
-                    await ref.update({ mesesPagos: novaLista });
-                    alert(`Pagamento do mês ${mesEscolhido} removido com sucesso!`);
-                }
-
+                alert(`✅ Pagamento removido!\nVencimento voltou para: ${vencimentoAnterior.toLocaleDateString('pt-BR')}`);
                 fecharModal();
                 carregarLista();
             } catch (erro) {
