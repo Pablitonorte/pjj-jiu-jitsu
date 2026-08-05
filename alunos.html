@@ -106,7 +106,7 @@
             border: 1px solid var(--borda); 
             border-radius: 10px; 
             overflow: hidden; 
-            min-width: 900px;
+            min-width: 1000px;
             table-layout: auto;
         }
         .tabela th { background: rgba(255,255,255,0.05); padding: 15px; text-align: left; font-size: 13px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
@@ -163,6 +163,7 @@
 
         .secao { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--borda); }
         .secao h3 { font-size: 16px; font-weight: 600; color: var(--texto-cinza); margin-bottom: 15px; }
+        .info-dica { font-size: 12px; color: var(--amarelo); margin-top: 5px; }
 
         .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 18px; }
         .campo { display: flex; flex-direction: column; }
@@ -256,6 +257,7 @@
                     <th>Tipo</th>
                     <th>Responsável</th>
                     <th>Nascimento</th>
+                    <th>Matrícula</th>
                     <th>Plano</th>
                     <th>Valor Final</th>
                     <th>Faixa</th>
@@ -263,7 +265,7 @@
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>
+                <tr><td colspan="10" class="vazio">🔄 Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -320,8 +322,9 @@
                             <input type="text" id="telefoneAluno" placeholder="(91) 99999-9999">
                         </div>
                         <div class="campo">
-                            <label>Data do Vencimento *</label>
-                            <input type="date" id="vencimentoAluno" required>
+                            <label>📅 Data de Matrícula *</label>
+                            <input type="date" id="matriculaAluno" required>
+                            <p class="info-dica">💡 O vencimento sempre será no mesmo dia do mês da matrícula</p>
                         </div>
                     </div>
                 </div>
@@ -373,7 +376,6 @@
     </div>
 
     <script>
-        // ✅ MESMA CONFIGURAÇÃO DO FINANCEIRO (não depende de arquivo externo)
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -443,20 +445,18 @@
             }
         }
 
-        // ✅ Carregamento igual ao financeiro, sem erros
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="9" class="vazio">🔄 Carregando alunos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="10" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="9" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="10" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     return;
                 }
 
-                // Ordena manualmente por nome
                 const alunos = [];
                 snapshot.forEach(doc => {
                     alunos.push({ id: doc.id, dados: doc.data() });
@@ -472,6 +472,7 @@
                     const classeFaixa = `faixa-${(dados.faixa || 'branca').toLowerCase()}`;
                     const nascimento = dados.dataNascimento ? dados.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
                     const cpf = dados.cpf ? formatarCPF(dados.cpf) : '-';
+                    const matricula = dados.dataMatricula ? dados.dataMatricula.toDate().toLocaleDateString('pt-BR') : '<span style="color:#ff4444">Não informada</span>';
 
                     lista.innerHTML += `
                     <tr>
@@ -480,6 +481,7 @@
                         <td><span class="tipo-aluno ${classeTipo}">${dados.tipo || '-'}</span></td>
                         <td>${dados.responsavel || '-'}</td>
                         <td>${nascimento}</td>
+                        <td>${matricula}</td>
                         <td>${dados.periodo || '-'}</td>
                         <td>${valorTexto}</td>
                         <td><span class="faixa ${classeFaixa}">${dados.faixa || '-'}</span></td>
@@ -493,7 +495,7 @@
 
             } catch (erro) {
                 console.error('ERRO NO CARREGAMENTO:', erro);
-                lista.innerHTML = `<tr><td colspan="9" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="10" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -505,7 +507,7 @@
             document.getElementById('idAluno').value = '';
             document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
             document.getElementById('formAluno').reset();
-            document.getElementById('vencimentoAluno').valueAsDate = new Date();
+            document.getElementById('matriculaAluno').valueAsDate = new Date();
             document.getElementById('valorFinalAluno').value = 'Selecione o tipo e o plano';
             document.getElementById('valorFinalAluno').className = 'valor-final valor-vazio';
             document.getElementById('modalCadastro').style.display = 'flex';
@@ -533,9 +535,16 @@
                 document.getElementById('telefoneAluno').value = dados.telefone || '';
                 document.getElementById('emailAluno').value = dados.email || '';
 
-                // ✅ Compatibilidade total com campos antigos
-                const dataVenc = dados.dataVencimento || dados.dataInicioAula;
-                document.getElementById('vencimentoAluno').value = dataVenc ? dataVenc.toDate().toISOString().split('T')[0] : '';
+                // ✅ Prioriza a NOVA dataMatricula, se não existir usa a antiga como referência
+                let dataMatricula = null;
+                if (dados.dataMatricula) {
+                    dataMatricula = dados.dataMatricula.toDate();
+                } else if (dados.dataVencimento) {
+                    dataMatricula = dados.dataVencimento.toDate();
+                } else if (dados.dataInicioAula) {
+                    dataMatricula = dados.dataInicioAula.toDate();
+                }
+                document.getElementById('matriculaAluno').value = dataMatricula ? dataMatricula.toISOString().split('T')[0] : '';
 
                 document.getElementById('periodoAluno').value = dados.periodo || '';
                 document.getElementById('descontoAluno').value = dados.desconto || 0;
@@ -574,24 +583,28 @@
                 responsavel: document.getElementById('responsavelAluno').value.trim(),
                 telefone: document.getElementById('telefoneAluno').value.trim(),
                 email: document.getElementById('emailAluno').value.trim(),
-                dataVencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('vencimentoAluno').value)),
+                // ✅ NOVA LÓGICA: Data de Matrícula é a base de TODOS os vencimentos
+                dataMatricula: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('matriculaAluno').value)),
+                qtdPagamentos: dadosAntigos.qtdPagamentos || 0, // mantém se já existir
                 periodo: document.getElementById('periodoAluno').value,
                 desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
                 valorPlano: valorFinal,
                 faixa: document.getElementById('faixaAluno').value,
-                statusPagamento: 'Pendente',
                 dataCadastro: firebase.firestore.Timestamp.now()
             };
 
             try {
                 if (id) {
-                    // Remove campo antigo se existir
+                    // ✅ Remove campos ANTIGOS para não confundir
+                    dados.dataVencimento = firebase.firestore.FieldValue.delete();
                     dados.dataInicioAula = firebase.firestore.FieldValue.delete();
                     await db.collection('alunos').doc(id).update(dados);
-                    alert('Aluno atualizado!');
+                    alert('✅ Aluno atualizado! Data de matrícula salva como base do vencimento.');
                 } else {
+                    // ✅ Novo aluno: começa com ZERO pagamentos
+                    dados.qtdPagamentos = 0;
                     await db.collection('alunos').add(dados);
-                    alert('Aluno cadastrado!');
+                    alert('✅ Aluno cadastrado! O vencimento sempre será no mesmo dia da matrícula.');
                 }
                 fecharModalCadastro();
                 carregarAlunos();
@@ -630,7 +643,6 @@
             }
         }
 
-        // ✅ MESMA INICIALIZAÇÃO DO FINANCEIRO
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
@@ -640,6 +652,5 @@
             }
         });
     </script>
-
 </body>
 </html>
