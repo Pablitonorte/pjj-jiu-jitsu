@@ -10,7 +10,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
-        /* 🎨 Variáveis dos temas */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -72,7 +71,6 @@
         .titulo-pagina { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
         .subtitulo { color: var(--texto-cinza); font-size: 14px; }
 
-        /* 📊 CARDS DE ESTATÍSTICAS */
         .grade-cards {
             display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px;
         }
@@ -91,7 +89,6 @@
 
         .card-total .icone { color: var(--azul); }
         .card-emdia .icone { color: var(--verde); }
-        .card-semana .icone { color: var(--amarelo); }
         .card-atrasados .icone { color: var(--vermelho-principal); }
         .card-receita .icone { color: var(--azul); }
         .card-recebido .icone { color: var(--verde); }
@@ -116,11 +113,8 @@
         .tabela tr:hover { background: rgba(255,255,255,0.02); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
-        /* 🟢🟡🔴 STATUS */
         .status { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; }
         .status-emdia { background: rgba(0,200,83,0.15); color: var(--verde); border: 1px solid rgba(0,200,83,0.3); }
-        .status-hoje { background: rgba(255,152,0,0.15); color: var(--laranja); border: 1px solid rgba(255,152,0,0.3); }
-        .status-semana { background: rgba(255,193,7,0.15); color: var(--amarelo); border: 1px solid rgba(255,193,7,0.3); }
         .status-atrasado { background: rgba(209,0,0,0.15); color: var(--vermelho-claro); border: 1px solid rgba(209,0,0,0.3); }
 
         .dias-contador { font-size: 12px; color: var(--texto-cinza); white-space: nowrap; }
@@ -130,8 +124,6 @@
         .btn-acao { padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
         .btn-pago { background: var(--verde); color: white; }
         .btn-pago:hover { background: #00b348; }
-        .btn-ver { background: transparent; color: var(--texto-cinza); border: 1px solid var(--borda); padding: 6px 10px; }
-        .btn-ver:hover { border-color: var(--azul); color: var(--azul); }
 
         .vencimento-data { font-weight: 600; }
         .vencimento-semana { font-size: 12px; color: var(--texto-cinza); margin-top: 2px; }
@@ -144,8 +136,6 @@
         .legenda-item { display: flex; align-items: center; gap: 6px; }
         .bolinha { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
         .bolinha-emdia { background: var(--verde); }
-        .bolinha-hoje { background: var(--laranja); }
-        .bolinha-semana { background: var(--amarelo); }
         .bolinha-atrasado { background: var(--vermelho-claro); }
 
         .fundo-modal {
@@ -214,7 +204,6 @@
             <p class="subtitulo">Gerencie os pagamentos e vencimentos dos alunos</p>
         </div>
 
-        <!-- 📊 CARDS DE ESTATÍSTICAS -->
         <div class="grade-cards">
             <div class="card-info card-total">
                 <div class="icone"><i class="fas fa-users"></i></div>
@@ -226,12 +215,6 @@
                 <div class="valor" id="cardEmDia">0</div>
                 <div class="rotulo">Em dia</div>
                 <div class="detalhe" id="pctEmDia">0%</div>
-            </div>
-            <div class="card-info card-semana">
-                <div class="icone"><i class="fas fa-calendar-week"></i></div>
-                <div class="valor" id="cardSemana">0</div>
-                <div class="rotulo">Vencem esta semana</div>
-                <div class="detalhe" id="pctSemana">0%</div>
             </div>
             <div class="card-info card-atrasados">
                 <div class="icone"><i class="fas fa-exclamation-triangle"></i></div>
@@ -265,8 +248,6 @@
             <select id="filtroStatus">
                 <option value="">Todos os Status</option>
                 <option value="emdia">Em dia</option>
-                <option value="hoje">Vence hoje</option>
-                <option value="semana">Vence esta semana</option>
                 <option value="atrasado">Atrasado</option>
             </select>
         </div>
@@ -277,28 +258,23 @@
                     <th>Aluno</th>
                     <th>Plano</th>
                     <th>Dia Venc.</th>
-                    <th>Próximo Vencimento</th>
+                    <th>Vencimento Atual</th>
                     <th>Status</th>
-                    <th>Dias</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>
+                <tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>
             </tbody>
         </table>
 
-        <!-- 📋 LEGENDA -->
         <div class="legenda">
             <span class="legenda-item"><span class="bolinha bolinha-emdia"></span> Em dia</span>
-            <span class="legenda-item"><span class="bolinha bolinha-hoje"></span> Vence hoje</span>
-            <span class="legenda-item"><span class="bolinha bolinha-semana"></span> Vence esta semana</span>
             <span class="legenda-item"><span class="bolinha bolinha-atrasado"></span> Atrasado</span>
-            <span style="margin-left:auto; font-size:11px; color:var(--texto-cinza)">O vencimento é calculado automaticamente com base na data de matrícula</span>
+            <span style="margin-left:auto; font-size:11px; color:var(--texto-cinza)">O vencimento avança SOMENTE após o pagamento do mês atual</span>
         </div>
     </main>
 
-    <!-- MODAL MARCAR PAGAMENTO -->
     <div id="modalPagamento" class="fundo-modal">
         <div class="modal">
             <h3 id="nomeAlunoPagamento">Marcar Pagamento</h3>
@@ -337,51 +313,78 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // 📅 Calcula o próximo vencimento com base no dia fixo da matrícula
-        function calcularProximoVencimento(diaFixo, qtdPagamentos) {
-            const hoje = new Date();
-            let mesBase = hoje.getMonth();
-            let anoBase = hoje.getFullYear();
+        // 📅 Calcula a data de vencimento de um mês específico
+        function calcularDataVencimento(diaFixo, dataMatricula, indicePagamento) {
+            const dataMat = new Date(dataMatricula);
+            let mes = dataMat.getMonth() + indicePagamento;
+            let ano = dataMat.getFullYear();
 
-            // Se já passou o dia hoje, começa do mês seguinte
-            if (hoje.getDate() > diaFixo) {
-                mesBase++;
-                if (mesBase > 11) { mesBase = 0; anoBase++; }
-            }
-
-            // Avança conforme os pagamentos feitos
-            let mesVenc = mesBase;
-            let anoVenc = anoBase;
-            if (qtdPagamentos && qtdPagamentos > 0) {
-                mesVenc += qtdPagamentos;
-                while (mesVenc > 11) { mesVenc -= 12; anoVenc++; }
-            }
-
-            return new Date(anoVenc, mesVenc, diaFixo);
+            while (mes > 11) { mes -= 12; ano++; }
+            return new Date(ano, mes, diaFixo);
         }
 
-        // 🟢🟡🔴 Define cor e status
-        function definirStatus(dataVenc) {
+        // 🧮 CONTA QUANTOS MESES ESTÃO EM ATRASO
+        function calcularStatusAluno(diaFixo, dataMatricula, qtdPagamentos) {
             const hoje = new Date(); hoje.setHours(0,0,0,0);
-            const venc = new Date(dataVenc); venc.setHours(0,0,0,0);
-            const diff = Math.ceil((venc - hoje) / (1000*60*60*24));
+            const dataMat = new Date(dataMatricula);
+            const mesInicio = dataMat.getMonth();
+            const anoInicio = dataMat.getFullYear();
 
-            if (diff < 0) return { classe: 'status-atrasado', texto: 'Atrasado', dias: diff, diasClasse: 'dias-atrasado' };
-            if (diff === 0) return { classe: 'status-hoje', texto: 'Vence hoje', dias: 0, diasClasse: '' };
-            if (diff <= 7) return { classe: 'status-semana', texto: 'Vence esta semana', dias: diff, diasClasse: '' };
-            return { classe: 'status-emdia', texto: 'Em dia', dias: diff, diasClasse: 'dias-emdia' };
+            // Encontra o PRÓXIMO mês que DEVERIA ter sido pago
+            let mesPendente = mesInicio + qtdPagamentos;
+            let anoPendente = anoInicio;
+            while (mesPendente > 11) { mesPendente -= 12; anoPendente++; }
+
+            // Data do vencimento atual (o que está esperando pagamento)
+            const dataVencimentoAtual = new Date(anoPendente, mesPendente, diaFixo);
+
+            // ✅ SE AINDA CHEGOU A DATA → EM DIA
+            if (dataVencimentoAtual >= hoje) {
+                return {
+                    classe: 'status-emdia',
+                    texto: 'Em dia',
+                    mesesAtraso: 0,
+                    dataVencimento: dataVencimentoAtual,
+                    emDia: true
+                };
+            }
+
+            // 🔴 SE PASSOU → CONTA QUANTOS MESES ESTÃO ATRASADOS
+            let mesesAtraso = 1;
+            let mesVerificar = mesPendente + 1;
+            let anoVerificar = anoPendente;
+
+            while (true) {
+                while (mesVerificar > 11) { mesVerificar -= 12; anoVerificar++; }
+                const proxData = new Date(anoVerificar, mesVerificar, diaFixo);
+                if (proxData <= hoje) {
+                    mesesAtraso++;
+                    mesVerificar++;
+                } else {
+                    break;
+                }
+            }
+
+            const texto = mesesAtraso === 1 ? 'Atrasado' : `${mesesAtraso} meses em atraso`;
+
+            return {
+                classe: 'status-atrasado',
+                texto: texto,
+                mesesAtraso: mesesAtraso,
+                dataVencimento: dataVencimentoAtual,
+                emDia: false
+            };
         }
 
-        // ✅ Carrega alunos e calcula tudo
         async function carregarFinanceiro() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').where('tipo','!=','Bolsista').get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno encontrado</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum aluno encontrado</td></tr>';
                     return;
                 }
 
@@ -390,49 +393,56 @@
                     const d = doc.data();
                     if (d.tipo === 'Bolsista') return;
 
-                    // ✅ Pega o DIA FIXO da matrícula
+                    // ✅ Pega o DIA FIXO e a DATA BASE
                     let diaFixo = null;
-                    if (d.dataMatricula) diaFixo = d.dataMatricula.toDate().getDate();
-                    else if (d.dataVencimento) diaFixo = d.dataVencimento.toDate().getDate();
-                    else if (d.dataInicioAula) diaFixo = d.dataInicioAula.toDate().getDate();
+                    let dataBase = null;
+                    if (d.dataMatricula) {
+                        diaFixo = d.dataMatricula.toDate().getDate();
+                        dataBase = d.dataMatricula.toDate();
+                    } else if (d.dataVencimento) {
+                        diaFixo = d.dataVencimento.toDate().getDate();
+                        dataBase = d.dataVencimento.toDate();
+                    } else if (d.dataInicioAula) {
+                        diaFixo = d.dataInicioAula.toDate().getDate();
+                        dataBase = d.dataInicioAula.toDate();
+                    }
 
-                    if (!diaFixo) return; // sem dia fixo = não mostra
+                    if (!diaFixo || !dataBase) return;
 
                     const qtdPag = d.qtdPagamentos || 0;
-                    const proxVenc = calcularProximoVencimento(diaFixo, qtdPag);
-                    const status = definirStatus(proxVenc);
+                    const status = calcularStatusAluno(diaFixo, dataBase, qtdPag);
 
                     alunosCarregados.push({
                         id: doc.id,
                         dados: d,
                         diaFixo,
+                        dataBase,
                         qtdPagamentos: qtdPag,
-                        proxVencimento: proxVenc,
                         status
                     });
                 });
 
-                // ✅ Ordena: atrasados primeiro, depois os próximos
-                alunosCarregados.sort((a,b) => a.proxVencimento - b.proxVencimento);
+                // ✅ Ordena: atrasados primeiro
+                alunosCarregados.sort((a,b) => b.status.mesesAtraso - a.status.mesesAtraso);
 
                 // ✅ Calcula estatísticas
                 const total = alunosCarregados.length;
-                let emdia = 0, semana = 0, atrasados = 0;
+                let emdia = 0, atrasados = 0;
                 let receitaPrevista = 0, recebidoMes = 0;
                 const hoje = new Date();
                 const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
 
                 alunosCarregados.forEach(a => {
                     receitaPrevista += (a.dados.valorPlano || 0);
-                    if (a.status.dias < 0) atrasados++;
-                    else if (a.status.dias === 0) semana++;
-                    else if (a.status.dias <= 7) semana++;
-                    else emdia++;
+                    if (a.status.emDia) emdia++;
+                    else atrasados++;
 
                     // Recebido do mês atual
                     if (a.qtdPagamentos > 0) {
-                        const mesUltimo = (mesAtual - 1 + a.qtdPagamentos) % 12;
-                        if (mesUltimo === mesAtual) recebidoMes += (a.dados.valorPlano || 0);
+                        const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, a.qtdPagamentos - 1);
+                        if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
+                            recebidoMes += (a.dados.valorPlano || 0);
+                        }
                     }
                 });
 
@@ -440,20 +450,17 @@
                 document.getElementById('cardTotal').textContent = total;
                 document.getElementById('cardEmDia').textContent = emdia;
                 document.getElementById('pctEmDia').textContent = total ? `${Math.round(emdia/total*100)}%` : '0%';
-                document.getElementById('cardSemana').textContent = semana;
-                document.getElementById('pctSemana').textContent = total ? `${Math.round(semana/total*100)}%` : '0%';
                 document.getElementById('cardAtrasados').textContent = atrasados;
                 document.getElementById('pctAtrasados').textContent = total ? `${Math.round(atrasados/total*100)}%` : '0%';
                 document.getElementById('cardReceita').textContent = `R$ ${receitaPrevista.toFixed(2).replace('.',',')}`;
                 document.getElementById('cardRecebido').textContent = `R$ ${recebidoMes.toFixed(2).replace('.',',')}`;
                 document.getElementById('pctRecebido').textContent = receitaPrevista ? `${Math.round(recebidoMes/receitaPrevista*100)}%` : '0%';
 
-                // ✅ Renderiza tabela
                 renderizarLista(alunosCarregados);
 
             } catch (erro) {
                 console.error('ERRO:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -463,10 +470,9 @@
 
             lista.forEach(a => {
                 const d = a.dados;
-                const dataStr = `${a.proxVencimento.getDate().toString().padStart(2,'0')}/${(a.proxVencimento.getMonth()+1).toString().padStart(2,'0')}/${a.proxVencimento.getFullYear()}`;
-                const diaSem = diasSemana[a.proxVencimento.getDay()];
-                const diasTxt = a.status.dias === 0 ? '0 dia' : 
-                    a.status.dias < 0 ? `${a.status.dias} dias` : `${a.status.dias} dias para vencer`;
+                const dataVenc = a.status.dataVencimento;
+                const dataStr = `${dataVenc.getDate().toString().padStart(2,'0')}/${(dataVenc.getMonth()+1).toString().padStart(2,'0')}/${dataVenc.getFullYear()}`;
+                const diaSem = diasSemana[dataVenc.getDay()];
 
                 tb.innerHTML += `
                 <tr>
@@ -481,13 +487,11 @@
                         <div class="vencimento-semana">(${diaSem})</div>
                     </td>
                     <td><span class="status ${a.status.classe}">${a.status.texto}</span></td>
-                    <td class="dias-contador ${a.status.diasClasse}">${diasTxt}</td>
                     <td><button class="btn-acao btn-pago" onclick="abrirModalPagamento('${a.id}')">Marcar Pago</button></td>
                 </tr>`;
             });
         }
 
-        // 🔍 Filtros
         document.getElementById('buscaAluno').addEventListener('input', aplicarFiltros);
         document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
         document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
@@ -502,20 +506,14 @@
                 const texto = `${d.nome||''}${d.responsavel||''}${d.cpf||''}`.toLowerCase();
                 if (termo && !texto.includes(termo)) return false;
                 if (tipoFiltro && (d.tipo||'') !== tipoFiltro) return false;
-
-                if (statusFiltro) {
-                    if (statusFiltro === 'atrasado' && a.status.dias >= 0) return false;
-                    if (statusFiltro === 'hoje' && a.status.dias !== 0) return false;
-                    if (statusFiltro === 'semana' && (a.status.dias < 1 || a.status.dias > 7)) return false;
-                    if (statusFiltro === 'emdia' && a.status.dias < 1) return false;
-                }
+                if (statusFiltro === 'emdia' && !a.status.emDia) return false;
+                if (statusFiltro === 'atrasado' && a.status.emDia) return false;
                 return true;
             });
 
             renderizarLista(filtrado);
         }
 
-        // 💳 MODAL DE PAGAMENTO
         async function abrirModalPagamento(idAluno) {
             alunoAtual = alunosCarregados.find(a => a.id === idAluno);
             if (!alunoAtual) return;
@@ -525,44 +523,41 @@
             listaMeses.innerHTML = '';
 
             const diaFixo = alunoAtual.diaFixo;
+            const dataBase = alunoAtual.dataBase;
             const qtdPag = alunoAtual.qtdPagamentos;
             const hoje = new Date();
-            const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
 
-            // Gera os meses desde a matrícula até +3 meses
-            let dataMat = null;
-            if (alunoAtual.dados.dataMatricula) dataMat = alunoAtual.dados.dataMatricula.toDate();
-            else if (alunoAtual.dados.dataVencimento) dataMat = alunoAtual.dados.dataVencimento.toDate();
-            else if (alunoAtual.dados.dataInicioAula) dataMat = alunoAtual.dados.dataInicioAula.toDate();
-
-            if (!dataMat) { alert('Data de matrícula não cadastrada!'); return; }
-
+            const dataMat = new Date(dataBase);
             const mesInicio = dataMat.getMonth();
             const anoInicio = dataMat.getFullYear();
-            const totalMeses = (anoAtual - anoInicio)*12 + (mesAtual - mesInicio) + 4;
+
+            // Gera meses desde matrícula até o mês atual + 1
+            let mesAtualBase = hoje.getMonth();
+            let anoAtualBase = hoje.getFullYear();
+            const totalMeses = (anoAtualBase - anoInicio)*12 + (mesAtualBase - mesInicio) + 2;
 
             for (let i = 0; i < totalMeses; i++) {
                 const m = mesInicio + i;
                 let ano = anoInicio + Math.floor(m/12);
                 let mes = m % 12;
                 const dataVenc = new Date(ano, mes, diaFixo);
-                const statusPag = definirStatus(dataVenc);
+                dataVenc.setHours(0,0,0,0);
 
                 const jaPago = i < qtdPag;
-                const ehAtual = i === qtdPag;
+                const ehPendente = i === qtdPag;
+                const estaAtrasado = dataVenc < hoje && !jaPago;
 
                 let classe = '';
                 if (jaPago) classe = 'pago';
-                else if (statusPag.dias < 0) classe = 'atrasado';
+                else if (estaAtrasado) classe = 'atrasado';
                 else classe = 'pendente';
 
-                const idMes = `${ano}-${mes}`;
                 listaMeses.innerHTML += `
-                <div class="opcao-mes ${classe}" data-id="${idMes}" data-indice="${i}" 
+                <div class="opcao-mes ${classe}" data-indice="${i}" 
                      onclick="selecionarMes(this, ${i})">
                     <strong>${nomesMeses[mes]} de ${ano}</strong> — ${diaFixo.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}
-                    ${jaPago ? ' ✅ PAGO' : statusPag.dias < 0 ? ' ⚠️ ATRASADO' : ''}
-                    ${ehAtual ? ' ← PRÓXIMO' : ''}
+                    ${jaPago ? ' ✅ PAGO' : estaAtrasado ? ' ⚠️ ATRASADO' : ''}
+                    ${ehPendente ? ' ← PRÓXIMO A PAGAR' : ''}
                 </div>`;
             }
 
@@ -593,7 +588,7 @@
                 await db.collection('alunos').doc(alunoAtual.id).update({
                     qtdPagamentos: novoQtd
                 });
-                alert('✅ Pagamento registrado!');
+                alert('✅ Pagamento registrado! O próximo vencimento já foi atualizado.');
                 fecharModalPagamento();
                 carregarFinanceiro();
             } catch (e) {
@@ -602,7 +597,7 @@
         }
 
         async function removerPagamento() {
-            if (!alunoAtual || !confirm('Remover o último pagamento?')) return;
+            if (!alunoAtual || !confirm('Remover o último pagamento? O vencimento voltará um mês.')) return;
             const novoQtd = Math.max(0, alunoAtual.qtdPagamentos - 1);
 
             try {
