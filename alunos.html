@@ -114,6 +114,18 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 40px !important; color: var(--texto-cinza); }
 
+        .foto-aluno {
+            width: 40px; height: 40px; border-radius: 50%; 
+            background: var(--texto-cinza);
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 18px; color: var(--fundo-card);
+            margin-right: 10px; flex-shrink: 0;
+            overflow: hidden;
+        }
+        .foto-aluno img { width: 100%; height: 100%; object-fit: cover; }
+        .celula-nome { display: flex; align-items: center; }
+        .nome-aluno { font-weight: 600; }
+
         .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
         .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
         .tipo-baby-class { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
@@ -409,7 +421,10 @@
         }
 
         function formatarCPF(cpf) {
-            return cpf.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            if (!cpf) return '';
+            const apenasNumeros = cpf.replace(/\D/g, '');
+            if (apenasNumeros.length < 11) return apenasNumeros;
+            return apenasNumeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
         }
 
         document.getElementById('cpfAluno').addEventListener('input', function() {
@@ -436,6 +451,7 @@
             if (tipo === 'Bolsista') {
                 campoValor.value = 'GRÁTIS';
                 campoValor.className = 'valor-final valor-gratis';
+                campoValor.dataset.valor = '0';
             } else {
                 const valorBase = valoresPlanos[periodo] || 0;
                 const valorFinal = valorBase - (valorBase * desconto / 100);
@@ -461,7 +477,11 @@
                 snapshot.forEach(doc => {
                     alunos.push({ id: doc.id, dados: doc.data() });
                 });
-                alunos.sort((a, b) => (a.dados.nome || '').localeCompare(b.dados.nome || ''));
+                alunos.sort((a, b) => {
+                    const nomeA = (a.dados.nome || '').toLowerCase();
+                    const nomeB = (b.dados.nome || '').toLowerCase();
+                    return nomeA.localeCompare(nomeB);
+                });
 
                 lista.innerHTML = '';
                 alunos.forEach(aluno => {
@@ -487,7 +507,7 @@
                         <td><span class="faixa ${classeFaixa}">${dados.faixa || '-'}</span></td>
                         <td>
                             <button class="btn-acao btn-editar" onclick="editarAluno('${aluno.id}')">Editar</button>
-                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${dados.nome}', '${dados.cpf || ''}')">Declaração</button>
+                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${dados.nome || ''}', '${dados.cpf || ''}')">Declaração</button>
                             <button class="btn-acao btn-excluir" onclick="excluirAluno('${aluno.id}')">Excluir</button>
                         </td>
                     </tr>`;
@@ -559,9 +579,10 @@
         }
 
         async function excluirAluno(id) {
-            if (!confirm('Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
+            if (!confirm('⚠️ Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
             try {
                 await db.collection('alunos').doc(id).delete();
+                alert('✅ Aluno excluído com sucesso!');
                 carregarAlunos();
             } catch (erro) {
                 alert('Erro ao excluir: ' + erro.message);
@@ -597,6 +618,7 @@
                     dados.qtdPagamentos = dadosAntigos.qtdPagamentos || 0;
                     dados.dataVencimento = firebase.firestore.FieldValue.delete();
                     dados.dataInicioAula = firebase.firestore.FieldValue.delete();
+                    dados.dataAtualizacao = firebase.firestore.Timestamp.now();
                     await db.collection('alunos').doc(id).update(dados);
                     alert('✅ Aluno atualizado! Data de matrícula salva como base do vencimento.');
                 } else {
@@ -612,32 +634,39 @@
         });
 
         document.getElementById('buscaAluno').addEventListener('input', () => {
-            const termo = document.getElementById('buscaAluno').value.toLowerCase();
+            const termo = document.getElementById('buscaAluno').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
-                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
+                const textoLinha = linha.textContent.toLowerCase();
+                linha.style.display = !termo || textoLinha.includes(termo) ? '' : 'none';
             });
         });
 
         document.getElementById('filtroTipo').addEventListener('change', () => {
-            const tipo = document.getElementById('filtroTipo').value.toLowerCase();
+            const tipo = document.getElementById('filtroTipo').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
-                linha.style.display = !tipo || linha.textContent.toLowerCase().includes(tipo) ? '' : 'none';
+                const textoLinha = linha.textContent.toLowerCase();
+                linha.style.display = !tipo || textoLinha.includes(tipo) ? '' : 'none';
             });
         });
 
         document.getElementById('filtroPeriodo').addEventListener('change', () => {
-            const periodo = document.getElementById('filtroPeriodo').value.toLowerCase();
+            const periodo = document.getElementById('filtroPeriodo').value.toLowerCase().trim();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
                 if (linha.classList.contains('vazio')) return;
-                linha.style.display = !periodo || linha.textContent.toLowerCase().includes(periodo) ? '' : 'none';
+                const textoLinha = linha.textContent.toLowerCase();
+                linha.style.display = !periodo || textoLinha.includes(periodo) ? '' : 'none';
             });
         });
 
         function sair() {
-            if (confirm('Deseja sair do sistema?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
+            if (confirm('Deseja realmente sair do sistema?')) {
+                auth.signOut().then(() => {
+                    window.location.href = 'login.html';
+                }).catch(erro => {
+                    console.error('Erro ao sair:', erro);
+                });
             }
         }
 
