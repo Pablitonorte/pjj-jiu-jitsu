@@ -118,11 +118,9 @@
             border: 1px solid var(--borda); 
             border-radius: 10px; 
             overflow: hidden; 
-            min-width: 1000px;
-            table-layout: auto;
         }
         .tabela th { background: rgba(255,255,255,0.05); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
-        .tabela td { padding: 14px 12px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); word-break: break-word; }
+        .tabela td { padding: 14px 12px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 50px !important; color: var(--texto-cinza); }
 
@@ -132,46 +130,41 @@
         .status-avencer { background: #FFC10720; color: #FFC107; }
         .status-atrasado { background: #FF3B3B20; color: #FF3B3B; }
 
-        .tipo-aluno { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; white-space: nowrap; }
-        .tipo-kids { background: #2196F320; color: #2196F3; border: 1px solid #2196F340; }
-        .tipo-baby-class { background: #9C27B020; color: #9C27B0; border: 1px solid #9C27B040; }
-        .tipo-comercial { background: #FF980020; color: #FF9800; border: 1px solid #FF980040; }
-        .tipo-competidor { background: #F4433620; color: #F44336; border: 1px solid #F4433640; }
-        .tipo-bolsista { background: #4CAF5020; color: #4CAF50; border: 1px solid #4CAF5040; }
-
-        .faixa { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
-        .faixa-branca { background: #FFFFFF; color: #121214; border: 1px solid #ddd; }
-        .faixa-cinza { background: #888888; color: #FFFFFF; }
-        .faixa-amarela { background: #FFD700; color: #121214; }
-        .faixa-laranja { background: #FF8C00; color: #FFFFFF; }
-        .faixa-verde { background: #228B22; color: #FFFFFF; }
-        .faixa-azul { background: #0066CC; color: #FFFFFF; }
-        .faixa-roxa { background: #800080; color: #FFFFFF; }
-        .faixa-marrom { background: #8B4513; color: #FFFFFF; }
-        .faixa-preta { background: #000000; color: #FFFFFF; border: 1px solid #555; }
-
-        .btn-acao { padding: 7px 10px; border: none; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 4px; transition: 0.2s; white-space: nowrap; }
-        .btn-editar { background: var(--azul); color: white; }
-        .btn-editar:hover { background: #3b82f6; }
-        .btn-excluir { background: var(--vermelho-principal); color: white; }
-        .btn-excluir:hover { background: var(--vermelho-claro); }
-        .btn-declaracao { background: var(--amarelo); color: #111; }
-        .btn-declaracao:hover { background: #FFD54F; }
-
-        .info-venc { font-size: 11px; margin-top: 2px; }
+        /* ⋮ BOTÃO DE AÇÕES */
+        .acoes { position: relative; }
+        .btn-acoes {
+            background: none; border: none; color: var(--texto-cinza);
+            font-size: 20px; font-weight: bold; cursor: pointer;
+            padding: 4px 10px; border-radius: 4px;
+        }
+        .btn-acoes:hover { background: rgba(255,255,255,0.05); color: var(--texto-branco); }
+        .menu-acoes {
+            position: absolute; right: 0; top: 100%;
+            background: var(--fundo-card); border: 1px solid var(--borda);
+            border-radius: 8px; min-width: 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 100; display: none;
+        }
+        .menu-acoes.aberto { display: block; }
+        .menu-acoes button {
+            width: 100%; text-align: left; border: none; background: none;
+            padding: 10px 15px; color: var(--texto-branco);
+            font-size: 14px; cursor: pointer; transition: 0.15s;
+        }
+        .menu-acoes button:hover { background: rgba(209,0,0,0.1); color: var(--vermelho-principal); }
+        .menu-acoes button.destaque { color: var(--azul); }
+        .menu-acoes button.vermelho { color: var(--vermelho-claro); }
 
         .fundo-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); z-index: 2000;
             justify-content: center; align-items: flex-start;
-            padding: 20px;
-            overflow-y: auto;
+            padding: 20px; overflow-y: auto;
         }
         .modal {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
-            padding: 30px; width: 100%; max-width: 650px;
-            margin: 20px auto;
-            position: relative;
+            padding: 30px; width: 100%; max-width: 500px;
+            margin: 20px auto; position: relative;
             box-shadow: 0 0 30px rgba(0,0,0,0.6);
         }
         .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
@@ -199,6 +192,12 @@
         .valor-final { margin-top: 5px; font-size: 18px; font-weight: 800; color: var(--verde); }
         .valor-gratis { color: #4CAF50; }
         .valor-vazio { color: var(--texto-cinza); font-style: italic; }
+
+        /* 📋 MODAL DE INFORMAÇÕES */
+        .info-linha { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--borda); }
+        .info-linha:last-child { border-bottom: none; }
+        .info-label { font-weight: 600; color: var(--texto-cinza); font-size: 14px; }
+        .info-valor { font-size: 14px; color: var(--texto-branco); text-align: right; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 20px; }
@@ -299,27 +298,25 @@
             </select>
         </div>
 
+        <!-- 📋 TABELA SIMPLIFICADA -->
         <table class="tabela">
             <thead>
                 <tr>
-                    <th>Nome / Responsável</th>
+                    <th>Nome do Aluno</th>
                     <th>CPF</th>
-                    <th>Tipo</th>
-                    <th>Nascimento</th>
-                    <th>Vencimento</th>
                     <th>Plano</th>
                     <th>Valor Final</th>
-                    <th>Próx. Vencimento</th>
                     <th>Status</th>
-                    <th>Ações</th>
+                    <th style="width:50px;"></th>
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="10" class="vazio">🔄 Carregando alunos...</td></tr>
+                <tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
 
+    <!-- 📝 MODAL CADASTRO/EDIÇÃO -->
     <div id="modalCadastro" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalCadastro()">&times;</button>
@@ -425,6 +422,15 @@
         </div>
     </div>
 
+    <!-- ℹ️ MODAL INFORMAÇÕES DO ALUNO -->
+    <div id="modalInfo" class="fundo-modal">
+        <div class="modal">
+            <button class="fechar-modal" onclick="fecharModalInfo()">&times;</button>
+            <h2 id="nomeInfo">Informações do Aluno</h2>
+            <div id="conteudoInfo"></div>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -446,6 +452,9 @@
             'Anual': 820.00
         };
 
+        // Variável global para guardar os alunos
+        let alunosCarregados = [];
+
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -465,6 +474,13 @@
                 return apenasNumeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
             }
             return apenasNumeros || '-';
+        }
+
+        function formatarTelefone(tel) {
+            if (!tel) return '-';
+            const n = tel.replace(/\D/g, '');
+            if (n.length === 11) return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
+            return tel;
         }
 
         document.getElementById('cpfAluno').addEventListener('input', function() {
@@ -521,23 +537,92 @@
             return { classe: 'emdia', texto: `Vence em ${dias} dias`, dias };
         }
 
+        // ⋮ Abre/fecha menu de ações
+        let menuAberto = null;
+        document.addEventListener('click', (e) => {
+            if (menuAberto && !e.target.closest('.acoes')) {
+                menuAberto.classList.remove('aberto');
+                menuAberto = null;
+            }
+        });
+        function alternarMenu(menuEl) {
+            if (menuAberto && menuAberto !== menuEl) menuAberto.classList.remove('aberto');
+            menuEl.classList.toggle('aberto');
+            menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
+        }
+
+        // ℹ️ Abre modal com informações do aluno
+        function abrirInfoAluno(id) {
+            const aluno = alunosCarregados.find(a => a.id === id);
+            if (!aluno) return;
+            const d = aluno.dados;
+
+            let vencimentoTexto = '-';
+            if (d.dataVencimento) vencimentoTexto = d.dataVencimento.toDate().toLocaleDateString('pt-BR');
+            else if (d.dataMatricula) vencimentoTexto = d.dataMatricula.toDate().toLocaleDateString('pt-BR');
+
+            let nascimentoTexto = '-';
+            if (d.dataNascimento) nascimentoTexto = d.dataNascimento.toDate().toLocaleDateString('pt-BR');
+
+            const valorTexto = (d.valorPlano || 0) === 0 ? 'GRÁTIS' : `R$ ${(d.valorPlano||0).toFixed(2).replace('.', ',')}`;
+
+            document.getElementById('nomeInfo').textContent = d.nome || 'Aluno';
+            document.getElementById('conteudoInfo').innerHTML = `
+                <div class="info-linha">
+                    <span class="info-label">CPF</span>
+                    <span class="info-valor">${formatarCPF(d.cpf)}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Telefone</span>
+                    <span class="info-valor">${formatarTelefone(d.telefone)}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">E-mail</span>
+                    <span class="info-valor">${d.email || '-'}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Data de Nascimento</span>
+                    <span class="info-valor">${nascimentoTexto}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Plano / Período</span>
+                    <span class="info-valor">${d.periodo || '-'}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Valor do Plano</span>
+                    <span class="info-valor">${valorTexto}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Próximo Vencimento</span>
+                    <span class="info-valor">${vencimentoTexto}</span>
+                </div>
+            `;
+            document.getElementById('modalInfo').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        function fecharModalInfo() {
+            document.getElementById('modalInfo').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="10" class="vazio">🔄 Carregando alunos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="10" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    alunosCarregados = [];
                     return;
                 }
 
-                const alunos = [];
+                alunosCarregados = [];
                 snapshot.forEach(doc => {
-                    alunos.push({ id: doc.id, dados: doc.data() });
+                    alunosCarregados.push({ id: doc.id, dados: doc.data() });
                 });
-                alunos.sort((a, b) => {
+                alunosCarregados.sort((a, b) => {
                     const nomeA = String((a.dados.nome || '')).toLowerCase();
                     const nomeB = String((b.dados.nome || '')).toLowerCase();
                     return nomeA.localeCompare(nomeB);
@@ -548,7 +633,7 @@
                 const fimSemana = new Date(hoje); fimSemana.setDate(fimSemana.getDate() + 7);
                 let total = 0, emDia = 0, estaSemana = 0, atrasados = 0, receita = 0;
 
-                alunos.forEach(a => {
+                alunosCarregados.forEach(a => {
                     total++;
                     let venc = null;
                     if (a.dados.dataVencimento) venc = a.dados.dataVencimento.toDate();
@@ -570,54 +655,44 @@
                 document.getElementById('cardPctSemana').textContent = total > 0 ? `${Math.round((estaSemana / total) * 100)}% do total` : '—';
                 document.getElementById('cardPctAtrasados').textContent = total > 0 ? `${Math.round((atrasados / total) * 100)}% do total` : '—';
 
-                // 📋 Monta tabela
+                // 📋 Monta tabela SIMPLIFICADA
                 lista.innerHTML = '';
-                alunos.forEach(aluno => {
-                    const dados = aluno.dados;
-                    const valorPlano = dados.valorPlano || 0;
+                alunosCarregados.forEach((aluno, indice) => {
+                    const d = aluno.dados;
+                    const valorPlano = d.valorPlano || 0;
                     const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
-                    const classeTipo = `tipo-aluno tipo-${(dados.tipo || 'comercial').toLowerCase().replace(/\s/g, '-')}`;
-                    const classeFaixa = `faixa faixa-${(dados.faixa || 'branca').toLowerCase()}`;
-                    const nascimento = dados.dataNascimento ? dados.dataNascimento.toDate().toLocaleDateString('pt-BR') : '-';
-                    const cpf = formatarCPF(dados.cpf);
+                    const cpf = formatarCPF(d.cpf);
                     
-                    let vencimentoTexto = '-', venc = null;
-                    if (dados.dataVencimento) {
-                        venc = dados.dataVencimento.toDate();
-                        vencimentoTexto = venc.toLocaleDateString('pt-BR');
-                    } else if (dados.dataMatricula) {
-                        venc = dados.dataMatricula.toDate();
-                        vencimentoTexto = venc.toLocaleDateString('pt-BR');
-                    }
+                    let venc = null;
+                    if (d.dataVencimento) venc = d.dataVencimento.toDate();
+                    else if (d.dataMatricula) venc = d.dataMatricula.toDate();
                     const status = calcularStatus(venc);
                     const statusTexto = status.classe === 'emdia' ? 'Em dia' : status.classe === 'avencer' ? 'A vencer' : 'Atrasado';
 
-                    // Escapa aspas para não quebrar a função
-                    const nomeSeguro = (dados.nome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const cpfSeguro = (dados.cpf || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const menuId = `menu-${aluno.id}`;
 
                     lista.innerHTML += `
                     <tr>
-                        <td><strong>${dados.nome || '-'}</strong><br><small style="color:var(--texto-cinza)">${dados.responsavel || '—'}</small></td>
+                        <td><strong>${d.nome || '-'}</strong></td>
                         <td>${cpf}</td>
-                        <td><span class="${classeTipo}">${dados.tipo || '-'}</span></td>
-                        <td>${nascimento}</td>
-                        <td>${vencimentoTexto}</td>
-                        <td>${dados.periodo || '-'}</td>
+                        <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
-                        <td class="info-venc">${status.texto}</td>
                         <td><span class="status status-${status.classe}">${statusTexto}</span></td>
-                        <td>
-                            <button class="btn-acao btn-editar" onclick="editarAluno('${aluno.id}')">Editar</button>
-                            <button class="btn-acao btn-declaracao" onclick="abrirDeclaracao('${nomeSeguro}', '${cpfSeguro}')">Declaração</button>
-                            <button class="btn-acao btn-excluir" onclick="excluirAluno('${aluno.id}')">Excluir</button>
+                        <td class="acoes">
+                            <button class="btn-acoes" onclick="alternarMenu(document.getElementById('${menuId}'))">⋮</button>
+                            <div class="menu-acoes" id="${menuId}">
+                                <button class="destaque" onclick="editarAluno('${aluno.id}')">✏️ Editar</button>
+                                <button onclick="abrirDeclaracao('${(d.nome||'').replace(/'/g, "\\'")}', '${(d.cpf||'').replace(/'/g, "\\'")}')">📄 Declaração</button>
+                                <button onclick="abrirInfoAluno('${aluno.id}')">ℹ️ Informações do Aluno</button>
+                                <button class="vermelho" onclick="excluirAluno('${aluno.id}')">🗑️ Excluir</button>
+                            </div>
                         </td>
                     </tr>`;
                 });
 
             } catch (erro) {
                 console.error('ERRO NO CARREGAMENTO:', erro);
-                lista.innerHTML = `<tr><td colspan="10" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
