@@ -92,7 +92,6 @@
         }
         .btn-novo:hover { background: #b00000; }
 
-        /* 📊 CARDS DO TOPO */
         .cards-topo {
             display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px;
         }
@@ -124,13 +123,11 @@
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 50px !important; color: var(--texto-cinza); }
 
-        /* 🟢 STATUS */
         .status { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
         .status-emdia { background: #00C85320; color: #00C853; }
         .status-avencer { background: #FFC10720; color: #FFC107; }
         .status-atrasado { background: #FF3B3B20; color: #FF3B3B; }
 
-        /* ⋮ BOTÃO DE AÇÕES */
         .acoes { position: relative; }
         .btn-acoes {
             background: none; border: none; color: var(--texto-cinza);
@@ -193,7 +190,6 @@
         .valor-gratis { color: #4CAF50; }
         .valor-vazio { color: var(--texto-cinza); font-style: italic; }
 
-        /* 📋 MODAL DE INFORMAÇÕES */
         .info-linha { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--borda); }
         .info-linha:last-child { border-bottom: none; }
         .info-label { font-weight: 600; color: var(--texto-cinza); font-size: 14px; }
@@ -250,7 +246,6 @@
             </button>
         </div>
 
-        <!-- 📊 CARDS DO TOPO -->
         <div class="cards-topo">
             <div class="card-resumo">
                 <div class="valor" id="cardTotal">0</div>
@@ -298,12 +293,13 @@
             </select>
         </div>
 
-        <!-- 📋 TABELA SIMPLIFICADA -->
+        <!-- 📋 TABELA ATUALIZADA COM COLUNA TIPO -->
         <table class="tabela">
             <thead>
                 <tr>
                     <th>Nome do Aluno</th>
                     <th>CPF</th>
+                    <th>Tipo</th>
                     <th>Plano</th>
                     <th>Valor Final</th>
                     <th>Status</th>
@@ -311,7 +307,7 @@
                 </tr>
             </thead>
             <tbody id="listaAlunos">
-                <tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>
+                <tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>
             </tbody>
         </table>
     </main>
@@ -452,7 +448,6 @@
             'Anual': 820.00
         };
 
-        // Variável global para guardar os alunos
         let alunosCarregados = [];
 
         function carregarTema() {
@@ -523,7 +518,6 @@
             }
         }
 
-        // 🧮 Calcula status de vencimento
         function calcularStatus(vencimento) {
             if (!vencimento) return { classe: 'avencer', texto: 'Sem data', dias: null };
             const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -537,7 +531,6 @@
             return { classe: 'emdia', texto: `Vence em ${dias} dias`, dias };
         }
 
-        // ⋮ Abre/fecha menu de ações
         let menuAberto = null;
         document.addEventListener('click', (e) => {
             if (menuAberto && !e.target.closest('.acoes')) {
@@ -551,7 +544,6 @@
             menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
         }
 
-        // ℹ️ Abre modal com informações do aluno
         function abrirInfoAluno(id) {
             const aluno = alunosCarregados.find(a => a.id === id);
             if (!aluno) return;
@@ -585,6 +577,10 @@
                     <span class="info-valor">${nascimentoTexto}</span>
                 </div>
                 <div class="info-linha">
+                    <span class="info-label">Tipo de Aluno</span>
+                    <span class="info-valor">${d.tipo || '-'}</span>
+                </div>
+                <div class="info-linha">
                     <span class="info-label">Plano / Período</span>
                     <span class="info-valor">${d.periodo || '-'}</span>
                 </div>
@@ -607,13 +603,13 @@
 
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>';
+            lista.innerHTML = '<tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>';
 
             try {
                 const snapshot = await db.collection('alunos').get();
 
                 if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="6" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
+                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     alunosCarregados = [];
                     return;
                 }
@@ -628,7 +624,6 @@
                     return nomeA.localeCompare(nomeB);
                 });
 
-                // 📊 Calcula dados dos cards
                 const hoje = new Date(); hoje.setHours(0,0,0,0);
                 const fimSemana = new Date(hoje); fimSemana.setDate(fimSemana.getDate() + 7);
                 let total = 0, emDia = 0, estaSemana = 0, atrasados = 0, receita = 0;
@@ -655,9 +650,8 @@
                 document.getElementById('cardPctSemana').textContent = total > 0 ? `${Math.round((estaSemana / total) * 100)}% do total` : '—';
                 document.getElementById('cardPctAtrasados').textContent = total > 0 ? `${Math.round((atrasados / total) * 100)}% do total` : '—';
 
-                // 📋 Monta tabela SIMPLIFICADA
                 lista.innerHTML = '';
-                alunosCarregados.forEach((aluno, indice) => {
+                alunosCarregados.forEach((aluno) => {
                     const d = aluno.dados;
                     const valorPlano = d.valorPlano || 0;
                     const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
@@ -675,6 +669,7 @@
                     <tr>
                         <td><strong>${d.nome || '-'}</strong></td>
                         <td>${cpf}</td>
+                        <td>${d.tipo || '-'}</td>
                         <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
                         <td><span class="status status-${status.classe}">${statusTexto}</span></td>
@@ -692,7 +687,7 @@
 
             } catch (erro) {
                 console.error('ERRO NO CARREGAMENTO:', erro);
-                lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
+                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -808,7 +803,6 @@
             }
         });
 
-        // 🔍 Filtros
         document.getElementById('buscaAluno').addEventListener('input', () => {
             const termo = document.getElementById('buscaAluno').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
