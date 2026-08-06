@@ -293,16 +293,16 @@
             </select>
         </div>
 
-        <!-- 📋 TABELA ATUALIZADA COM COLUNA TIPO -->
+        <!-- 📋 TABELA ATUALIZADA: sem Status, com Responsável -->
         <table class="tabela">
             <thead>
                 <tr>
                     <th>Nome do Aluno</th>
                     <th>CPF</th>
                     <th>Tipo</th>
+                    <th>Responsável</th>
                     <th>Plano</th>
                     <th>Valor Final</th>
-                    <th>Status</th>
                     <th style="width:50px;"></th>
                 </tr>
             </thead>
@@ -418,7 +418,7 @@
         </div>
     </div>
 
-    <!-- ℹ️ MODAL INFORMAÇÕES DO ALUNO -->
+    <!-- ℹ️ MODAL INFORMAÇÕES DO ALUNO COM TODOS OS CAMPOS -->
     <div id="modalInfo" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalInfo()">&times;</button>
@@ -478,6 +478,12 @@
             return tel;
         }
 
+        function formatarData(data) {
+            if (!data) return '-';
+            if (data.toDate) return data.toDate().toLocaleDateString('pt-BR');
+            return new Date(data).toLocaleDateString('pt-BR');
+        }
+
         document.getElementById('cpfAluno').addEventListener('input', function() {
             const apenasNumeros = this.value.replace(/\D/g, '');
             if (apenasNumeros.length <= 11) {
@@ -518,19 +524,6 @@
             }
         }
 
-        function calcularStatus(vencimento) {
-            if (!vencimento) return { classe: 'avencer', texto: 'Sem data', dias: null };
-            const hoje = new Date(); hoje.setHours(0,0,0,0);
-            const ven = new Date(vencimento); ven.setHours(0,0,0,0);
-            if (isNaN(ven.getTime())) return { classe: 'avencer', texto: 'Data inválida', dias: null };
-            
-            const dias = Math.ceil((ven - hoje) / (1000 * 60 * 60 * 24));
-            if (dias < 0) return { classe: 'atrasado', texto: `Atrasado há ${Math.abs(dias)} dias`, dias };
-            if (dias === 0) return { classe: 'avencer', texto: 'Vence HOJE', dias };
-            if (dias <= 5) return { classe: 'avencer', texto: `Vence em ${dias} dia${dias>1?'s':''}`, dias };
-            return { classe: 'emdia', texto: `Vence em ${dias} dias`, dias };
-        }
-
         let menuAberto = null;
         document.addEventListener('click', (e) => {
             if (menuAberto && !e.target.closest('.acoes')) {
@@ -544,28 +537,39 @@
             menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
         }
 
+        // ℹ️ MODAL COM TODAS AS INFORMAÇÕES DO CADASTRO
         function abrirInfoAluno(id) {
             const aluno = alunosCarregados.find(a => a.id === id);
             if (!aluno) return;
             const d = aluno.dados;
 
-            let vencimentoTexto = '-';
-            if (d.dataVencimento) vencimentoTexto = d.dataVencimento.toDate().toLocaleDateString('pt-BR');
-            else if (d.dataMatricula) vencimentoTexto = d.dataMatricula.toDate().toLocaleDateString('pt-BR');
-
-            let nascimentoTexto = '-';
-            if (d.dataNascimento) nascimentoTexto = d.dataNascimento.toDate().toLocaleDateString('pt-BR');
-
             const valorTexto = (d.valorPlano || 0) === 0 ? 'GRÁTIS' : `R$ ${(d.valorPlano||0).toFixed(2).replace('.', ',')}`;
+            const descontoTexto = (d.desconto || 0) === 0 ? '0%' : `${d.desconto}%`;
 
             document.getElementById('nomeInfo').textContent = d.nome || 'Aluno';
             document.getElementById('conteudoInfo').innerHTML = `
+                <div class="info-linha">
+                    <span class="info-label">Nome Completo</span>
+                    <span class="info-valor">${d.nome || '-'}</span>
+                </div>
                 <div class="info-linha">
                     <span class="info-label">CPF</span>
                     <span class="info-valor">${formatarCPF(d.cpf)}</span>
                 </div>
                 <div class="info-linha">
-                    <span class="info-label">Telefone</span>
+                    <span class="info-label">Tipo de Aluno</span>
+                    <span class="info-valor">${d.tipo || '-'}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Data de Nascimento</span>
+                    <span class="info-valor">${formatarData(d.dataNascimento)}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Nome do Responsável</span>
+                    <span class="info-valor">${d.responsavel || '-'}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Telefone / Contato</span>
                     <span class="info-valor">${formatarTelefone(d.telefone)}</span>
                 </div>
                 <div class="info-linha">
@@ -573,24 +577,24 @@
                     <span class="info-valor">${d.email || '-'}</span>
                 </div>
                 <div class="info-linha">
-                    <span class="info-label">Data de Nascimento</span>
-                    <span class="info-valor">${nascimentoTexto}</span>
+                    <span class="info-label">Data de Vencimento</span>
+                    <span class="info-valor">${formatarData(d.dataVencimento || d.dataMatricula)}</span>
                 </div>
                 <div class="info-linha">
-                    <span class="info-label">Tipo de Aluno</span>
-                    <span class="info-valor">${d.tipo || '-'}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Plano / Período</span>
+                    <span class="info-label">Período do Plano</span>
                     <span class="info-valor">${d.periodo || '-'}</span>
                 </div>
                 <div class="info-linha">
-                    <span class="info-label">Valor do Plano</span>
+                    <span class="info-label">Desconto Aplicado</span>
+                    <span class="info-valor">${descontoTexto}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="info-label">Valor Final do Plano</span>
                     <span class="info-valor">${valorTexto}</span>
                 </div>
                 <div class="info-linha">
-                    <span class="info-label">Próximo Vencimento</span>
-                    <span class="info-valor">${vencimentoTexto}</span>
+                    <span class="info-label">Faixa Inicial</span>
+                    <span class="info-valor">${d.faixa || '-'}</span>
                 </div>
             `;
             document.getElementById('modalInfo').style.display = 'flex';
@@ -634,10 +638,12 @@
                     if (a.dados.dataVencimento) venc = a.dados.dataVencimento.toDate();
                     else if (a.dados.dataMatricula) venc = a.dados.dataMatricula.toDate();
                     
-                    const status = calcularStatus(venc);
-                    if (status.classe === 'emdia') emDia++;
-                    if (status.classe === 'atrasado') atrasados++;
-                    if (status.dias !== null && status.dias >= 0 && status.dias <= 7) estaSemana++;
+                    if (venc) {
+                        const dias = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
+                        if (dias < 0) atrasados++;
+                        else if (dias <= 7) estaSemana++;
+                        else emDia++;
+                    }
                     receita += Number(a.dados.valorPlano) || 0;
                 });
 
@@ -656,12 +662,7 @@
                     const valorPlano = d.valorPlano || 0;
                     const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
                     const cpf = formatarCPF(d.cpf);
-                    
-                    let venc = null;
-                    if (d.dataVencimento) venc = d.dataVencimento.toDate();
-                    else if (d.dataMatricula) venc = d.dataMatricula.toDate();
-                    const status = calcularStatus(venc);
-                    const statusTexto = status.classe === 'emdia' ? 'Em dia' : status.classe === 'avencer' ? 'A vencer' : 'Atrasado';
+                    const responsavel = d.responsavel || '-';
 
                     const menuId = `menu-${aluno.id}`;
 
@@ -670,9 +671,9 @@
                         <td><strong>${d.nome || '-'}</strong></td>
                         <td>${cpf}</td>
                         <td>${d.tipo || '-'}</td>
+                        <td>${responsavel}</td>
                         <td>${d.periodo || '-'}</td>
                         <td>${valorTexto}</td>
-                        <td><span class="status status-${status.classe}">${statusTexto}</span></td>
                         <td class="acoes">
                             <button class="btn-acoes" onclick="alternarMenu(document.getElementById('${menuId}'))">⋮</button>
                             <div class="menu-acoes" id="${menuId}">
