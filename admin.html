@@ -498,7 +498,7 @@
             <div class="card-grande">
                 <h3><i class="fas fa-list-ol"></i> Últimos Cadastros</h3>
                 <ul class="lista-tipo" id="ultimosCadastros">
-                    <li><span style="color:var(--texto-cinza);">Carregando...</span></li>
+                    <li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Carregando...</li>
                 </ul>
             </div>
         </div>
@@ -561,12 +561,6 @@
             const hoje = new Date(); hoje.setHours(0,0,0,0);
             const venc = new Date(dataVencimento); venc.setHours(0,0,0,0);
             return hoje > venc;
-        }
-
-        function formatarData(data) {
-            if (!data) return '-';
-            const d = data.toDate ? data.toDate() : new Date(data);
-            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
         }
 
         function desenharGraficoPizza(contagem, total) {
@@ -632,12 +626,9 @@
                 let contagemTipos = { Kids: 0, "Baby Class": 0, Comercial: 0, Competidor: 0, Bolsista: 0 };
                 let contagemFaixas = { Branca: 0, Cinza: 0, Amarela: 0, Laranja: 0, Verde: 0, Azul: 0, Roxa: 0, Marrom: 0, Preta: 0 };
                 let listaAniversariantes = [];
-                let todosAlunos = [];
 
                 alunosSnapshot.forEach(doc => {
                     const d = doc.data();
-                    todosAlunos.push({ id: doc.id, dados: d });
-
                     const tipo = d.tipo || d.tipoAluno;
                     if (contagemTipos.hasOwnProperty(tipo)) contagemTipos[tipo]++;
 
@@ -687,16 +678,19 @@
                     });
                 }
 
-                todosAlunos.sort((a, b) => {
+                const listaUltimos = document.getElementById('ultimosCadastros');
+                listaUltimos.innerHTML = '';
+                const alunosOrdenados = [];
+                alunosSnapshot.forEach(doc => alunosOrdenados.push({ id: doc.id, dados: doc.data() }));
+                alunosOrdenados.sort((a, b) => {
                     const dataA = a.dados.dataCadastro ? (a.dados.dataCadastro.toDate ? a.dados.dataCadastro.toDate() : new Date(a.dados.dataCadastro)) : new Date(0);
                     const dataB = b.dados.dataCadastro ? (b.dados.dataCadastro.toDate ? b.dados.dataCadastro.toDate() : new Date(b.dados.dataCadastro)) : new Date(0);
                     return dataB - dataA;
                 });
-                const ultimos5 = todosAlunos.slice(0, 5);
+                const ultimos5 = alunosOrdenados.slice(0, 5);
 
-                const listaUltimos = document.getElementById('ultimosCadastros');
                 if (ultimos5.length === 0) {
-                    listaUltimos.innerHTML = '<li><span style="color:var(--texto-cinza);">Nenhum aluno cadastrado</span></li>';
+                    listaUltimos.innerHTML = '<li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Nenhum aluno cadastrado</li>';
                 } else {
                     listaUltimos.innerHTML = '';
                     ultimos5.forEach(aluno => {
@@ -734,6 +728,7 @@
 
             } catch (erro) {
                 console.error('Erro ao carregar dados do Dashboard:', erro);
+                document.getElementById('ultimosCadastros').innerHTML = '<li class="text-center" style="color: var(--erro); padding: 20px;">Erro ao carregar dados</li>';
             }
         }
 
@@ -745,11 +740,7 @@
 
         auth.onAuthStateChanged(usuario => {
             if (!usuario) window.location.href = 'login.html';
-            else {
-                setTimeout(() => {
-                    carregarDadosDashboard();
-                }, 300);
-            }
+            else carregarDadosDashboard();
         });
     </script>
 
