@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alunos - PJJ Pará Jiu-Jitsu</title>
+    <title>Relatórios - PJJ Pará Jiu-Jitsu</title>
     <link rel="icon" href="imagens/logopjj.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -85,112 +85,44 @@
         }
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
-        
-        .btn-novo { 
-            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px; 
-            border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
-            transition: 0.2s;
-        }
-        .btn-novo:hover { background: #b00000; }
 
-        .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
-        .card-filtro input, .card-filtro select {
-            flex: 1; min-width: 160px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
+        .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+
+        .card { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; transition: 0.2s; }
+        .card:hover { border-color: var(--vermelho-principal); transform: translateY(-3px); }
+        .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--texto-cinza); }
+        .card .valor { font-size: 32px; font-weight: 800; }
+        .card .descricao { font-size: 13px; color: var(--texto-cinza); margin-top: 8px; }
+
+        .card.verde .valor { color: var(--verde); }
+        .card.vermelho .valor { color: var(--vermelho-principal); }
+        .card.azul .valor { color: var(--azul); }
+        .card.amarelo .valor { color: var(--amarelo); }
+
+        .card-lista { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; }
+        .card-lista h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--texto-branco); }
+        .item-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--borda); }
+        .item-linha:last-child { border-bottom: none; }
+        .item-nome { font-weight: 600; font-size: 14px; }
+        .item-valor { font-weight: 700; font-size: 14px; }
+
+        .filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .filtro select {
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
             border-radius: 6px; color: var(--texto-branco); font-size: 14px; outline: none;
         }
-        .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
-
-        .tabela { 
-            width: 100%; 
-            border-collapse: collapse; 
-            background: var(--fundo-card); 
-            border: 1px solid var(--borda); 
-            border-radius: 10px; 
-            overflow: hidden; 
+        .filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
+        .btn-gerar {
+            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px;
+            border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s;
         }
-        .tabela th { background: rgba(255,255,255,0.05); padding: 14px 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--texto-cinza); text-transform: uppercase; white-space: nowrap; }
-        .tabela td { padding: 14px 12px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
-        .tabela tr:hover { background: rgba(255,255,255,0.03); }
-        .vazio { text-align: center; padding: 50px !important; color: var(--texto-cinza); }
-
-        .acoes { position: relative; }
-        .btn-acoes {
-            background: none; border: none; color: var(--texto-cinza);
-            font-size: 20px; font-weight: bold; cursor: pointer;
-            padding: 4px 10px; border-radius: 4px;
-        }
-        .btn-acoes:hover { background: rgba(255,255,255,0.05); color: var(--texto-branco); }
-        .menu-acoes {
-            position: absolute; right: 0; top: 100%;
-            background: var(--fundo-card); border: 1px solid var(--borda);
-            border-radius: 8px; min-width: 180px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            z-index: 100; display: none;
-        }
-        .menu-acoes.aberto { display: block; }
-        .menu-acoes button {
-            width: 100%; text-align: left; border: none; background: none;
-            padding: 10px 15px; color: var(--texto-branco);
-            font-size: 14px; cursor: pointer; transition: 0.15s;
-        }
-        .menu-acoes button:hover { background: rgba(209,0,0,0.1); color: var(--vermelho-principal); }
-        .menu-acoes button.destaque { color: var(--azul); }
-        .menu-acoes button.vermelho { color: var(--vermelho-claro); }
-
-        .fundo-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 2000;
-            justify-content: center; align-items: flex-start;
-            padding: 20px; overflow-y: auto;
-        }
-        .modal {
-            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
-            padding: 30px; width: 100%; max-width: 500px;
-            margin: 20px auto; position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.6);
-        }
-        .modal h2 { color: var(--vermelho-principal); margin-bottom: 25px; font-size: 22px; font-weight: 800; }
-        .fechar-modal {
-            position: absolute; top: 15px; right: 15px; background: none; border: none;
-            color: var(--texto-cinza); font-size: 28px; cursor: pointer; transition: 0.2s;
-        }
-        .fechar-modal:hover { color: var(--vermelho-principal); }
-
-        .secao { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--borda); }
-        .secao h3 { font-size: 16px; font-weight: 600; color: var(--texto-cinza); margin-bottom: 15px; }
-        .info-dica { font-size: 12px; color: var(--amarelo); margin-top: 5px; }
-
-        .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 18px; }
-        .campo { display: flex; flex-direction: column; }
-        .campo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--texto-branco); }
-        .campo input, .campo select {
-            width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
-            border-radius: 6px; color: var(--texto-branco); font-size: 14px;
-        }
-        .campo input:focus, .campo select:focus {
-            outline: none; border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15);
-        }
-        .opcional { font-size: 12px; color: var(--texto-cinza); font-weight: normal; }
-        .valor-final { margin-top: 5px; font-size: 18px; font-weight: 800; color: var(--verde); }
-        .valor-gratis { color: #4CAF50; }
-        .valor-vazio { color: var(--texto-cinza); font-style: italic; }
-
-        .info-linha { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--borda); }
-        .info-linha:last-child { border-bottom: none; }
-        .info-label { font-weight: 600; color: var(--texto-cinza); font-size: 14px; }
-        .info-valor { font-size: 14px; color: var(--texto-branco); text-align: right; }
+        .btn-gerar:hover { background: #b00000; }
 
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
-        }
-
-        @media (max-width: 600px) {
-            .linha { grid-template-columns: 1fr; }
-            .modal { padding: 20px; margin: 10px auto; }
-            .tabela { display: block; overflow-x: auto; }
         }
     </style>
 
@@ -212,10 +144,10 @@
         <nav class="menu-navegacao">
             <ul>
                 <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#" class="ativo"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
                 <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" class="sair" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
@@ -224,161 +156,87 @@
 
     <main class="conteudo">
         <div class="cabecalho">
-            <h1 class="titulo-pagina">Gerenciar Alunos</h1>
-            <button class="btn-novo" onclick="abrirModalCadastro()">
-                <i class="fas fa-plus"></i> Novo Aluno
-            </button>
+            <h1 class="titulo-pagina">Relatórios</h1>
         </div>
 
-        <div class="card-filtro">
-            <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome, CPF ou responsável...">
-            <select id="filtroTipo">
-                <option value="">Todos os Tipos</option>
-                <option value="Kids">Kids</option>
-                <option value="Baby Class">Baby Class</option>
-                <option value="Comercial">Comercial</option>
-                <option value="Competidor">Competidor</option>
-                <option value="Bolsista">Bolsista</option>
+        <div class="filtro">
+            <select id="anoRelatorio">
+                <option value="2026">Ano: 2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
             </select>
-            <select id="filtroPeriodo">
-                <option value="">Todos os Planos</option>
-                <option value="Mensal">Mensal</option>
-                <option value="Trimestral">Trimestral</option>
-                <option value="Semestral">Semestral</option>
-                <option value="Anual">Anual</option>
+            <select id="mesRelatorio">
+                <option value="">Todos os Meses</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
             </select>
+            <button class="btn-gerar" onclick="carregarRelatorios()">🔄 Atualizar</button>
         </div>
 
-        <table class="tabela">
-            <thead>
-                <tr>
-                    <th>Nome do Aluno</th>
-                    <th>CPF</th>
-                    <th>Tipo</th>
-                    <th>Responsável</th>
-                    <th>Plano</th>
-                    <th>Valor Final</th>
-                    <th style="width:50px;"></th>
-                </tr>
-            </thead>
-            <tbody id="listaAlunos">
-                <tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>
-            </tbody>
-        </table>
+        <div class="grade">
+            <div class="card verde">
+                <h3>Total de Alunos</h3>
+                <div class="valor" id="totalAlunos">—</div>
+                <p class="descricao">Alunos ativos cadastrados</p>
+            </div>
+            <div class="card azul">
+                <h3>Mensalistas</h3>
+                <div class="valor" id="totalMensal">—</div>
+                <p class="descricao">Plano Mensal</p>
+            </div>
+            <div class="card amarelo">
+                <h3>Anuais</h3>
+                <div class="valor" id="totalAnual">—</div>
+                <p class="descricao">Plano Anual</p>
+            </div>
+            <div class="card vermelho">
+                <h3>Bolsistas</h3>
+                <div class="valor" id="totalBolsista">—</div>
+                <p class="descricao">Isentos de mensalidade</p>
+            </div>
+        </div>
+
+        <div class="grade">
+            <div class="card">
+                <h3>Kids</h3>
+                <div class="valor" id="totalKids">—</div>
+                <p class="descricao">Turma Kids</p>
+            </div>
+            <div class="card">
+                <h3>Comercial</h3>
+                <div class="valor" id="totalComercial">—</div>
+                <p class="descricao">Plano Comercial</p>
+            </div>
+            <div class="card">
+                <h3>Competidor</h3>
+                <div class="valor" id="totalCompetidor">—</div>
+                <p class="descricao">Atletas Competidores</p>
+            </div>
+            <div class="card">
+                <h3>Baby Class</h3>
+                <div class="valor" id="totalBaby">—</div>
+                <p class="descricao">Turma Baby</p>
+            </div>
+        </div>
+
+        <div class="card-lista">
+            <h2>📊 Distribuição por Faixa</h2>
+            <div id="listaFaixas">
+                <p style="color:var(--texto-cinza);text-align:center;padding:20px;">Carregando dados...</p>
+            </div>
+        </div>
+
     </main>
-
-    <div id="modalCadastro" class="fundo-modal">
-        <div class="modal">
-            <button class="fechar-modal" onclick="fecharModalCadastro()">&times;</button>
-            <h2 id="tituloModal">Cadastrar Novo Aluno</h2>
-            <form id="formAluno">
-                <input type="hidden" id="idAluno" value="">
-
-                <div class="secao">
-                    <h3>Dados Pessoais</h3>
-                    <div class="linha">
-                        <div class="campo">
-                            <label>Nome Completo *</label>
-                            <input type="text" id="nomeAluno" required>
-                        </div>
-                        <div class="campo">
-                            <label>CPF *</label>
-                            <input type="text" id="cpfAluno" placeholder="000.000.000-00" maxlength="14" required>
-                        </div>
-                    </div>
-                    <div class="linha">
-                        <div class="campo">
-                            <label>Tipo de Aluno *</label>
-                            <select id="tipoAluno" onchange="atualizarValorPlano()" required>
-                                <option value="">Selecione</option>
-                                <option value="Kids">Kids</option>
-                                <option value="Baby Class">Baby Class</option>
-                                <option value="Comercial">Comercial</option>
-                                <option value="Competidor">Competidor</option>
-                                <option value="Bolsista">Bolsista (Gratuito)</option>
-                            </select>
-                        </div>
-                        <div class="campo">
-                            <label>Data de Nascimento *</label>
-                            <input type="date" id="nascimentoAluno" required>
-                        </div>
-                    </div>
-                    <div class="linha">
-                        <div class="campo">
-                            <label>Nome do Responsável <span class="opcional">(opcional)</span></label>
-                            <input type="text" id="responsavelAluno">
-                        </div>
-                        <div class="campo">
-                            <label>📅 Data de Vencimento *</label>
-                            <input type="date" id="matriculaAluno" required>
-                            <p class="info-dica">💡 O vencimento sempre será no mesmo dia do mês</p>
-                        </div>
-                    </div>
-                    <div class="linha">
-                        <div class="campo">
-                            <label>Telefone / Contato <span class="opcional">(opcional)</span></label>
-                            <input type="text" id="telefoneAluno" placeholder="(91) 99999-9999">
-                        </div>
-                        <div class="campo">
-                            <label>E-mail <span class="opcional">(opcional)</span></label>
-                            <input type="email" id="emailAluno">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="secao">
-                    <h3>Plano e Valores</h3>
-                    <div class="linha">
-                        <div class="campo">
-                            <label>Período do Plano *</label>
-                            <select id="periodoAluno" onchange="atualizarValorPlano()" required>
-                                <option value="">Selecione</option>
-                                <option value="Mensal">Mensal - R$ 90,00</option>
-                                <option value="Trimestral">Trimestral - R$ 240,00</option>
-                                <option value="Semestral">Semestral - R$ 450,00</option>
-                                <option value="Anual">Anual - R$ 820,00</option>
-                            </select>
-                        </div>
-                        <div class="campo">
-                            <label>Desconto (%) <span class="opcional">(opcional)</span></label>
-                            <input type="number" id="descontoAluno" min="0" max="100" step="0.1" value="0" oninput="atualizarValorPlano()">
-                        </div>
-                    </div>
-                    <div class="linha">
-                        <div class="campo">
-                            <label>Valor Final</label>
-                            <input type="text" id="valorFinalAluno" class="valor-final valor-vazio" value="Selecione o tipo e o plano" readonly>
-                        </div>
-                        <div class="campo">
-                            <label>Faixa Inicial *</label>
-                            <select id="faixaAluno" required>
-                                <option value="">Selecione</option>
-                                <option value="Branca">Branca</option>
-                                <option value="Cinza">Cinza</option>
-                                <option value="Amarela">Amarela</option>
-                                <option value="Laranja">Laranja</option>
-                                <option value="Verde">Verde</option>
-                                <option value="Azul">Azul</option>
-                                <option value="Roxa">Roxa</option>
-                                <option value="Marrom">Marrom</option>
-                                <option value="Preta">Preta</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-salvar" style="width:100%;padding:14px;background:var(--verde);color:white;border:none;border-radius:6px;font-weight:700;font-size:16px;cursor:pointer;">Salvar Aluno</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modalInfo" class="fundo-modal">
-        <div class="modal">
-            <button class="fechar-modal" onclick="fecharModalInfo()">&times;</button>
-            <h2 id="nomeInfo">Informações do Aluno</h2>
-            <div id="conteudoInfo"></div>
-        </div>
-    </div>
 
     <script>
         const firebaseConfig = {
@@ -394,15 +252,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const valoresPlanos = {
-            'Mensal': 90.00,
-            'Trimestral': 240.00,
-            'Semestral': 450.00,
-            'Anual': 820.00
-        };
-
-        let alunosCarregados = [];
-
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -415,341 +264,59 @@
             }
         }
 
-        function formatarCPF(cpf) {
-            if (!cpf) return '-';
-            const apenasNumeros = cpf.replace(/\D/g, '');
-            if (apenasNumeros.length === 11) {
-                return apenasNumeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-            }
-            return apenasNumeros || '-';
-        }
-
-        function formatarTelefone(tel) {
-            if (!tel) return '-';
-            const n = tel.replace(/\D/g, '');
-            if (n.length === 11) return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
-            return tel;
-        }
-
-        function formatarData(data) {
-            if (!data) return '-';
-            if (data.toDate) return data.toDate().toLocaleDateString('pt-BR');
-            return new Date(data).toLocaleDateString('pt-BR');
-        }
-
-        document.getElementById('cpfAluno').addEventListener('input', function() {
-            const apenasNumeros = this.value.replace(/\D/g, '');
-            if (apenasNumeros.length <= 11) {
-                let cpfFormatado = apenasNumeros;
-                if (apenasNumeros.length >= 4) cpfFormatado = apenasNumeros.slice(0,3) + '.' + apenasNumeros.slice(3);
-                if (apenasNumeros.length >= 7) cpfFormatado = cpfFormatado.slice(0,7) + '.' + cpfFormatado.slice(7);
-                if (apenasNumeros.length >= 10) cpfFormatado = cpfFormatado.slice(0,11) + '-' + cpfFormatado.slice(11,13);
-                this.value = cpfFormatado;
-            }
-        });
-
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        function atualizarValorPlano() {
-            const tipo = document.getElementById('tipoAluno').value;
-            const periodo = document.getElementById('periodoAluno').value;
-            const desconto = parseFloat(document.getElementById('descontoAluno').value) || 0;
-            const campoValor = document.getElementById('valorFinalAluno');
-
-            if (!tipo || !periodo) {
-                campoValor.value = 'Selecione o tipo e o plano';
-                campoValor.className = 'valor-final valor-vazio';
-                campoValor.removeAttribute('data-valor');
-                return;
-            }
-
-            if (tipo === 'Bolsista') {
-                campoValor.value = 'GRÁTIS';
-                campoValor.className = 'valor-final valor-gratis';
-            } else {
-                const valorBase = valoresPlanos[periodo] || 0;
-                const valorFinal = valorBase - (valorBase * desconto / 100);
-                campoValor.value = `R$ ${valorFinal.toFixed(2).replace('.', ',')}`;
-                campoValor.className = 'valor-final';
-                campoValor.dataset.valor = valorFinal;
-            }
-        }
-
-        let menuAberto = null;
-        document.addEventListener('click', (e) => {
-            if (menuAberto && !e.target.closest('.acoes')) {
-                menuAberto.classList.remove('aberto');
-                menuAberto = null;
-            }
-        });
-        function alternarMenu(menuEl) {
-            if (menuAberto && menuAberto !== menuEl) menuAberto.classList.remove('aberto');
-            menuEl.classList.toggle('aberto');
-            menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
-        }
-
-        function abrirInfoAluno(id) {
-            const aluno = alunosCarregados.find(a => a.id === id);
-            if (!aluno) return;
-            const d = aluno.dados;
-
-            const valorTexto = (d.valorPlano || 0) === 0 ? 'GRÁTIS' : `R$ ${(d.valorPlano||0).toFixed(2).replace('.', ',')}`;
-            const descontoTexto = (d.desconto || 0) === 0 ? '0%' : `${d.desconto}%`;
-
-            document.getElementById('nomeInfo').textContent = d.nome || 'Aluno';
-            document.getElementById('conteudoInfo').innerHTML = `
-                <div class="info-linha">
-                    <span class="info-label">Nome Completo</span>
-                    <span class="info-valor">${d.nome || '-'}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">CPF</span>
-                    <span class="info-valor">${formatarCPF(d.cpf)}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Tipo de Aluno</span>
-                    <span class="info-valor">${d.tipo || '-'}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Data de Nascimento</span>
-                    <span class="info-valor">${formatarData(d.dataNascimento)}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Nome do Responsável</span>
-                    <span class="info-valor">${d.responsavel || '-'}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Telefone / Contato</span>
-                    <span class="info-valor">${formatarTelefone(d.telefone)}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">E-mail</span>
-                    <span class="info-valor">${d.email || '-'}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Data de Vencimento</span>
-                    <span class="info-valor">${formatarData(d.dataVencimento || d.dataMatricula)}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Período do Plano</span>
-                    <span class="info-valor">${d.periodo || '-'}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Desconto Aplicado</span>
-                    <span class="info-valor">${descontoTexto}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Valor Final do Plano</span>
-                    <span class="info-valor">${valorTexto}</span>
-                </div>
-                <div class="info-linha">
-                    <span class="info-label">Faixa Inicial</span>
-                    <span class="info-valor">${d.faixa || '-'}</span>
-                </div>
-            `;
-            document.getElementById('modalInfo').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-        function fecharModalInfo() {
-            document.getElementById('modalInfo').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        async function carregarAlunos() {
-            const lista = document.getElementById('listaAlunos');
-            lista.innerHTML = '<tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>';
-
+        async function carregarRelatorios() {
             try {
                 const snapshot = await db.collection('alunos').get();
+                const alunos = [];
+                snapshot.forEach(doc => alunos.push(doc.data()));
 
-                if (snapshot.empty) {
-                    lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
-                    alunosCarregados = [];
-                    return;
-                }
+                document.getElementById('totalAlunos').textContent = alunos.length;
 
-                alunosCarregados = [];
-                snapshot.forEach(doc => {
-                    alunosCarregados.push({ id: doc.id, dados: doc.data() });
-                });
-                alunosCarregados.sort((a, b) => {
-                    const nomeA = String((a.dados.nome || '')).toLowerCase();
-                    const nomeB = String((b.dados.nome || '')).toLowerCase();
-                    return nomeA.localeCompare(nomeB);
-                });
+                const contagem = {
+                    Mensal: 0, Anual: 0, Bolsista: 0,
+                    Kids: 0, Comercial: 0, Competidor: 0, 'Baby Class': 0
+                };
+                const faixas = { Branca: 0, Cinza: 0, Amarela: 0, Laranja: 0, Verde: 0, Azul: 0, Roxa: 0, Marrom: 0, Preta: 0 };
 
-                lista.innerHTML = '';
-                alunosCarregados.forEach((aluno) => {
-                    const d = aluno.dados;
-                    const valorPlano = d.valorPlano || 0;
-                    const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
-                    const cpf = formatarCPF(d.cpf);
-                    const responsavel = d.responsavel || '-';
-                    const menuId = `menu-${aluno.id}`;
-
-                    lista.innerHTML += `
-                    <tr>
-                        <td><strong>${d.nome || '-'}</strong></td>
-                        <td>${cpf}</td>
-                        <td>${d.tipo || '-'}</td>
-                        <td>${responsavel}</td>
-                        <td>${d.periodo || '-'}</td>
-                        <td>${valorTexto}</td>
-                        <td class="acoes">
-                            <button class="btn-acoes" onclick="alternarMenu(document.getElementById('${menuId}'))">⋮</button>
-                            <div class="menu-acoes" id="${menuId}">
-                                <button class="destaque" onclick="editarAluno('${aluno.id}')">✏️ Editar</button>
-                                <button onclick="abrirDeclaracao('${(d.nome||'').replace(/'/g, "\\'")}', '${(d.cpf||'').replace(/'/g, "\\'")}')">📄 Declaração</button>
-                                <button onclick="abrirInfoAluno('${aluno.id}')">ℹ️ Informações do Aluno</button>
-                                <button class="vermelho" onclick="excluirAluno('${aluno.id}')">🗑️ Excluir</button>
-                            </div>
-                        </td>
-                    </tr>`;
+                alunos.forEach(a => {
+                    if (a.periodo === 'Mensal') contagem.Mensal++;
+                    if (a.periodo === 'Anual') contagem.Anual++;
+                    if (a.tipo === 'Bolsista') contagem.Bolsista++;
+                    if (a.tipo === 'Kids') contagem.Kids++;
+                    if (a.tipo === 'Comercial') contagem.Comercial++;
+                    if (a.tipo === 'Competidor') contagem.Competidor++;
+                    if (a.tipo === 'Baby Class') contagem['Baby Class']++;
+                    if (faixas[a.faixa] !== undefined) faixas[a.faixa]++;
                 });
 
-            } catch (erro) {
-                console.error('ERRO NO CARREGAMENTO:', erro);
-                lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
-            }
-        }
+                document.getElementById('totalMensal').textContent = contagem.Mensal;
+                document.getElementById('totalAnual').textContent = contagem.Anual;
+                document.getElementById('totalBolsista').textContent = contagem.Bolsista;
+                document.getElementById('totalKids').textContent = contagem.Kids;
+                document.getElementById('totalComercial').textContent = contagem.Comercial;
+                document.getElementById('totalCompetidor').textContent = contagem.Competidor;
+                document.getElementById('totalBaby').textContent = contagem['Baby Class'];
 
-        function abrirDeclaracao(nome, cpf) {
-            window.open(`declaracao.html?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`, '_blank');
-        }
-
-        function abrirModalCadastro() {
-            document.getElementById('idAluno').value = '';
-            document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
-            document.getElementById('formAluno').reset();
-            document.getElementById('matriculaAluno').valueAsDate = new Date();
-            document.getElementById('valorFinalAluno').value = 'Selecione o tipo e o plano';
-            document.getElementById('valorFinalAluno').className = 'valor-final valor-vazio';
-            document.getElementById('modalCadastro').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
-
-        function fecharModalCadastro() {
-            document.getElementById('modalCadastro').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-
-        async function editarAluno(id) {
-            try {
-                const doc = await db.collection('alunos').doc(id).get();
-                if (!doc.exists) return;
-
-                const dados = doc.data();
-                document.getElementById('idAluno').value = id;
-                document.getElementById('tituloModal').textContent = 'Editar Aluno';
-                document.getElementById('nomeAluno').value = dados.nome || '';
-                document.getElementById('cpfAluno').value = formatarCPF(dados.cpf || '');
-                document.getElementById('tipoAluno').value = dados.tipo || '';
-                document.getElementById('nascimentoAluno').value = dados.dataNascimento ? dados.dataNascimento.toDate().toISOString().split('T')[0] : '';
-                document.getElementById('responsavelAluno').value = dados.responsavel || '';
-                document.getElementById('telefoneAluno').value = dados.telefone || '';
-                document.getElementById('emailAluno').value = dados.email || '';
-
-                let dataVenc = null;
-                if (dados.dataVencimento) {
-                    dataVenc = dados.dataVencimento.toDate();
-                } else if (dados.dataMatricula) {
-                    dataVenc = dados.dataMatricula.toDate();
-                } else if (dados.dataInicioAula) {
-                    dataVenc = dados.dataInicioAula.toDate();
-                }
-                document.getElementById('matriculaAluno').value = dataVenc ? dataVenc.toISOString().split('T')[0] : '';
-
-                document.getElementById('periodoAluno').value = dados.periodo || '';
-                document.getElementById('descontoAluno').value = dados.desconto || 0;
-                document.getElementById('faixaAluno').value = dados.faixa || '';
-
-                atualizarValorPlano();
-                document.getElementById('modalCadastro').style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-
-            } catch (erro) {
-                alert('Erro ao carregar: ' + erro.message);
-            }
-        }
-
-        async function excluirAluno(id) {
-            if (!confirm('Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
-            try {
-                await db.collection('alunos').doc(id).delete();
-                carregarAlunos();
-            } catch (erro) {
-                alert('Erro ao excluir: ' + erro.message);
-            }
-        }
-
-        document.getElementById('formAluno').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('idAluno').value;
-            const valorFinal = parseFloat(document.getElementById('valorFinalAluno').dataset.valor) || 0;
-            const cpfSemFormatacao = document.getElementById('cpfAluno').value.replace(/\D/g, '');
-
-            const dados = {
-                nome: document.getElementById('nomeAluno').value.trim(),
-                cpf: cpfSemFormatacao,
-                tipo: document.getElementById('tipoAluno').value,
-                dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
-                responsavel: document.getElementById('responsavelAluno').value.trim(),
-                telefone: document.getElementById('telefoneAluno').value.trim(),
-                email: document.getElementById('emailAluno').value.trim(),
-                dataVencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('matriculaAluno').value)),
-                periodo: document.getElementById('periodoAluno').value,
-                desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
-                valorPlano: valorFinal,
-                faixa: document.getElementById('faixaAluno').value,
-                dataCadastro: firebase.firestore.Timestamp.now()
-            };
-
-            try {
-                if (id) {
-                    const docAntigo = await db.collection('alunos').doc(id).get();
-                    if (docAntigo.exists) {
-                        const dadosAntigos = docAntigo.data();
-                        dados.qtdPagamentos = dadosAntigos.qtdPagamentos || 0;
+                let htmlFaixas = '';
+                Object.entries(faixas).forEach(([nome, qtd]) => {
+                    if (qtd > 0) {
+                        htmlFaixas += `
+                        <div class="item-linha">
+                            <span class="item-nome">Faixa ${nome}</span>
+                            <span class="item-valor">${qtd} aluno${qtd !== 1 ? 's' : ''}</span>
+                        </div>`;
                     }
-                    await db.collection('alunos').doc(id).update(dados);
-                    alert('✅ Aluno atualizado! Data de vencimento salva.');
-                } else {
-                    dados.qtdPagamentos = 0;
-                    await db.collection('alunos').add(dados);
-                    alert('✅ Aluno cadastrado! O vencimento será no dia informado.');
-                }
-                fecharModalCadastro();
-                carregarAlunos();
+                });
+                document.getElementById('listaFaixas').innerHTML = htmlFaixas || '<p style="color:var(--texto-cinza);text-align:center;padding:20px;">Sem dados de faixa</p>';
+
             } catch (erro) {
-                alert('Erro ao salvar: ' + erro.message);
+                alert('Erro ao carregar relatórios: ' + erro.message);
             }
-        });
-
-        document.getElementById('buscaAluno').addEventListener('input', () => {
-            const termo = document.getElementById('buscaAluno').value.toLowerCase();
-            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                if (linha.classList.contains('vazio')) return;
-                linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
-            });
-        });
-
-        document.getElementById('filtroTipo').addEventListener('change', () => {
-            const tipo = document.getElementById('filtroTipo').value.toLowerCase();
-            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                if (linha.classList.contains('vazio')) return;
-                linha.style.display = !tipo || linha.textContent.toLowerCase().includes(tipo) ? '' : 'none';
-            });
-        });
-
-        document.getElementById('filtroPeriodo').addEventListener('change', () => {
-            const periodo = document.getElementById('filtroPeriodo').value.toLowerCase();
-            document.querySelectorAll('#listaAlunos tr').forEach(linha => {
-                if (linha.classList.contains('vazio')) return;
-                linha.style.display = !periodo || linha.textContent.toLowerCase().includes(periodo) ? '' : 'none';
-            });
-        });
+        }
 
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
@@ -763,7 +330,7 @@
             } else {
                 carregarTema();
                 setTimeout(() => {
-                    carregarAlunos();
+                    carregarRelatorios();
                 }, 300);
             }
         });
