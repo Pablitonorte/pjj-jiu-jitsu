@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - PJJ Pará Jiu-Jitsu</title>
+    <link rel="icon" href="imagens/logopjj.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
+        :root {
+            --vermelho-principal: #D10000;
+            --vermelho-claro: #FF3B3B;
+            --verde: #00C853;
+            --amarelo: #FFC107;
+            --cinza: #6B7280;
+            --borda: #29292E;
+        }
+
+        .tema-escuro {
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+        }
+
+        html, body {
+            background: var(--fundo-escuro);
+            color: var(--texto-branco);
+            min-height: 100vh;
+        }
+
+        .btn-menu {
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .menu-lateral {
+            width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            transition: transform 0.3s ease; overflow-y: auto;
+        }
+        .menu-lateral.aberto { transform: translateX(0); }
+        .menu-lateral.fechado { transform: translateX(-100%); }
+
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo img { width: 90px; margin-bottom: 10px; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+
+        .menu-navegacao ul { list-style: none; padding: 0 15px; }
+        .menu-navegacao li a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
+        }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+
+        .conteudo {
+            margin-left: 240px;
+            padding: 30px 20px;
+            min-height: 100vh;
+        }
+
+        .cabecalho-pagina {
+            margin-bottom: 30px;
+        }
+        .cabecalho-pagina h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .cabecalho-pagina p {
+            color: var(--texto-cinza);
+            font-size: 14px;
+        }
+
+        .filtros {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filtros label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--texto-cinza);
+        }
+        .filtros select {
+            padding: 10px 12px;
+            background: #0C0C0E;
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+        }
+        .btn-atualizar {
+            padding: 10px 20px;
+            background: var(--vermelho-principal);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-atualizar:hover { background: var(--vermelho-claro); }
+
+        .grade-relatorios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 25px;
+        }
+
+        .card-relatorio {
+            background: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .card-relatorio h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-relatorio h3 i { color: var(--vermelho-claro); }
+
+        .item-dado {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--borda);
+        }
+        .item-dado:last-child { border-bottom: none; }
+        .rotulo { font-size: 14px; color: var(--texto-cinza); }
+        .valor { font-size: 15px; font-weight: 700; }
+        .valor.verde { color: var(--verde); }
+        .valor.vermelho { color: var(--vermelho-claro); }
+        .valor.amarelo { color: var(--amarelo); }
+
+        .lista-nomes {
+            margin-top: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .linha-nome {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--borda);
+            font-size: 14px;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 20px;
+            color: var(--texto-cinza);
+            font-size: 14px;
+        }
+
+        @media (max-width: 992px) {
+            .conteudo { margin-left: 0; padding: 80px 12px 20px; }
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .menu-lateral { transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
+            .grade-relatorios { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="tema-escuro">
+
+    <button class="btn-menu" onclick="abrirFecharMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <aside class="menu-lateral" id="menuLateral">
+        <div class="logo">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
+            <h1>PJJ<br>Pará Jiu-Jitsu</h1>
+        </div>
+        <nav class="menu-navegacao">
+            <ul>
+                <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
+                <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+                <li><a href="#" style="margin-top:20px;color:#FF4D4D" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="conteudo">
+        <div class="cabecalho-pagina">
+            <h2>Relatórios</h2>
+            <p>Resumo de dados e estatísticas do sistema</p>
+        </div>
+
+        <div class="filtros">
+            <div>
+                <label>Mês</label>
+                <select id="filtroMes">
+                    <option value="1">Janeiro</option>
+                    <option value="2">Fevereiro</option>
+                    <option value="3">Março</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Maio</option>
+                    <option value="6">Junho</option>
+                    <option value="7">Julho</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+            </div>
+            <div>
+                <label>Ano</label>
+                <select id="filtroAno"></select>
+            </div>
+            <button class="btn-atualizar" onclick="carregarTodosRelatorios()">
+                <i class="fas fa-sync-alt"></i> Atualizar
+            </button>
+        </div>
+
+        <div class="grade-relatorios">
+            <!-- 📊 ALUNOS POR FAIXA ETÁRIA -->
+            <div class="card-relatorio">
+                <h3><i class="fas fa-birthday-cake"></i> Alunos por Faixa Etária</h3>
+                <div id="listaFaixaEtaria">
+                    <div class="vazio">Carregando...</div>
+                </div>
+            </div>
+
+            <!-- 🥋 ALUNOS POR GRAU DE FAIXA -->
+            <div class="card-relatorio">
+                <h3><i class="fas fa-medal"></i> Alunos por Grau de Faixa</h3>
+                <div id="listaGrauFaixa">
+                    <div class="vazio">Carregando...</div>
+                </div>
+            </div>
+
+            <!-- 💰 TOTAL RECEBIDO -->
+            <div class="card-relatorio">
+                <h3><i class="fas fa-coins"></i> Total Recebido</h3>
+                <div class="item-dado">
+                    <span class="rotulo">Este Mês</span>
+                    <span class="valor verde" id="valorMes">R$ 0,00</span>
+                </div>
+                <div class="item-dado">
+                    <span class="rotulo">Este Ano</span>
+                    <span class="valor verde" id="valorAno">R$ 0,00</span>
+                </div>
+            </div>
+
+            <!-- ⚠️ INADIMPLÊNCIA -->
+            <div class="card-relatorio">
+                <h3><i class="fas fa-exclamation-triangle"></i> Inadimplência</h3>
+                <div class="item-dado">
+                    <span class="rotulo">Alunos Devendo</span>
+                    <span class="valor vermelho" id="qtdInadimplentes">0 alunos</span>
+                </div>
+                <div class="item-dado">
+                    <span class="rotulo">Valor Total em Atraso</span>
+                    <span class="valor vermelho" id="valorInadimplencia">R$ 0,00</span>
+                </div>
+                <div class="lista-nomes" id="listaInadimplentes">
+                    <div class="vazio">Carregando...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+          authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+          projectId: "pjj-para-jiu-jitsu",
+          storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+          messagingSenderId: "72563195814",
+          appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        function abrirFecharMenu() {
+            document.getElementById('menuLateral').classList.toggle('aberto');
+        }
+
+        function inicializarFiltros() {
+            const anoAtual = new Date().getFullYear();
+            const selAno = document.getElementById('filtroAno');
+            for (let a = anoAtual - 5; a <= anoAtual + 1; a++) {
+                const opt = document.createElement('option');
+                opt.value = a;
+                opt.textContent = a;
+                if (a === anoAtual) opt.selected = true;
+                selAno.appendChild(opt);
+            }
+            document.getElementById('filtroMes').value = new Date().getMonth() + 1;
+        }
+
+        function calcularFaixaEtaria(dataNascimento) {
+            if (!dataNascimento) return 'Sem data';
+            const nasc = new Date(dataNascimento);
+            const hoje = new Date();
+            let idade = hoje.getFullYear() - nasc.getFullYear();
+            const m = hoje.getMonth() - nasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+            if (idade < 6) return 'Até 5 anos';
+            if (idade < 11) return '6 a 10 anos';
+            if (idade < 16) return '11 a 15 anos';
+            if (idade < 21) return '16 a 20 anos';
+            if (idade < 31) return '21 a 30 anos';
+            if (idade < 41) return '31 a 40 anos';
+            return 'Acima de 40 anos';
+        }
+
+        async function carregarFaixaEtaria() {
+            const snap = await db.collection('alunos').get();
+            const contagem = {};
+            snap.forEach(doc => {
+                const d = doc.data();
+                const faixa = calcularFaixaEtaria(d.dataNascimento);
+                contagem[faixa] = (contagem[faixa] || 0) + 1;
+            });
+            const container = document.getElementById('listaFaixaEtaria');
+            container.innerHTML = '';
+            if (Object.keys(contagem).length === 0) {
+                container.innerHTML = '<div class="vazio">Nenhum aluno cadastrado</div>';
+                return;
+            }
+            for (const [faixa, qtd] of Object.entries(contagem)) {
+                container.innerHTML += `
+                    <div class="item-dado">
+                        <span class="rotulo">${faixa}</span>
+                        <span class="valor">${qtd} aluno${qtd !== 1 ? 's' : ''}</span>
+                    </div>`;
+            }
+        }
+
+        async function carregarGrauFaixa() {
+            const snap = await db.collection('alunos').get();
+            const ordem = { 'Branca': 1, 'Cinza': 2, 'Amarela': 3, 'Laranja': 4, 'Verde': 5, 'Azul': 6, 'Roxa': 7, 'Marrom': 8, 'Preta': 9 };
+            const contagem = {};
+            snap.forEach(doc => {
+                const d = doc.data();
+                const faixa = d.faixa || 'Não informada';
+                contagem[faixa] = (contagem[faixa] || 0) + 1;
+            });
+            const ordenado = Object.entries(contagem).sort((a, b) => (ordem[a[0]] || 99) - (ordem[b[0]] || 99));
+            const container = document.getElementById('listaGrauFaixa');
+            container.innerHTML = '';
+            if (ordenado.length === 0) {
+                container.innerHTML = '<div class="vazio">Nenhum aluno cadastrado</div>';
+                return;
+            }
+            for (const [faixa, qtd] of ordenado) {
+                container.innerHTML += `
+                    <div class="item-dado">
+                        <span class="rotulo">Faixa ${faixa}</span>
+                        <span class="valor">${qtd} aluno${qtd !== 1 ? 's' : ''}</span>
+                    </div>`;
+            }
+        }
+
+        async function carregarTotalRecebido() {
+            const mes = parseInt(document.getElementById('filtroMes').value);
+            const ano = parseInt(document.getElementById('filtroAno').value);
+            const snap = await db.collection('pagamentos').get();
+            let totalMes = 0, totalAno = 0;
+            snap.forEach(doc => {
+                const d = doc.data();
+                if (!d.valor || d.status !== 'Pago') return;
+                const dataPgto = d.dataPagamento ? new Date(d.dataPagamento) : null;
+                if (!dataPgto) return;
+                if (dataPgto.getFullYear() === ano) {
+                    totalAno += parseFloat(d.valor);
+                    if (dataPgto.getMonth() + 1 === mes) totalMes += parseFloat(d.valor);
+                }
+            });
+            document.getElementById('valorMes').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalMes);
+            document.getElementById('valorAno').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalAno);
+        }
+
+        async function carregarInadimplencia() {
+            const mes = parseInt(document.getElementById('filtroMes').value);
+            const ano = parseInt(document.getElementById('filtroAno').value);
+            const snap = await db.collection('pagamentos').get();
+            const devedores = [];
+            let valorTotal = 0;
+            snap.forEach(doc => {
+                const d = doc.data();
+                if (d.status === 'Pago') return;
+                const dataVenc = d.dataVencimento ? new Date(d.dataVencimento) : null;
+                if (!dataVenc) return;
+                if (dataVenc.getFullYear() === ano && dataVenc.getMonth() + 1 === mes) {
+                    const valor = parseFloat(d.valor || 0);
+                    valorTotal += valor;
+                    if (!devedores.includes(d.alunoNome)) devedores.push(d.alunoNome || 'Nome desconhecido');
+                }
+            });
+            document.getElementById('qtdInadimplentes').textContent = `${devedores.length} aluno${devedores.length !== 1 ? 's' : ''}`;
+            document.getElementById('valorInadimplencia').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal);
+            const lista = document.getElementById('listaInadimplentes');
+            lista.innerHTML = '';
+            if (devedores.length === 0) {
+                lista.innerHTML = '<div class="vazio">✅ Nenhum aluno em atraso</div>';
+                return;
+            }
+            devedores.sort();
+            devedores.forEach(nome => {
+                lista.innerHTML += `<div class="linha-nome">⚠️ ${nome}</div>`;
+            });
+        }
+
+        async function carregarTodosRelatorios() {
+            await Promise.all([
+                carregarFaixaEtaria(),
+                carregarGrauFaixa(),
+                carregarTotalRecebido(),
+                carregarInadimplencia()
+            ]);
+        }
+
+        function sair() {
+            if (confirm('Deseja sair do sistema?')) {
+                auth.signOut().then(() => window.location.href = 'login.html');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            inicializarFiltros();
+            carregarTodosRelatorios();
+        });
+    </script>
+</body>
+</html>
