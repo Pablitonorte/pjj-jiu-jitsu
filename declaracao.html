@@ -133,93 +133,115 @@
         }
         .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 DECLARAÇÃO - VERSÃO FINAL SEM ERROS */
+        /* ================================================= */
+        /* 📄 DECLARAÇÃO — IDÊNTICA À IMAGEM ORIGINAL */
+        /* ================================================= */
         .documento-area {
             background: white;
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 10mm 20mm 3mm 20mm; /* ✅ ESPAÇAMENTO SUPERIOR REDUZIDO */
+            padding: 12mm 20mm 10mm 20mm;
             box-sizing: border-box;
             color: #000;
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
             line-height: 1.5;
-            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+            box-shadow: 0 0 8px rgba(0,0,0,0.15);
             position: relative;
             display: none;
         }
 
-        /* ✅ CABEÇALHO SEM CNPJ + DATA EM UMA LINHA SÓ */
+        /* ---- Cabeçalho: Logo à esquerda, Data à direita ---- */
         .cabecalho-doc {
             display: flex;
             justify-content: space-between;
-            align-items: center; /* ✅ ALINHA VERTICALMENTE PARA NÃO QUEBRAR */
-            flex-wrap: nowrap; /* ✅ FORÇA TUDO EM UMA LINHA */
-            margin-bottom: 3mm;
+            align-items: flex-start;
+            margin-bottom: 6mm;
         }
         .logo-cabecalho {
             height: auto;
-            width: 150mm; /* ✅ AJUSTADO PARA DEIXAR ESPAÇO PARA DATA */
+            width: 165mm; /* Largura exata da imagem */
+            display: block;
         }
         .cabecalho-direita {
             text-align: right;
-            white-space: nowrap; /* ✅ IMPIDE QUE A DATA QUEBRE EM VÁRIAS LINHAS */
+            padding-top: 6mm; /* Alinha a data com o topo correto */
+            white-space: nowrap; /* Impede quebra da data */
         }
         .data-doc {
             font-size: 12pt;
             text-transform: uppercase;
-            line-height: 1.4;
         }
 
-        .destinatario { margin-bottom: 3mm; }
+        /* ---- Destinatário ---- */
+        .destinatario {
+            margin-bottom: 8mm;
+            font-size: 12pt;
+        }
+
+        /* ---- Título ---- */
         .titulo-doc {
             text-align: center;
             font-weight: bold;
-            font-size: 14pt;
-            margin: 3mm 0;
+            font-size: 12pt;
+            text-decoration: underline; /* ✅ Sublinhado igual imagem! */
+            margin: 0 0 6mm 0;
             text-transform: uppercase;
         }
-        .nome-aluno { font-weight: bold; }
-        .corpo-doc {
-            text-align: justify;
-            margin-bottom: 4mm; /* ✅ MENOS ESPAÇO */
-            line-height: 1.6;
-        }
-        .assinatura-texto { margin: 1mm 0 5mm 0; } /* ✅ MUITO COMPACTO */
 
-        /* ✅ ASSINATURA COMPACTA */
+        /* ---- Corpo do texto ---- */
+        .corpo-doc {
+            text-align: left; /* ✅ Alinhado à esquerda, NÃO justificado! */
+            font-size: 12pt;
+            margin-bottom: 18mm; /* ✅ Espaço até Atenciosamente */
+            line-height: 1.5;
+        }
+        .nome-aluno { font-weight: bold; }
+        .assinatura-texto {
+            display: block;
+            margin: 6mm 0 12mm 0;
+        }
+
+        /* ---- Assinatura ---- */
         .assinatura-doc {
             text-align: center;
-            margin: 0 auto 4mm auto; /* ✅ ESPAÇO MÍNIMO ANTES DO RODAPÉ */
+            margin: 0 0 22mm 0; /* ✅ Espaço grande até o rodapé */
         }
         .img-assinatura {
             height: auto;
-            width: 50mm; /* ✅ MENOR AINDA */
+            width: 52mm; /* ✅ Tamanho proporcional igual imagem */
             display: block;
-            margin: 0 auto;
+            margin: 0 auto 0 auto;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
-            width: 45mm; /* ✅ LINHA CURTA IGUAL ORIGINAL */
-            margin: 0 auto 0.5mm auto;
+            width: 52mm;
+            margin: 0 auto 1mm auto;
         }
         .nome-assinatura { font-size: 12pt; }
         .cargo-assinatura { font-size: 11pt; }
 
-        /* ✅ RODAPÉ BEM JUNTO, SEM ESPAÇOS VAZIOS */
+        /* ---- Rodapé: BEM EMBAIXO, JUNTO ---- */
         .rodape {
-            margin-top: 0; /* ✅ SEM MARGEM EXTRA */
             text-align: center;
+            margin-top: auto;
         }
-        .rodape-validade { font-size: 10pt; margin-bottom: 0.5mm; }
+        .rodape-validade {
+            font-size: 10pt;
+            margin-bottom: 1mm;
+            line-height: 1.4;
+        }
         .linha-rodape {
             border-top: 1px solid #000;
-            width: 130mm;
-            margin: 0 auto 0.5mm auto;
+            width: 140mm;
+            margin: 0 auto 1mm auto;
         }
-        .rodape-contato { font-size: 10pt; }
+        .rodape-contato {
+            font-size: 10pt;
+        }
 
+        /* ---- Botões ---- */
         .botoes-acao {
             width: 210mm;
             margin: 25px auto;
@@ -243,6 +265,7 @@
         }
         .btn-acao:hover { background-color: var(--vermelho-claro); }
 
+        /* ---- Responsivo ---- */
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
@@ -251,6 +274,7 @@
             .card-formulario, .documento-area, .botoes-acao { width: 100% !important; }
         }
 
+        /* ---- Impressão ---- */
         @page {
             size: A4;
             margin: 0;
@@ -266,14 +290,15 @@
                 margin: 0 auto !important;
                 box-shadow: none !important;
                 display: block !important;
-                padding: 10mm 18mm 2mm 18mm !important; /* ✅ AJUSTE FINAL DE IMPRESSÃO */
+                padding: 12mm 20mm 10mm 20mm !important;
                 page-break-after: avoid;
                 page-break-inside: avoid;
             }
             .img-assinatura { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .assinatura-doc, .rodape {
                 page-break-inside: avoid;
-                orphans: 10; widows: 10; /* ✅ FORÇA TUDO JUNTO */
+                orphans: 4;
+                widows: 4;
             }
         }
     </style>
@@ -339,24 +364,27 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO FINAL - SEM CNPJ, DATA EM LINHA ÚNICA, NÃO QUEBRA -->
+        <!-- 📄 DECLARAÇÃO — EXATAMENTE COMO A IMAGEM ORIGINAL -->
         <div class="documento-area" id="areaDeclaracao">
+            <!-- Logo à esquerda + Data à direita (CNPJ fica na IMAGEM, não toca) -->
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
                 <div class="cabecalho-direita">
-                    <!-- ✅ NENHUM CNPJ AQUI, SÓ A DATA -->
                     <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
                 </div>
             </div>
 
             <div class="destinatario">À <span id="texto-escola">[NOME DA INSTITUIÇÃO]</span>.</div>
+
             <h2 class="titulo-doc">DECLARAÇÃO</h2>
+
             <div class="corpo-doc">
-                A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno" class="nome-aluno">[NOME DO ATLETA]</span>, pertence à academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
+                A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno" class="nome-aluno">[NOME DO ATLETA]</span>, pertence a academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
                 O mesmo precisará se ausentar de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela Confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
                 <span class="assinatura-texto">Atenciosamente,</span>
             </div>
 
+            <!-- Assinatura -->
             <div class="assinatura-doc">
                 <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
                 <div class="linha-assinatura"></div>
@@ -364,6 +392,7 @@
                 <div class="cargo-assinatura">Presidente</div>
             </div>
 
+            <!-- Rodapé BEM EMBAIXO, JUNTOZINHO -->
             <div class="rodape">
                 <div class="rodape-validade">Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.</div>
                 <div class="linha-rodape"></div>
@@ -408,7 +437,7 @@
             }
         }
 
-        // ✅ DATA GERADA EM FORMATO ÚNICO E SEM QUEBRAS
+        // Data em maiúsculas, linha única
         function obterDataAtual() {
             const hoje = new Date();
             const meses = [
