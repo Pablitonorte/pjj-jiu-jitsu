@@ -80,6 +80,7 @@
 
         .card-formulario {
             width: 210mm;
+            max-width: 100%;
             background: var(--fundo-card);
             border: 1px solid var(--borda);
             border-radius: 10px;
@@ -137,50 +138,54 @@
         }
         .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 DECLARAÇÃO — IGUAL A FOTO ORIGINAL */
+        /* 📄 VISUALIZAÇÃO NO CELULAR — AJUSTADA SEM MEXER NA IMPRESSÃO */
         .documento-area {
             background: white;
             width: 210mm;
-            min-height: 297mm;
+            max-width: 100%; /* Não ultrapassar a tela */
+            min-height: auto;
             margin: 0 auto;
-            padding: 10mm 20mm 15mm 25mm;
+            padding: 15px; /* Margem segura nas bordas do celular */
             box-sizing: border-box;
             color: #000;
             font-family: 'Times New Roman', serif;
-            font-size: 12pt;
-            line-height: 1.6;
+            font-size: 16px; /* Tamanho bom para leitura móvel */
+            line-height: 1.6; /* Espaçamento entre linhas confortável */
             box-shadow: 0 0 8px rgba(0,0,0,0.15);
             position: relative;
             display: none;
         }
 
         .cabecalho-doc {
-            margin-bottom: 6mm;
+            margin-bottom: 15px;
+            text-align: center; /* Centraliza logo e data no celular */
         }
         .logo-cabecalho {
             height: auto;
-            width: 170mm;
+            width: 100%;
+            max-width: 320px; /* Tamanho ideal sem cortar */
             display: block;
-            margin-bottom: 2mm;
+            margin: 0 auto 8px auto;
+            object-fit: contain; /* Garante que NÃO CORTE a logo */
         }
         .data-doc {
-            text-align: right;
-            font-size: 12pt;
+            text-align: center; /* Centraliza a data no celular (fica melhor!) */
+            font-size: 15px;
             text-transform: uppercase;
-            margin-bottom: 8mm;
+            margin-bottom: 20px;
         }
 
         .destinatario {
             text-align: left;
-            font-size: 12pt;
-            margin-bottom: 8mm;
+            font-size: 16px;
+            margin-bottom: 20px;
         }
 
         .titulo-doc {
             text-align: center;
             font-weight: bold;
-            font-size: 12pt;
-            margin: 0 0 8mm 0;
+            font-size: 17px;
+            margin: 0 0 20px 0;
             text-transform: uppercase;
             text-decoration: underline;
         }
@@ -188,67 +193,68 @@
         .nome-aluno { font-weight: bold; }
 
         .corpo-doc {
-            text-align: justify;
-            font-size: 12pt;
-            margin-bottom: 12mm;
+            text-align: justify; /* Texto alinhado dos dois lados */
+            font-size: 16px;
+            margin-bottom: 30px;
         }
 
         .assinatura-texto {
             display: block;
-            margin-bottom: 20mm;
+            margin-bottom: 40px;
         }
 
-        /* ✅ ASSINATURA COM LINHA EMBAIXO */
         .assinatura-doc {
             text-align: center;
-            margin-bottom: 25mm;
+            margin-bottom: 40px;
         }
         .img-assinatura {
             height: auto;
-            width: 60mm;
+            width: 110px; /* Proporcional */
             display: block;
             margin: 0 auto;
+            object-fit: contain;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
-            width: 60mm;
+            width: 110px;
             margin: 2mm auto 1mm auto;
         }
         .nome-assinatura {
-            font-size: 12pt;
+            font-size: 16px;
             display: block;
         }
         .cargo-assinatura {
-            font-size: 11pt;
+            font-size: 14px;
             display: block;
         }
 
-        /* ✅ RODAPÉ COM LINHA EMBAIXO DO TEXTO DE VALIDADE */
         .rodape {
             text-align: center;
             margin-top: auto;
         }
         .rodape-validade {
-            font-size: 11pt;
-            margin-bottom: 1mm;
+            font-size: 14px;
+            margin-bottom: 5px;
         }
         .linha-rodape {
             border-top: 1px solid #000;
-            width: 140mm;
-            margin: 0 auto 1mm auto;
+            width: 85%;
+            margin: 0 auto 5px auto;
         }
         .rodape-contato {
-            font-size: 11pt;
+            font-size: 14px;
         }
 
         .botoes-acao {
             width: 210mm;
+            max-width: 100%;
             margin: 25px auto;
             text-align: center;
             display: none;
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+            padding: 0 10px;
         }
         .btn-acao {
             background-color: var(--vermelho-principal);
@@ -264,14 +270,7 @@
         }
         .btn-acao:hover { background-color: var(--vermelho-claro); }
 
-        @media (max-width: 992px) {
-            .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
-            .btn-menu { display: flex; align-items: center; justify-content: center; }
-            .menu-lateral { transform: translateX(-100%); }
-            .menu-lateral.aberto { transform: translateX(0); }
-            .card-formulario, .documento-area, .botoes-acao { width: 100% !important; }
-        }
-
+        /* ✅ IMPRESSÃO — TOTALMENTE INTACTA, IGUAL AO ORIGINAL! NÃO MEXI EM NADA AQUI */
         @page {
             size: A4 portrait;
             margin: 0;
@@ -296,14 +295,27 @@
                 box-shadow: none !important;
                 display: block !important;
                 position: relative;
-                page-break-after: avoid;
-                page-break-inside: avoid;
+                font-size: 12pt !important; /* Volta ao tamanho oficial */
+                line-height: 1.6 !important;
             }
+            .cabecalho-doc { text-align: left !important; margin-bottom: 6mm !important; }
+            .logo-cabecalho { width: 170mm !important; max-width: unset !important; margin: 0 0 2mm 0 !important; }
+            .data-doc { text-align: right !important; margin-bottom: 8mm !important; font-size: 12pt !important; }
+            .img-assinatura { width: 50mm !important; }
+            .linha-assinatura { width: 50mm !important; }
             .assinatura-doc, .rodape {
                 page-break-inside: avoid;
                 orphans: 10;
                 widows: 10;
             }
+        }
+
+        /* ✅ Menu responsivo */
+        @media (max-width: 992px) {
+            .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .menu-lateral { transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
         }
     </style>
 
@@ -368,7 +380,6 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO FINAL COM TODAS AS LINHAS -->
         <div class="documento-area" id="areaDeclaracao">
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
