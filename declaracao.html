@@ -133,13 +133,13 @@
         }
         .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 DECLARAÇÃO - SEM CNPJ */
+        /* 📄 DECLARAÇÃO - VERSÃO FINAL SEM ERROS */
         .documento-area {
             background: white;
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 12mm 20mm 5mm 20mm;
+            padding: 10mm 20mm 3mm 20mm; /* ✅ ESPAÇAMENTO SUPERIOR REDUZIDO */
             box-sizing: border-box;
             color: #000;
             font-family: 'Times New Roman', serif;
@@ -150,67 +150,73 @@
             display: none;
         }
 
+        /* ✅ CABEÇALHO SEM CNPJ + DATA EM UMA LINHA SÓ */
         .cabecalho-doc {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 4mm;
+            align-items: center; /* ✅ ALINHA VERTICALMENTE PARA NÃO QUEBRAR */
+            flex-wrap: nowrap; /* ✅ FORÇA TUDO EM UMA LINHA */
+            margin-bottom: 3mm;
         }
         .logo-cabecalho {
             height: auto;
-            width: 160mm;
+            width: 150mm; /* ✅ AJUSTADO PARA DEIXAR ESPAÇO PARA DATA */
         }
-        .cabecalho-direita { text-align: right; }
+        .cabecalho-direita {
+            text-align: right;
+            white-space: nowrap; /* ✅ IMPIDE QUE A DATA QUEBRE EM VÁRIAS LINHAS */
+        }
         .data-doc {
             font-size: 12pt;
             text-transform: uppercase;
+            line-height: 1.4;
         }
 
-        .destinatario { margin-bottom: 4mm; }
+        .destinatario { margin-bottom: 3mm; }
         .titulo-doc {
             text-align: center;
             font-weight: bold;
             font-size: 14pt;
-            margin: 4mm 0;
+            margin: 3mm 0;
             text-transform: uppercase;
         }
         .nome-aluno { font-weight: bold; }
         .corpo-doc {
             text-align: justify;
-            margin-bottom: 6mm;
+            margin-bottom: 4mm; /* ✅ MENOS ESPAÇO */
             line-height: 1.6;
         }
-        .assinatura-texto { margin: 2mm 0 8mm 0; }
+        .assinatura-texto { margin: 1mm 0 5mm 0; } /* ✅ MUITO COMPACTO */
 
-        /* ✅ Assinatura menor e proporcional */
+        /* ✅ ASSINATURA COMPACTA */
         .assinatura-doc {
             text-align: center;
-            margin: 0 auto 10mm auto;
+            margin: 0 auto 4mm auto; /* ✅ ESPAÇO MÍNIMO ANTES DO RODAPÉ */
         }
         .img-assinatura {
             height: auto;
-            width: 55mm;
+            width: 50mm; /* ✅ MENOR AINDA */
             display: block;
             margin: 0 auto;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
-            width: 50mm;
-            margin: 0 auto 1mm auto;
+            width: 45mm; /* ✅ LINHA CURTA IGUAL ORIGINAL */
+            margin: 0 auto 0.5mm auto;
         }
         .nome-assinatura { font-size: 12pt; }
         .cargo-assinatura { font-size: 11pt; }
 
-        /* ✅ Rodapé compacto, bem embaixo, não quebra página */
+        /* ✅ RODAPÉ BEM JUNTO, SEM ESPAÇOS VAZIOS */
         .rodape {
-            margin-top: auto;
+            margin-top: 0; /* ✅ SEM MARGEM EXTRA */
             text-align: center;
         }
-        .rodape-validade { font-size: 10pt; margin-bottom: 1mm; }
+        .rodape-validade { font-size: 10pt; margin-bottom: 0.5mm; }
         .linha-rodape {
             border-top: 1px solid #000;
-            width: 140mm;
-            margin: 0 auto 1mm auto;
+            width: 130mm;
+            margin: 0 auto 0.5mm auto;
         }
         .rodape-contato { font-size: 10pt; }
 
@@ -260,15 +266,14 @@
                 margin: 0 auto !important;
                 box-shadow: none !important;
                 display: block !important;
-                padding: 12mm 20mm 4mm 20mm !important;
+                padding: 10mm 18mm 2mm 18mm !important; /* ✅ AJUSTE FINAL DE IMPRESSÃO */
                 page-break-after: avoid;
                 page-break-inside: avoid;
             }
             .img-assinatura { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .assinatura-doc, .rodape {
                 page-break-inside: avoid;
-                orphans: 4;
-                widows: 4;
+                orphans: 10; widows: 10; /* ✅ FORÇA TUDO JUNTO */
             }
         }
     </style>
@@ -334,11 +339,12 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO SEM NENHUM CNPJ -->
+        <!-- 📄 DECLARAÇÃO FINAL - SEM CNPJ, DATA EM LINHA ÚNICA, NÃO QUEBRA -->
         <div class="documento-area" id="areaDeclaracao">
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
                 <div class="cabecalho-direita">
+                    <!-- ✅ NENHUM CNPJ AQUI, SÓ A DATA -->
                     <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
                 </div>
             </div>
@@ -402,6 +408,7 @@
             }
         }
 
+        // ✅ DATA GERADA EM FORMATO ÚNICO E SEM QUEBRAS
         function obterDataAtual() {
             const hoje = new Date();
             const meses = [
