@@ -9,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Times New Roman', serif; }
 
         :root {
             --vermelho-principal: #D10000;
@@ -60,12 +60,12 @@
 
         .logo { text-align: center; margin-bottom: 40px; }
         .logo img { width: 90px; margin-bottom: 10px; }
-        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; font-family: 'Montserrat', sans-serif; }
 
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
             display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
-            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s; font-family: 'Montserrat', sans-serif;
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
 
@@ -93,6 +93,7 @@
             margin-bottom: 20px;
             color: var(--vermelho-claro);
             text-align: center;
+            font-family: 'Montserrat', sans-serif;
         }
         .form-grid {
             display: grid;
@@ -108,6 +109,7 @@
             font-size: 14px;
             font-weight: 600;
             color: var(--texto-cinza);
+            font-family: 'Montserrat', sans-serif;
         }
         .form-grupo input,
         .form-grupo select {
@@ -117,6 +119,7 @@
             border-radius: 6px;
             color: var(--texto-branco);
             font-size: 14px;
+            font-family: 'Montserrat', sans-serif;
         }
         .btn-gerar {
             margin-top: 20px;
@@ -130,104 +133,111 @@
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
+            font-family: 'Montserrat', sans-serif;
         }
         .btn-gerar:hover { background: #00E05C; }
 
         /* ================================================= */
-        /* 📄 DECLARAÇÃO - IMPRESSÃO 100% CORRIGIDA */
+        /* 📄 DECLARAÇÃO — IGUAL A FOTO ORIGINAL */
         /* ================================================= */
         .documento-area {
             background: white;
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 8mm 20mm 5mm 20mm; /* ✅ Espaçamento superior pequeno */
+            padding: 10mm 20mm 15mm 25mm; /* ✅ Margens exatas */
             box-sizing: border-box;
             color: #000;
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
-            line-height: 1.5;
+            line-height: 1.6; /* ✅ Espaçamento entre linhas igual original */
             box-shadow: 0 0 8px rgba(0,0,0,0.15);
             position: relative;
             display: none;
         }
 
-        /* ✅ CABEÇALHO: LOGO + DATA ALINHADA DIREITA ABAIXO */
+        /* ✅ CABEÇALHO: LOGO + DATA ALINHADA DIREITA, ABAIXO DA LOGO */
         .cabecalho-doc {
-            position: relative;
-            margin-bottom: 4mm;
+            margin-bottom: 6mm; /* Espaçamento logo ↔ data */
         }
         .logo-cabecalho {
             height: auto;
-            width: 165mm; /* ✅ Tamanho exato da logo */
+            width: 170mm; /* Tamanho fiel da logo */
             display: block;
+            margin-bottom: 2mm; /* Pequeno espaço antes da data */
         }
         .data-doc {
-            position: absolute;
-            top: 0;
-            right: 0; /* ✅ Fica na extremidade direita, ao lado da logo */
+            text-align: right;
             font-size: 12pt;
             text-transform: uppercase;
-            white-space: nowrap;
+            margin-bottom: 8mm; /* Espaçamento data ↔ destinatário */
         }
 
         .destinatario {
             text-align: left;
             font-size: 12pt;
-            margin-bottom: 4mm;
+            margin-bottom: 8mm; /* Espaçamento destinatário ↔ título */
         }
 
+        /* ✅ TÍTULO SUBLINHADO, IGUAL NO ORIGINAL! */
         .titulo-doc {
             text-align: center;
             font-weight: bold;
             font-size: 12pt;
-            margin: 0 0 5mm 0;
+            margin: 0 0 8mm 0;
             text-transform: uppercase;
+            text-decoration: underline; /* ✅ VOLTEI O SUBLINHADO COMO NO MODELO! */
         }
 
         .nome-aluno { font-weight: bold; }
 
         .corpo-doc {
-            text-align: left;
+            text-align: justify; /* ✅ Texto justificado igual original */
             font-size: 12pt;
-            margin-bottom: 10mm; /* ✅ Espaço compacto */
-            line-height: 1.5;
+            margin-bottom: 12mm; /* Espaçamento texto ↔ assinatura */
         }
 
+        .assinatura-texto {
+            display: block;
+            margin-bottom: 20mm; /* ✅ Espaçamento até assinatura */
+        }
+
+        /* ✅ ASSINATURA EXATA */
         .assinatura-doc {
             text-align: center;
-            margin: 15mm 0 20mm 0; /* ✅ Espaço até assinatura igual modelo */
+            margin-bottom: 25mm;
         }
         .img-assinatura {
             height: auto;
-            width: 50mm;
+            width: 60mm;
             display: block;
             margin: 0 auto;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
-            width: 50mm;
+            width: 60mm;
             margin: 0 auto 1mm auto;
         }
-        .nome-assinatura { font-size: 12pt; }
-        .cargo-assinatura { font-size: 11pt; }
+        .nome-assinatura {
+            font-size: 12pt;
+            display: block;
+        }
+        .cargo-assinatura {
+            font-size: 11pt;
+            display: block;
+        }
 
-        /* ✅ RODAPÉ BEM EMBAIXO, JUNTO, SEM QUEBRAR */
+        /* ✅ RODAPÉ ALINHADO E ESPAÇADO IGUAL */
         .rodape {
             text-align: center;
             margin-top: auto;
         }
         .rodape-validade {
-            font-size: 10pt;
+            font-size: 11pt;
             margin-bottom: 1mm;
         }
-        .linha-rodape {
-            border-top: 1px solid #000;
-            width: 140mm;
-            margin: 0 auto 1mm auto;
-        }
         .rodape-contato {
-            font-size: 10pt;
+            font-size: 11pt;
         }
 
         .botoes-acao {
@@ -261,7 +271,7 @@
             .card-formulario, .documento-area, .botoes-acao { width: 100% !important; }
         }
 
-        /* ✅ REGRAS DE IMPRESSÃO QUE NÃO DEIXAM QUEBRAR */
+        /* ✅ IMPRESSÃO SEM ERROS */
         @page {
             size: A4 portrait;
             margin: 0;
@@ -282,7 +292,7 @@
                 width: 210mm !important;
                 height: 297mm !important;
                 margin: 0 auto !important;
-                padding: 8mm 20mm 5mm 20mm !important;
+                padding: 10mm 20mm 15mm 25mm !important;
                 box-shadow: none !important;
                 display: block !important;
                 position: relative;
@@ -292,7 +302,7 @@
             .assinatura-doc, .rodape {
                 page-break-inside: avoid;
                 orphans: 10;
-                widows: 10; /* ✅ Força manter tudo na mesma página */
+                widows: 10;
             }
         }
     </style>
@@ -352,13 +362,13 @@
                 </div>
                 <div class="form-grupo">
                     <label>Cidade / Estado</label>
-                    <input type="text" id="campoCidade" placeholder="Ex: Fortaleza - Ceará">
+                    <input type="text" id="campoCidade" placeholder="Ex: Fortaleza Ceará">
                 </div>
             </div>
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO COM DATA NO LADO DIREITO DA LOGO -->
+        <!-- 📄 DECLARAÇÃO FINAL IGUAL A FOTO -->
         <div class="documento-area" id="areaDeclaracao">
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
@@ -371,8 +381,8 @@
 
             <div class="corpo-doc">
                 A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno" class="nome-aluno">[NOME DO ATLETA]</span>, pertence a academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
-                O mesmo precisará se ausentar de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela Confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
-                Atenciosamente,
+                O mesmo precisará ausentar-se de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela Confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
+                <span class="assinatura-texto">Atenciosamente,</span>
             </div>
 
             <div class="assinatura-doc">
@@ -384,7 +394,6 @@
 
             <div class="rodape">
                 <div class="rodape-validade">Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.</div>
-                <div class="linha-rodape"></div>
                 <div class="rodape-contato">Contatos: (91) 8356-0215</div>
             </div>
         </div>
@@ -426,6 +435,7 @@
             }
         }
 
+        // ✅ DATA NO FORMATO EXATO DO MODELO
         function obterDataAtual() {
             const hoje = new Date();
             const meses = [
