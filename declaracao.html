@@ -138,54 +138,50 @@
         }
         .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 VISUALIZAÇÃO NO CELULAR — AJUSTADA SEM MEXER NA IMPRESSÃO */
+        /* 📄 DECLARAÇÃO — IGUAL A FOTO ORIGINAL (PC e Impressão) */
         .documento-area {
             background: white;
             width: 210mm;
-            max-width: 100%; /* Não ultrapassar a tela */
-            min-height: auto;
+            min-height: 297mm;
             margin: 0 auto;
-            padding: 15px; /* Margem segura nas bordas do celular */
+            padding: 10mm 20mm 15mm 25mm;
             box-sizing: border-box;
             color: #000;
             font-family: 'Times New Roman', serif;
-            font-size: 16px; /* Tamanho bom para leitura móvel */
-            line-height: 1.6; /* Espaçamento entre linhas confortável */
+            font-size: 12pt;
+            line-height: 1.6;
             box-shadow: 0 0 8px rgba(0,0,0,0.15);
             position: relative;
             display: none;
         }
 
         .cabecalho-doc {
-            margin-bottom: 15px;
-            text-align: center; /* Centraliza logo e data no celular */
+            margin-bottom: 6mm;
         }
         .logo-cabecalho {
             height: auto;
-            width: 100%;
-            max-width: 320px; /* Tamanho ideal sem cortar */
+            width: 170mm;
             display: block;
-            margin: 0 auto 8px auto;
-            object-fit: contain; /* Garante que NÃO CORTE a logo */
+            margin-bottom: 2mm;
         }
         .data-doc {
-            text-align: center; /* Centraliza a data no celular (fica melhor!) */
-            font-size: 15px;
+            text-align: right;
+            font-size: 12pt;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 8mm;
         }
 
         .destinatario {
             text-align: left;
-            font-size: 16px;
-            margin-bottom: 20px;
+            font-size: 12pt;
+            margin-bottom: 8mm;
         }
 
         .titulo-doc {
             text-align: center;
             font-weight: bold;
-            font-size: 17px;
-            margin: 0 0 20px 0;
+            font-size: 12pt;
+            margin: 0 0 8mm 0;
             text-transform: uppercase;
             text-decoration: underline;
         }
@@ -193,38 +189,37 @@
         .nome-aluno { font-weight: bold; }
 
         .corpo-doc {
-            text-align: justify; /* Texto alinhado dos dois lados */
-            font-size: 16px;
-            margin-bottom: 30px;
+            text-align: justify;
+            font-size: 12pt;
+            margin-bottom: 12mm;
         }
 
         .assinatura-texto {
             display: block;
-            margin-bottom: 40px;
+            margin-bottom: 20mm;
         }
 
         .assinatura-doc {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 25mm;
         }
         .img-assinatura {
             height: auto;
-            width: 110px; /* Proporcional */
+            width: 50mm;
             display: block;
             margin: 0 auto;
-            object-fit: contain;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
-            width: 110px;
+            width: 50mm;
             margin: 2mm auto 1mm auto;
         }
         .nome-assinatura {
-            font-size: 16px;
+            font-size: 12pt;
             display: block;
         }
         .cargo-assinatura {
-            font-size: 14px;
+            font-size: 11pt;
             display: block;
         }
 
@@ -233,16 +228,16 @@
             margin-top: auto;
         }
         .rodape-validade {
-            font-size: 14px;
-            margin-bottom: 5px;
+            font-size: 11pt;
+            margin-bottom: 1mm;
         }
         .linha-rodape {
             border-top: 1px solid #000;
-            width: 85%;
-            margin: 0 auto 5px auto;
+            width: 140mm;
+            margin: 0 auto 1mm auto;
         }
         .rodape-contato {
-            font-size: 14px;
+            font-size: 11pt;
         }
 
         .botoes-acao {
@@ -254,7 +249,6 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
-            padding: 0 10px;
         }
         .btn-acao {
             background-color: var(--vermelho-principal);
@@ -270,7 +264,31 @@
         }
         .btn-acao:hover { background-color: var(--vermelho-claro); }
 
-        /* ✅ IMPRESSÃO — TOTALMENTE INTACTA, IGUAL AO ORIGINAL! NÃO MEXI EM NADA AQUI */
+        /* ✅ AJUSTE SÓ PARA CELULAR — NÃO MEXE NO PC NEM NA IMPRESSÃO! */
+        @media (max-width: 992px) {
+            .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
+            .btn-menu { display: flex; align-items: center; justify-content: center; }
+            .menu-lateral { transform: translateX(-100%); }
+            .menu-lateral.aberto { transform: translateX(0); }
+
+            /* Documento adaptado só para visualização no celular */
+            .documento-area {
+                width: 100% !important;
+                min-height: auto;
+                padding: 15px !important;
+                font-size: 16px !important;
+            }
+            .logo-cabecalho {
+                width: 100% !important;
+                max-width: 320px;
+                margin: 0 auto 10px auto !important;
+            }
+            .cabecalho-doc { text-align: center; }
+            .data-doc { text-align: center !important; font-size: 15px !important; }
+            .linha-rodape { width: 85% !important; }
+        }
+
+        /* ✅ IMPRESSÃO — TOTALMENTE INTACTA, IGUAL AO ORIGINAL */
         @page {
             size: A4 portrait;
             margin: 0;
@@ -295,27 +313,13 @@
                 box-shadow: none !important;
                 display: block !important;
                 position: relative;
-                font-size: 12pt !important; /* Volta ao tamanho oficial */
-                line-height: 1.6 !important;
+                font-size: 12pt !important;
             }
-            .cabecalho-doc { text-align: left !important; margin-bottom: 6mm !important; }
-            .logo-cabecalho { width: 170mm !important; max-width: unset !important; margin: 0 0 2mm 0 !important; }
-            .data-doc { text-align: right !important; margin-bottom: 8mm !important; font-size: 12pt !important; }
-            .img-assinatura { width: 50mm !important; }
-            .linha-assinatura { width: 50mm !important; }
             .assinatura-doc, .rodape {
                 page-break-inside: avoid;
                 orphans: 10;
                 widows: 10;
             }
-        }
-
-        /* ✅ Menu responsivo */
-        @media (max-width: 992px) {
-            .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
-            .btn-menu { display: flex; align-items: center; justify-content: center; }
-            .menu-lateral { transform: translateX(-100%); }
-            .menu-lateral.aberto { transform: translateX(0); }
         }
     </style>
 
