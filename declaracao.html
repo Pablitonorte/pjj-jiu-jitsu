@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Declaração - PJJ Pará Jiu-Jitsu</title>
+    <link rel="icon" href="imagens/logopjj.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
-        /* 🎨 Variáveis dos temas */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -19,7 +19,6 @@
             --cinza: #6B7280;
         }
 
-        /* 🌙 Tema Escuro */
         .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
@@ -29,7 +28,6 @@
             --fundo-input: #0C0C0E;
         }
 
-        /* ☀️ Tema Claro */
         .tema-claro {
             --fundo-escuro: #F8F9FA;
             --fundo-card: #FFFFFF;
@@ -81,7 +79,6 @@
             align-items: center;
         }
 
-        /* 📋 FORMULÁRIO DE PREENCHIMENTO */
         .card-formulario {
             width: 210mm;
             background: var(--fundo-card);
@@ -135,87 +132,121 @@
             cursor: pointer;
             transition: 0.3s;
         }
-        .btn-gerar:hover {
-            background: #00E05C;
-        }
+        .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 Estilo da Declaração - Formato A4 */
+        /* 📄 ESTILO EXATO DO MODELO DA IMAGEM */
         .documento-area {
             background: white;
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 25mm;
+            padding: 20mm 25mm;
             box-sizing: border-box;
-            color: black;
+            color: #000;
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
-            line-height: 1.5;
-            box-shadow: 0 0 8px rgba(0,0,0,0.35);
+            line-height: 1.6;
+            box-shadow: 0 0 8px rgba(0,0,0,0.2);
             position: relative;
         }
 
-        .cabecalho-doc { text-align: center; margin-bottom: 5mm; }
+        /* Cabeçalho com logo + nome + CNPJ */
+        .cabecalho-doc {
+            text-align: center;
+            margin-bottom: 5mm;
+        }
         .logo-cabecalho {
-            width: 160mm;
+            width: 100%;
+            max-width: 160mm;
             height: auto;
-            margin: 0 auto 3mm auto;
             display: block;
-            border: 2px solid #008000;
-            padding: 2px;
-            border-radius: 2px;
+            margin: 0 auto 2mm auto;
+        }
+        .nome-federacao {
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .cnpj-federacao {
+            font-size: 11pt;
+            margin-top: 2mm;
         }
 
-        .data-doc { text-align: right; font-size: 12pt; margin-bottom: 10mm; margin-top: 0; }
-        .destinatario { text-align: left; font-size: 12pt; margin-bottom: 10mm; }
-        .titulo-doc { text-align: center; font-weight: bold; font-size: 14pt; margin: 8mm 0; text-transform: uppercase; }
-        .corpo-doc { text-align: justify; font-size: 12pt; margin-bottom: 30mm; width: 160mm; margin-left: auto; margin-right: auto; }
+        /* Cidade e data no canto direito */
+        .data-doc {
+            text-align: right;
+            font-size: 12pt;
+            margin-bottom: 15mm;
+        }
 
+        /* Destinatário */
+        .destinatario {
+            text-align: left;
+            font-size: 12pt;
+            margin-bottom: 10mm;
+        }
+
+        /* Título DECLARAÇÃO centralizado e em negrito */
+        .titulo-doc {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14pt;
+            margin: 8mm 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Corpo do texto */
+        .corpo-doc {
+            text-align: justify;
+            font-size: 12pt;
+            margin-bottom: 20mm;
+            line-height: 1.8;
+        }
+
+        /* Assinatura centralizada */
         .assinatura-doc {
             text-align: center;
-            margin-top: 10mm;
-            position: relative;
-            width: 160mm;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 8mm;
+            margin-top: 15mm;
+            margin-bottom: 10mm;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
             width: 60mm;
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            z-index: 1;
+            margin: 0 auto 5mm auto;
         }
         .img-assinatura {
-            height: 45px;
+            height: 50px;
             width: auto;
-            max-width: 70mm;
             display: block;
-            margin: 0 auto 8px auto;
-            background: transparent;
-            padding: 0;
-            object-fit: contain;
-            position: relative;
-            z-index: 2;
+            margin: 0 auto 3mm auto;
         }
-        .nome-assinatura { font-weight: bold; font-size: 12pt; margin: 0; position: relative; z-index: 3; }
-        .cargo-assinatura { font-size: 11pt; margin: 0; position: relative; z-index: 3; }
+        .nome-assinatura {
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 2mm;
+        }
+        .cargo-assinatura {
+            font-size: 11pt;
+        }
 
-        .texto-rodape {
-            font-size: 10pt;
-            line-height: 1.3;
+        /* Rodapé com validade, linha e contatos */
+        .rodape-doc {
+            margin-top: 15mm;
             text-align: center;
+            font-size: 10pt;
+        }
+        .linha-rodape {
+            border-top: 1px solid #000;
             width: 160mm;
-            margin: 0 auto;
-            display: block;
-            position: static;
+            margin: 5mm auto;
+        }
+        .contatos-rodape {
+            font-size: 10pt;
+            margin-top: 2mm;
         }
 
-        /* Botões de Ação */
         .botoes-acao {
             width: 210mm;
             margin: 25px auto;
@@ -239,7 +270,6 @@
         }
         .btn-acao:hover { background-color: var(--vermelho-claro); }
 
-        /* Responsivo */
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 10px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
@@ -248,32 +278,20 @@
             .card-formulario, .documento-area, .botoes-acao { width: 100% !important; }
         }
 
-        /* 🖨️ Impressão Perfeita - OCULTA O FORMULÁRIO */
-        @page {
-            size: A4;
-            margin: 0;
-        }
+        @page { size: A4; margin: 0; }
         @media print {
             body { background: white; padding: 0; }
             .menu-lateral, .btn-menu, .botoes-acao, .card-formulario { display: none !important; }
             .conteudo { margin: 0; padding: 0; width: 100%; }
             .documento-area {
                 width: 210mm !important;
-                height: 297mm !important;
-                min-height: auto !important;
+                min-height: 297mm !important;
                 margin: 0 auto !important;
                 box-shadow: none !important;
-                border: none !important;
-                page-break-after: avoid !important;
-            }
-            .img-assinatura {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
             }
         }
     </style>
 
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -304,7 +322,6 @@
 
     <main class="conteudo">
 
-        <!-- 📋 FORMULÁRIO DE PREENCHIMENTO -->
         <div class="card-formulario">
             <h2>Preencha os dados para gerar a declaração</h2>
             <div class="form-grid">
@@ -324,57 +341,67 @@
                 </div>
                 <div class="form-grupo">
                     <label>Nome da Instituição/Escola</label>
-                    <input type="text" id="campoEscola" placeholder="Ex: Escola Estadual Paulo Freire">
+                    <input type="text" id="campoEscola" placeholder="Ex: E M de Ensino F Maria Emília Antunes">
                 </div>
                 <div class="form-grupo">
                     <label>Período de Ausência</label>
-                    <input type="text" id="campoPeriodo" placeholder="Ex: 15 e 16 de julho de 2026">
+                    <input type="text" id="campoPeriodo" placeholder="Ex: 19/08 a 24/08">
                 </div>
                 <div class="form-grupo">
-                    <label>Nome do Campeonato</label>
-                    <input type="text" id="campoCampeonato" placeholder="Ex: Campeonato Paraense de Jiu-Jitsu">
+                    <label>Nome do Evento/Campeonato</label>
+                    <input type="text" id="campoCampeonato" placeholder="Ex: Open Fortaleza de Jiu-Jitsu">
                 </div>
                 <div class="form-grupo">
                     <label>Cidade / Estado</label>
-                    <input type="text" id="campoCidade" placeholder="Ex: Belém / PA">
+                    <input type="text" id="campoCidade" placeholder="Ex: Fortaleza - Ceará">
                 </div>
             </div>
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 ÁREA DA DECLARAÇÃO -->
+        <!-- 📄 DECLARAÇÃO NO FORMATO EXATO DA IMAGEM -->
         <div class="documento-area">
+
+            <!-- Cabeçalho: Logo + Nome Federação + CNPJ -->
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
+                <div class="nome-federacao">Federação de Jiu Jitsu do Estado do Pará</div>
+                <div class="cnpj-federacao">CNPJ: 01.171.019/0001-63</div>
             </div>
 
+            <!-- Cidade e Data no canto direito -->
             <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
 
-            <div class="destinatario">Ao <span id="texto-escola">[NOME DA INSTITUIÇÃO]</span></div>
+            <!-- Destinatário -->
+            <div class="destinatario">À <span id="texto-escola">[NOME DA INSTITUIÇÃO]</span>.</div>
 
-            <div class="titulo-doc">DECLARAÇÃO</div>
+            <!-- Título -->
+            <h2 class="titulo-doc">DECLARAÇÃO</h2>
 
+            <!-- Corpo do texto -->
             <div class="corpo-doc">
-                A Federação de Jiu Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, portador do CPF nº <span id="texto-cpf">[CPF]</span>, pertence à academia PARÁ JIU JITSU e é filiado e devidamente regularizado.<br><br>
-                O mesmo precisará se ausentar no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar sua equipe no <span id="texto-campeonato">[NOME DO CAMPEONATO]</span>, que acontecerá na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
+                A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, portador do CPF nº <span id="texto-cpf">[CPF]</span>, pertence à academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
+                O mesmo precisará se ausentar de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
                 Atenciosamente,
             </div>
 
+            <!-- Assinatura -->
             <div class="assinatura-doc">
                 <div class="linha-assinatura"></div>
-                <!-- ✅ Assinatura adicionada corretamente -->
                 <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
                 <div class="nome-assinatura">Ricardo Candido Gomes</div>
                 <div class="cargo-assinatura">Presidente</div>
             </div>
 
-            <div class="texto-rodape">
-                Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.<br>
-                Contatos: (91) 8356-0215
+            <!-- Rodapé: Validade + Linha + Contatos -->
+            <div class="rodape-doc">
+                Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.
+                <div class="linha-rodape"></div>
+                <div class="contatos-rodape">Contatos: (91) 8356-0215</div>
             </div>
+
         </div>
 
-        <!-- Botões -->
         <div class="botoes-acao">
             <button class="btn-acao" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir Declaração</button>
             <button class="btn-acao" onclick="limparFormulario()"><i class="fa-solid fa-eraser"></i> Limpar Campos</button>
@@ -383,7 +410,6 @@
     </main>
 
     <script>
-        // Configuração do Firebase
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -397,12 +423,10 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Função para abrir/fechar menu lateral
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        // Carrega o tema salvo do sistema
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -415,33 +439,27 @@
             }
         }
 
-        // Função para obter data formatada corretamente
         function obterDataAtual() {
             const hoje = new Date();
             const meses = [
-                "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-                "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+                "de janeiro de", "de fevereiro de", "de março de", "de abril de", "de maio de", "de junho de",
+                "de julho de", "de agosto de", "de setembro de", "de outubro de", "de novembro de", "de dezembro de"
             ];
-            return `${hoje.getDate()} de ${meses[hoje.getMonth()]} de ${hoje.getFullYear()}`;
+            return `${hoje.getDate()} ${meses[hoje.getMonth()]} ${hoje.getFullYear()}`;
         }
 
-        // 📋 Carrega lista de alunos cadastrados
         async function carregarListaAlunos() {
             const select = document.getElementById('selecionarAluno');
             select.innerHTML = '<option value="">Escolha um aluno...</option>';
-
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
                     select.innerHTML = '<option value="">Nenhum aluno cadastrado</option>';
                     return;
                 }
-
-                // Ordena manualmente por nome sem precisar de índice
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
                 alunos.sort((a, b) => (a.dados.nome || '').localeCompare(b.dados.nome || ''));
-
                 alunos.forEach(aluno => {
                     const dados = aluno.dados;
                     const opcao = document.createElement('option');
@@ -449,14 +467,12 @@
                     opcao.textContent = dados.nome;
                     select.appendChild(opcao);
                 });
-
             } catch (erro) {
                 select.innerHTML = '<option value="">Erro ao carregar alunos</option>';
                 console.error(erro);
             }
         }
 
-        // 📋 Preenche nome e CPF ao selecionar aluno
         function carregarDadosAluno() {
             const valor = document.getElementById('selecionarAluno').value;
             if (!valor) {
@@ -469,7 +485,6 @@
             document.getElementById('campoCpf').value = dados.cpf;
         }
 
-        // ✅ Gera a declaração com todos os dados
         function gerarDeclaracao() {
             const nome = document.getElementById('campoNome').value.trim();
             const cpf = document.getElementById('campoCpf').value.trim();
@@ -478,7 +493,6 @@
             const campeonato = document.getElementById('campoCampeonato').value.trim();
             const cidade = document.getElementById('campoCidade').value.trim();
 
-            // Preenche a área do documento
             document.getElementById('texto-nome-aluno').textContent = nome || '[NOME DO ATLETA]';
             document.getElementById('texto-cpf').textContent = cpf || '[CPF]';
             document.getElementById('texto-escola').textContent = escola || '[NOME DA INSTITUIÇÃO]';
@@ -488,7 +502,6 @@
             document.getElementById('data-atual').textContent = obterDataAtual();
         }
 
-        // 🧹 Limpa todos os campos
         function limparFormulario() {
             document.getElementById('selecionarAluno').value = '';
             document.getElementById('campoNome').value = '';
@@ -500,14 +513,12 @@
             gerarDeclaracao();
         }
 
-        // Função para sair do sistema
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
-        // Inicializa tudo ao carregar a página
         window.addEventListener('load', () => {
             carregarTema();
             carregarListaAlunos();
