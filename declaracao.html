@@ -147,7 +147,7 @@
             line-height: 1.6;
             box-shadow: 0 0 8px rgba(0,0,0,0.2);
             position: relative;
-            display: none; /* ✅ Começa escondida */
+            display: none; /* Começa escondida */
         }
 
         /* Cabeçalho SOMENTE com a logo */
@@ -161,10 +161,12 @@
             display: block;
         }
 
-        /* Cidade e Data alinhada à direita */
+        /* ✅ DATA EM MAIÚSCULAS E ALINHADA À DIREITA */
         .data-doc {
             text-align: right;
             font-size: 12pt;
+            font-weight: 500;
+            text-transform: uppercase; /* Tudo maiúsculo */
             margin-bottom: 15mm;
         }
 
@@ -239,7 +241,7 @@
             width: 210mm;
             margin: 25px auto;
             text-align: center;
-            display: none; /* ✅ Também começa oculto */
+            display: none; /* Também começa oculto */
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
@@ -351,7 +353,8 @@
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
             </div>
-            <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
+            <!-- ✅ DATA DINÂMICA EM MAIÚSCULAS -->
+            <div class="data-doc">belém – pa, <span id="data-atual"></span></div>
             <div class="destinatario">À <span id="texto-escola">[NOME DA INSTITUIÇÃO]</span>.</div>
             <h2 class="titulo-doc">DECLARAÇÃO</h2>
             <div class="corpo-doc">
@@ -408,13 +411,17 @@
             }
         }
 
+        // ✅ FUNÇÃO DE DATA: DINÂMICA E EM MAIÚSCULAS
         function obterDataAtual() {
             const hoje = new Date();
             const meses = [
-                "de janeiro de", "de fevereiro de", "de março de", "de abril de", "de maio de", "de junho de",
-                "de julho de", "de agosto de", "de setembro de", "de outubro de", "de novembro de", "de dezembro de"
+                "DE JANEIRO DE", "DE FEVEREIRO DE", "DE MARÇO DE", "DE ABRIL DE", "DE MAIO DE", "DE JUNHO DE",
+                "DE JULHO DE", "DE AGOSTO DE", "DE SETEMBRO DE", "DE OUTUBRO DE", "DE NOVEMBRO DE", "DE DEZEMBRO DE"
             ];
-            return `${hoje.getDate()} ${meses[hoje.getMonth()]} ${hoje.getFullYear()}`;
+            const dia = hoje.getDate();
+            const mes = meses[hoje.getMonth()];
+            const ano = hoje.getFullYear();
+            return `${dia} ${mes} ${ano}`;
         }
 
         async function carregarListaAlunos() {
@@ -466,17 +473,17 @@
             document.getElementById('texto-periodo').textContent = periodo || '[PERÍODO]';
             document.getElementById('texto-campeonato').textContent = campeonato || '[NOME DO CAMPEONATO]';
             document.getElementById('texto-cidade').textContent = cidade || '[CIDADE / ESTADO]';
-            document.getElementById('data-atual').textContent = obterDataAtual();
+            document.getElementById('data-atual').textContent = obterDataAtual(); // Data atualizada
 
-            // ✅ MOSTRA A DECLARAÇÃO E OS BOTÕES
+            // MOSTRA A DECLARAÇÃO E OS BOTÕES
             document.getElementById('areaDeclaracao').style.display = 'block';
             document.getElementById('botoesAcao').style.display = 'flex';
 
-            // Rola a página suavemente até a declaração
+            // Rola suavemente até a declaração
             document.getElementById('areaDeclaracao').scrollIntoView({behavior: 'smooth'});
         }
 
-        // ✅ Limpa e oculta novamente
+        // Limpa e oculta novamente
         function limparFormulario() {
             document.getElementById('selecionarAluno').value = '';
             document.getElementById('campoNome').value = '';
