@@ -188,11 +188,11 @@
         .corpo-doc {
             text-align: justify;
             font-size: 12pt;
-            margin-bottom: 25mm;
+            margin-bottom: 20mm;
             line-height: 1.8;
         }
 
-        /* Assinatura centralizada */
+        /* Assinatura centralizada - AJUSTADA PARA A NOVA IMAGEM */
         .assinatura-doc {
             text-align: center;
             margin-top: 10mm;
@@ -201,13 +201,15 @@
         .linha-assinatura {
             border-top: 1px solid #000;
             width: 60mm;
-            margin: 0 auto 4mm auto;
+            margin: 0 auto 2mm auto;
         }
         .img-assinatura {
-            height: 45px;
-            width: auto;
+            height: auto;
+            width: 70mm;
+            max-width: 100%;
             display: block;
             margin: 0 auto 2mm auto;
+            object-fit: contain;
         }
         .nome-assinatura {
             font-weight: normal;
@@ -275,6 +277,10 @@
                 margin: 0 auto !important;
                 box-shadow: none !important;
             }
+            .img-assinatura {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 
@@ -341,7 +347,7 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO FINAL AJUSTADA -->
+        <!-- 📄 DECLARAÇÃO COM ASSINATURA ATUALIZADA -->
         <div class="documento-area">
 
             <!-- Cabeçalho SOMENTE com a logo -->
@@ -365,10 +371,10 @@
                 Atenciosamente,
             </div>
 
-            <!-- Assinatura -->
+            <!-- Assinatura com a NOVA imagem -->
             <div class="assinatura-doc">
-                <div class="linha-assinatura"></div>
                 <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
+                <div class="linha-assinatura"></div>
                 <div class="nome-assinatura">Ricardo Candido Gomes</div>
                 <div class="cargo-assinatura">Presidente</div>
             </div>
