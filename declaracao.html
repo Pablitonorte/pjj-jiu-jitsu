@@ -133,13 +133,13 @@
         }
         .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 DECLARAÇÃO */
+        /* 📄 DECLARAÇÃO - FORMATO OFICIAL */
         .documento-area {
             background: white;
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 15mm 25mm 10mm 25mm;
+            padding: 12mm 20mm 5mm 20mm; /* ✅ POUCO ESPAÇO EMBAIXO */
             box-sizing: border-box;
             color: #000;
             font-family: 'Times New Roman', serif;
@@ -150,89 +150,71 @@
             display: none;
         }
 
+        /* ✅ CABEÇALHO COM LOGO + CNPJ ALINHADO */
         .cabecalho-doc {
-            text-align: left;
-            margin-bottom: 3mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4mm;
         }
         .logo-cabecalho {
             height: auto;
-            width: 180mm;
-            display: block;
+            width: 160mm;
         }
-
-        /* ✅ DATA 100% MAIÚSCULA GARANTIDO */
+        .cabecalho-direita { text-align: right; }
+        .cnpj { font-size: 11pt; margin-bottom: 2mm; }
         .data-doc {
-            text-align: right;
             font-size: 12pt;
-            font-weight: normal;
             text-transform: uppercase;
-            margin-bottom: 8mm;
         }
 
-        .destinatario {
-            text-align: left;
-            font-size: 12pt;
-            margin-bottom: 5mm;
-        }
-
+        .destinatario { margin-bottom: 4mm; }
         .titulo-doc {
             text-align: center;
             font-weight: bold;
             font-size: 14pt;
-            margin: 5mm 0;
+            margin: 4mm 0;
             text-transform: uppercase;
         }
-
         .nome-aluno { font-weight: bold; }
-
         .corpo-doc {
             text-align: justify;
-            font-size: 12pt;
-            margin-bottom: 12mm; /* ✅ Ajustado para ficar igual */
+            margin-bottom: 6mm; /* ✅ ESPAÇO PEQUENO */
             line-height: 1.6;
         }
+        .assinatura-texto { margin: 2mm 0 8mm 0; } /* ✅ POUCO ESPAÇO ANTES DA ASSINATURA */
 
-        /* ✅ ESPAÇAMENTO DA ASSINATURA IGUAL AO MODELO */
+        /* ✅ ASSINATURA REDUZIDA NO TAMANHO - PROPORCIONAL */
         .assinatura-doc {
             text-align: center;
-            margin-top: 8mm; /* Menor, mais compacto */
-            margin-bottom: 5mm;
+            margin: 0 auto 10mm auto; /* ✅ ESPAÇO CONTROLADO */
         }
         .img-assinatura {
             height: auto;
-            width: 75mm;
+            width: 55mm; /* ✅ MENOR, IGUAL AO MODELO */
             display: block;
-            margin: 0 auto 1mm auto;
+            margin: 0 auto;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
-            width: 65mm;
-            margin: 0 auto 2mm auto;
-        }
-        .nome-assinatura {
-            font-weight: normal;
-            font-size: 12pt;
-            margin-bottom: 0.5mm;
-        }
-        .cargo-assinatura {
-            font-size: 11pt;
-        }
-
-        /* ✅ LINHA DO RODAPÉ MAIOR IGUAL NO SEU EXEMPLO */
-        .rodape-validade {
-            text-align: center;
-            font-size: 10pt;
-            margin-bottom: 1mm;
-        }
-        .linha-rodape {
-            border-top: 1px solid #000;
-            width: 120mm; /* ✅ Aumentei o comprimento */
+            width: 50mm; /* ✅ LINHA CURTA */
             margin: 0 auto 1mm auto;
         }
-        .rodape-contato {
+        .nome-assinatura { font-size: 12pt; }
+        .cargo-assinatura { font-size: 11pt; }
+
+        /* ✅ RODAPÉ TUDO JUNTO, BEM EMBAIXO, SEM ESPAÇOS EXTRAS */
+        .rodape {
+            margin-top: auto; /* ✅ EMPURRA PARA O FINAL DA PÁGINA */
             text-align: center;
-            font-size: 10pt;
         }
+        .rodape-validade { font-size: 10pt; margin-bottom: 1mm; }
+        .linha-rodape {
+            border-top: 1px solid #000;
+            width: 140mm; /* ✅ LINHA COMPRIDA COBRINDO O TEXTO */
+            margin: 0 auto 1mm auto;
+        }
+        .rodape-contato { font-size: 10pt; }
 
         .botoes-acao {
             width: 210mm;
@@ -269,7 +251,6 @@
             size: A4;
             margin: 0;
         }
-
         @media print {
             html, body { width: 210mm; height: 297mm; }
             body { background: white; padding: 0; margin: 0; }
@@ -281,15 +262,15 @@
                 margin: 0 auto !important;
                 box-shadow: none !important;
                 display: block !important;
-                padding: 15mm 20mm 8mm 20mm !important;
+                padding: 12mm 20mm 4mm 20mm !important;
                 page-break-after: avoid;
                 page-break-inside: avoid;
             }
             .img-assinatura { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .assinatura-doc, .rodape-validade, .linha-rodape, .rodape-contato {
+            .assinatura-doc, .rodape {
                 page-break-inside: avoid;
-                orphans: 3;
-                widows: 3;
+                orphans: 4;
+                widows: 4;
             }
         }
     </style>
@@ -322,7 +303,6 @@
     </aside>
 
     <main class="conteudo">
-
         <div class="card-formulario">
             <h2>Preencha os dados para gerar a declaração</h2>
             <div class="form-grid">
@@ -356,28 +336,39 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
+        <!-- 📄 DECLARAÇÃO COM TODOS OS AJUSTES -->
         <div class="documento-area" id="areaDeclaracao">
+            <!-- ✅ Cabeçalho com Logo + CNPJ/Data -->
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
+                <div class="cabecalho-direita">
+                    <div class="cnpj">CNPJ:01.171.019/0001-63</div>
+                    <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
+                </div>
             </div>
-            <!-- ✅ AGORA SIM: TUDO 100% MAIÚSCULO -->
-            <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
+
             <div class="destinatario">À <span id="texto-escola">[NOME DA INSTITUIÇÃO]</span>.</div>
             <h2 class="titulo-doc">DECLARAÇÃO</h2>
             <div class="corpo-doc">
                 A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno" class="nome-aluno">[NOME DO ATLETA]</span>, pertence à academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
                 O mesmo precisará se ausentar de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela Confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
-                Atenciosamente,
+                <span class="assinatura-texto">Atenciosamente,</span>
             </div>
+
+            <!-- ✅ ASSINATURA MENOR E PROPORCIONAL -->
             <div class="assinatura-doc">
                 <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
                 <div class="linha-assinatura"></div>
                 <div class="nome-assinatura">Ricardo Candido Gomes</div>
                 <div class="cargo-assinatura">Presidente</div>
             </div>
-            <div class="rodape-validade">Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.</div>
-            <div class="linha-rodape"></div>
-            <div class="rodape-contato">Contatos: (91) 8356-0215</div>
+
+            <!-- ✅ RODAPÉ BEM EMBAIXO, COMPACTO, NÃO QUEBRA PÁGINA -->
+            <div class="rodape">
+                <div class="rodape-validade">Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.</div>
+                <div class="linha-rodape"></div>
+                <div class="rodape-contato">Contatos: (91) 8356-0215</div>
+            </div>
         </div>
 
         <div class="botoes-acao" id="botoesAcao">
@@ -417,7 +408,7 @@
             }
         }
 
-        // ✅ FUNÇÃO DE DATA FORÇADA TUDO MAIÚSCULA
+        // ✅ DATA SEMPRE TUDO MAIÚSCULA
         function obterDataAtual() {
             const hoje = new Date();
             const meses = [
@@ -432,7 +423,7 @@
 
         async function carregarListaAlunos() {
             const select = document.getElementById('selecionarAluno');
-            select.innerHTML = '<option value="">Escolha um aluno...</option>';
+            select.innerHTML = '<option value="">Carregando alunos...</option>';
             try {
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
