@@ -210,7 +210,7 @@
 
         <div class="filtros">
             <div>
-                <label>Mês</label>
+                <label>Mês de Referência</label>
                 <select id="filtroMes">
                     <option value="1">Janeiro</option>
                     <option value="2">Fevereiro</option>
@@ -219,7 +219,7 @@
                     <option value="5">Maio</option>
                     <option value="6">Junho</option>
                     <option value="7">Julho</option>
-                    <option value="8">Agosto</option>
+                    <option value="8" selected>Agosto</option>
                     <option value="9">Setembro</option>
                     <option value="10">Outubro</option>
                     <option value="11">Novembro</option>
@@ -252,15 +252,15 @@
                 </div>
             </div>
 
-            <!-- 💰 TOTAL RECEBIDO -->
+            <!-- 💰 TOTAL RECEBIDO / PREVISTO -->
             <div class="card-relatorio">
-                <h3><i class="fas fa-coins"></i> Total Recebido</h3>
+                <h3><i class="fas fa-coins"></i> Valores do Período</h3>
                 <div class="item-dado">
-                    <span class="rotulo">Este Mês</span>
+                    <span class="rotulo">Valor Previsto (Mês)</span>
                     <span class="valor verde" id="valorMes">R$ 0,00</span>
                 </div>
                 <div class="item-dado">
-                    <span class="rotulo">Este Ano</span>
+                    <span class="rotulo">Valor Previsto (Ano)</span>
                     <span class="valor verde" id="valorAno">R$ 0,00</span>
                 </div>
             </div>
@@ -269,7 +269,7 @@
             <div class="card-relatorio">
                 <h3><i class="fas fa-exclamation-triangle"></i> Inadimplência</h3>
                 <div class="item-dado">
-                    <span class="rotulo">Alunos Devendo</span>
+                    <span class="rotulo">Alunos em Atraso</span>
                     <span class="valor vermelho" id="qtdInadimplentes">0 alunos</span>
                 </div>
                 <div class="item-dado">
@@ -316,9 +316,10 @@
             document.getElementById('filtroMes').value = new Date().getMonth() + 1;
         }
 
+        // ✅ CALCULA IDADE A PARTIR DO CAMPO dataNascimento do aluno
         function calcularFaixaEtaria(dataNascimento) {
             if (!dataNascimento) return 'Sem data';
-            const nasc = new Date(dataNascimento);
+            const nasc = dataNascimento.toDate ? dataNascimento.toDate() : new Date(dataNascimento);
             const hoje = new Date();
             let idade = hoje.getFullYear() - nasc.getFullYear();
             const m = hoje.getMonth() - nasc.getMonth();
@@ -332,6 +333,7 @@
             return 'Acima de 40 anos';
         }
 
+        // ✅ FAIXA ETÁRIA — lendo campo dataNascimento do aluno
         async function carregarFaixaEtaria() {
             const snap = await db.collection('alunos').get();
             const contagem = {};
@@ -355,6 +357,7 @@
             }
         }
 
+        // ✅ GRAU DE FAIXA — lendo campo faixa do aluno
         async function carregarGrauFaixa() {
             const snap = await db.collection('alunos').get();
             const ordem = { 'Branca': 1, 'Cinza': 2, 'Amarela': 3, 'Laranja': 4, 'Verde': 5, 'Azul': 6, 'Roxa': 7, 'Marrom': 8, 'Preta': 9 };
@@ -380,53 +383,81 @@
             }
         }
 
+        // ✅ VALORES — calcula do valorPlano de cada aluno (vencimento no mês/ano)
         async function carregarTotalRecebido() {
             const mes = parseInt(document.getElementById('filtroMes').value);
             const ano = parseInt(document.getElementById('filtroAno').value);
-            const snap = await db.collection('pagamentos').get();
+            const snap = await db.collection('alunos').get();
             let totalMes = 0, totalAno = 0;
+
             snap.forEach(doc => {
                 const d = doc.data();
-                if (!d.valor || d.status !== 'Pago') return;
-                const dataPgto = d.dataPagamento ? new Date(d.dataPagamento) : null;
-                if (!dataPgto) return;
-                if (dataPgto.getFullYear() === ano) {
-                    totalAno += parseFloat(d.valor);
-                    if (dataPgto.getMonth() + 1 === mes) totalMes += parseFloat(d.valor);
+                const valor = parseFloat(d.valorPlano) || 0;
+                if (valor === 0) return; // Bolsista = gratuito
+
+                // Pega a data de vencimento
+                let dataVenc = null;
+                if (d.dataVencimento) dataVenc = d.dataVencimento.toDate();
+                else if (d.dataMatricula) dataVenc = d.dataMatricula.toDate();
+
+                if (!dataVenc) return;
+
+                // Se o vencimento cai no mês/ano selecionado
+                if (dataVenc.getFullYear() === ano) {
+                    totalAno += valor;
+                    if (dataVenc.getMonth() + 1 === mes) {
+                        totalMes += valor;
+                    }
                 }
             });
+
             document.getElementById('valorMes').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalMes);
             document.getElementById('valorAno').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalAno);
         }
 
+        // ✅ INADIMPLÊNCIA — compara data de vencimento com hoje
         async function carregarInadimplencia() {
             const mes = parseInt(document.getElementById('filtroMes').value);
             const ano = parseInt(document.getElementById('filtroAno').value);
-            const snap = await db.collection('pagamentos').get();
+            const snap = await db.collection('alunos').get();
             const devedores = [];
             let valorTotal = 0;
+            const hoje = new Date(); hoje.setHours(0,0,0,0);
+
             snap.forEach(doc => {
                 const d = doc.data();
-                if (d.status === 'Pago') return;
-                const dataVenc = d.dataVencimento ? new Date(d.dataVencimento) : null;
+                const valor = parseFloat(d.valorPlano) || 0;
+                if (valor === 0) return;
+
+                // Pega a data de vencimento
+                let dataVenc = null;
+                if (d.dataVencimento) dataVenc = d.dataVencimento.toDate();
+                else if (d.dataMatricula) dataVenc = d.dataMatricula.toDate();
+
                 if (!dataVenc) return;
-                if (dataVenc.getFullYear() === ano && dataVenc.getMonth() + 1 === mes) {
-                    const valor = parseFloat(d.valor || 0);
+
+                // Verifica se venceu no período selecionado e está atrasado
+                const vencMes = dataVenc.getMonth() + 1;
+                const vencAno = dataVenc.getFullYear();
+
+                if (vencAno === ano && vencMes === mes && dataVenc < hoje) {
                     valorTotal += valor;
-                    if (!devedores.includes(d.alunoNome)) devedores.push(d.alunoNome || 'Nome desconhecido');
+                    devedores.push({ nome: d.nome || 'Nome desconhecido', valor: valor });
                 }
             });
+
             document.getElementById('qtdInadimplentes').textContent = `${devedores.length} aluno${devedores.length !== 1 ? 's' : ''}`;
             document.getElementById('valorInadimplencia').textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotal);
+
             const lista = document.getElementById('listaInadimplentes');
             lista.innerHTML = '';
             if (devedores.length === 0) {
-                lista.innerHTML = '<div class="vazio">✅ Nenhum aluno em atraso</div>';
+                lista.innerHTML = '<div class="vazio">✅ Nenhum aluno em atraso neste período</div>';
                 return;
             }
-            devedores.sort();
-            devedores.forEach(nome => {
-                lista.innerHTML += `<div class="linha-nome">⚠️ ${nome}</div>`;
+            devedores.sort((a, b) => a.nome.localeCompare(b.nome));
+            devedores.forEach(aluno => {
+                lista.innerHTML += `<div class="linha-nome">⚠️ ${aluno.nome} — R$ ${aluno.valor.toFixed(2).replace('.', ',')}</div>`;
             });
         }
 
