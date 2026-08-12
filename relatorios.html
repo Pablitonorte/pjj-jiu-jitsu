@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
+    <title>Relatórios - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
@@ -11,20 +11,30 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
 
         :root {
-            --fundo-escuro: #121214;
-            --fundo-card: #1A1A1F;
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
-            --vermelho-escuro: #A00000;
-            --texto-branco: #FFFFFF;
-            --texto-cinza: #B0B0B8;
-            --borda: #29292E;
             --verde: #00C853;
             --amarelo: #FFC107;
             --azul: #2563eb;
-            --roxo: #9C27B0;
-            --laranja: #FF9800;
-            --erro: #FF4D4D;
+            --cinza: #6B7280;
+        }
+
+        .tema-escuro {
+            --fundo-escuro: #121214;
+            --fundo-card: #1A1A1F;
+            --texto-branco: #FFFFFF;
+            --texto-cinza: #B0B0B8;
+            --borda: #29292E;
+            --fundo-input: #0C0C0E;
+        }
+
+        .tema-claro {
+            --fundo-escuro: #F8F9FA;
+            --fundo-card: #FFFFFF;
+            --texto-branco: #121214;
+            --texto-cinza: #6B7280;
+            --borda: #DEE2E6;
+            --fundo-input: #FFFFFF;
         }
 
         html, body { 
@@ -32,297 +42,86 @@
             color: var(--texto-branco); 
             min-height: 100vh; 
             overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .btn-menu {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 9999;
-            background: var(--vermelho-principal);
-            border: none;
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
-            font-size: 22px;
-            cursor: pointer;
+            display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
+            background: var(--vermelho-principal); border: none; color: white;
+            width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            transition: background 0.2s;
         }
-        .btn-menu:hover { background: var(--vermelho-claro); }
 
         .menu-lateral {
-            width: 240px;
-            background: var(--fundo-card);
-            border-right: 1px solid var(--borda);
-            padding: 20px 0;
-            position: fixed;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: 999;
-            transition: transform 0.3s ease;
-            overflow-y: auto;
+            width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
+            padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
+            transition: transform 0.3s ease; overflow-y: auto;
         }
         .menu-lateral.fechado { transform: translateX(-100%); }
         .menu-lateral.aberto { transform: translateX(0); }
 
-        .logo { 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 10px 0 35px 0;
-            padding: 0 10px;
-        }
-        .logo img { 
-            width: 90px; 
-            height: auto;
-            margin-bottom: 12px; 
-            object-fit: contain;
-            display: block;
-        }
-        .logo h1 { 
-            font-size: 14px; 
-            font-weight: 700; 
-            line-height: 1.4; 
-            color: var(--texto-branco);
-            text-align: center;
-            margin: 0;
-        }
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo img { width: 90px; margin-bottom: 10px; }
+        .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--texto-branco); }
 
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            margin-bottom: 5px;
-            color: var(--texto-cinza);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px;
-            transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
+            color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
         }
-        .menu-navegacao li a.ativo, 
-        .menu-navegacao li a:hover { 
-            background: rgba(209, 0, 0, 0.15); 
-            color: var(--vermelho-principal); 
-        }
-        .menu-navegacao li a.sair {
-            margin-top: 20px;
-            color: var(--erro);
-        }
-        .menu-navegacao li a.sair:hover {
-            background: rgba(255, 77, 77, 0.15);
-            color: var(--erro);
-        }
+        .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
+        .menu-navegacao li a.sair { color: #FF4D4D; margin-top: 20px; }
 
         .conteudo { 
             margin-left: 240px; 
-            padding: 35px 45px; 
+            padding: 25px 30px; 
             min-height: 100vh;
             width: calc(100% - 240px);
         }
 
         .cabecalho {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-wrap: wrap; 
-            gap: 15px; 
-            margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
         }
-        .titulo-pagina { 
-            font-size: 28px; 
-            font-weight: 800; 
-            position: relative; 
-            color: var(--texto-branco);
-        }
-        .titulo-pagina::after { 
-            content: ''; 
-            position: absolute; 
-            bottom: -8px; 
-            left: 0; 
-            width: 80px; 
-            height: 3px; 
-            background: var(--vermelho-principal); 
-            border-radius: 2px;
-        }
-        .subtitulo {
-            color: var(--texto-cinza);
-            font-size: 1rem;
-            font-weight: 400;
-            margin-top: 8px;
-        }
+        .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
+        .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
 
-        .grid-resumo {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 35px;
-        }
+        .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
 
-        .card-resumo {
-            background: var(--fundo-card);
-            border: 1px solid var(--borda);
-            border-radius: 12px;
-            padding: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s ease;
-            border-left: 4px solid transparent;
-        }
-        .card-resumo:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-        }
+        .card { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; transition: 0.2s; }
+        .card:hover { border-color: var(--vermelho-principal); transform: translateY(-3px); }
+        .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--texto-cinza); }
+        .card .valor { font-size: 32px; font-weight: 800; }
+        .card .descricao { font-size: 13px; color: var(--texto-cinza); margin-top: 8px; }
 
-        .card-icone {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-        }
+        .card.verde .valor { color: var(--verde); }
+        .card.vermelho .valor { color: var(--vermelho-principal); }
+        .card.azul .valor { color: var(--azul); }
+        .card.amarelo .valor { color: var(--amarelo); }
 
-        .card-dados h3 {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--texto-cinza);
-            margin-bottom: 8px;
-        }
-        .card-dados p {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--texto-branco);
-        }
+        .card-lista { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 25px; }
+        .card-lista h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--texto-branco); }
+        .item-linha { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--borda); }
+        .item-linha:last-child { border-bottom: none; }
+        .item-nome { font-weight: 600; font-size: 14px; }
+        .item-valor { font-weight: 700; font-size: 14px; }
 
-        .card-alunos { border-left-color: var(--azul); }
-        .card-alunos .card-icone { background: rgba(37, 99, 235, 0.15); color: var(--azul); }
-
-        .card-recebido { border-left-color: var(--verde); }
-        .card-recebido .card-icone { background: rgba(0, 200, 83, 0.15); color: var(--verde); }
-
-        .card-pendente { border-left-color: var(--amarelo); }
-        .card-pendente .card-icone { background: rgba(255, 193, 7, 0.15); color: var(--amarelo); }
-
-        .card-atrasado { border-left-color: var(--vermelho-principal); }
-        .card-atrasado .card-icone { background: rgba(209, 0, 0, 0.15); color: var(--vermelho-principal); }
-
-        .acoes-rapidas {
-            background: var(--fundo-card);
-            border: 1px solid var(--borda);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 35px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .filtro select {
+            flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
+            border-radius: 6px; color: var(--texto-branco); font-size: 14px; outline: none;
         }
-        .acoes-rapidas h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--borda);
-            color: var(--texto-branco);
+        .filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
+        .btn-gerar {
+            background: var(--vermelho-principal); color: white; border: none; padding: 12px 20px;
+            border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s;
         }
-        .grid-acoes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-        }
-        .btn-acao {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-acao.aluno { background: rgba(37, 99, 235, 0.15); color: var(--azul); }
-        .btn-acao.aluno:hover { background: rgba(37, 99, 235, 0.25); transform: translateY(-2px); }
-        .btn-acao.financeiro { background: rgba(0, 200, 83, 0.15); color: var(--verde); }
-        .btn-acao.financeiro:hover { background: rgba(0, 200, 83, 0.25); transform: translateY(-2px); }
-        .btn-acao.declaracao { background: rgba(156, 39, 176, 0.15); color: var(--roxo); }
-        .btn-acao.declaracao:hover { background: rgba(156, 39, 176, 0.25); transform: translateY(-2px); }
-        .btn-acao.relatorio { background: rgba(255, 152, 0, 0.15); color: var(--laranja); }
-        .btn-acao.relatorio:hover { background: rgba(255, 152, 0, 0.25); transform: translateY(-2px); }
-
-        .grid-inferior {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-
-        .card-grande {
-            background: var(--fundo-card);
-            border: 1px solid var(--borda);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .card-grande h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--borda);
-            color: var(--texto-branco);
-        }
-
-        .lista-tipo { list-style: none; }
-        .lista-tipo li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .lista-tipo li:last-child { border: none; }
-        .lista-tipo span:first-child { color: var(--texto-branco); }
-        .lista-tipo small { color: var(--texto-cinza); font-size: 0.85rem; }
-
-        .badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .badge-kids { background: rgba(33, 150, 243, 0.2); color: #2196F3; }
-        .badge-baby { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
-        .badge-comercial { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
-        .badge-competidor { background: rgba(244, 67, 54, 0.2); color: #F44336; }
-        .badge-bolsista { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .btn-gerar:hover { background: #b00000; }
 
         @media (max-width: 992px) {
-            .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
+            .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
-            .grid-inferior { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 600px) {
-            .grid-resumo, .grid-acoes { grid-template-columns: 1fr; }
-            .cabecalho { flex-direction: column; text-align: center; }
-            .titulo-pagina { font-size: 24px; }
-            .titulo-pagina::after { left: 50%; transform: translateX(-50%); }
-            .logo img { width: 80px; }
         }
     </style>
 
@@ -330,7 +129,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
-<body>
+<body class="tema-escuro">
 
     <button class="btn-menu" onclick="abrirFecharMenu()">
         <i class="fas fa-bars"></i>
@@ -338,16 +137,16 @@
 
     <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
-            <img src="imagens/logopjj.png" alt="Logo PJJ Pará Jiu-Jitsu">
+            <img src="imagens/logopjj.png" alt="Logo PJJ">
             <h1>PJJ<br>Pará Jiu-Jitsu</h1>
         </div>
         <nav class="menu-navegacao">
             <ul>
-                <li><a href="#" class="ativo"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="alunos.html"><i class="fas fa-users"></i> Alunos</a></li>
                 <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
                 <li><a href="declaracao.html"><i class="fas fa-file-alt"></i> Declaração</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="#" class="ativo"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 <li><a href="#" class="sair" onclick="sair()"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
             </ul>
@@ -356,91 +155,86 @@
 
     <main class="conteudo">
         <div class="cabecalho">
-            <div>
-                <h1 class="titulo-pagina">Painel de Controle</h1>
-                <p class="subtitulo">Bem-vindo! Acompanhe os dados da academia em tempo real</p>
+            <h1 class="titulo-pagina">Relatórios</h1>
+        </div>
+
+        <div class="filtro">
+            <select id="anoRelatorio">
+                <option value="2026">Ano: 2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+            <select id="mesRelatorio">
+                <option value="">Todos os Meses</option>
+                <option value="01">Janeiro</option>
+                <option value="02">Fevereiro</option>
+                <option value="03">Março</option>
+                <option value="04">Abril</option>
+                <option value="05">Maio</option>
+                <option value="06">Junho</option>
+                <option value="07">Julho</option>
+                <option value="08">Agosto</option>
+                <option value="09">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+            </select>
+            <button class="btn-gerar" onclick="carregarRelatorios()">🔄 Atualizar</button>
+        </div>
+
+        <div class="grade">
+            <div class="card verde">
+                <h3>Total de Alunos</h3>
+                <div class="valor" id="totalAlunos">—</div>
+                <p class="descricao">Alunos ativos cadastrados</p>
+            </div>
+            <div class="card azul">
+                <h3>Mensalistas</h3>
+                <div class="valor" id="totalMensal">—</div>
+                <p class="descricao">Plano Mensal</p>
+            </div>
+            <div class="card amarelo">
+                <h3>Anuais</h3>
+                <div class="valor" id="totalAnual">—</div>
+                <p class="descricao">Plano Anual</p>
+            </div>
+            <div class="card vermelho">
+                <h3>Bolsistas</h3>
+                <div class="valor" id="totalBolsista">—</div>
+                <p class="descricao">Isentos de mensalidade</p>
             </div>
         </div>
 
-        <div class="grid-resumo">
-            <div class="card-resumo card-alunos">
-                <div class="card-dados">
-                    <h3>Total de Alunos</h3>
-                    <p id="totalAlunos">0</p>
-                </div>
-                <div class="card-icone">
-                    <i class="fas fa-users"></i>
-                </div>
+        <div class="grade">
+            <div class="card">
+                <h3>Kids</h3>
+                <div class="valor" id="totalKids">—</div>
+                <p class="descricao">Turma Kids</p>
             </div>
-
-            <div class="card-resumo card-recebido">
-                <div class="card-dados">
-                    <h3>Valor Previsto</h3>
-                    <p id="valorRecebido">R$ 0,00</p>
-                </div>
-                <div class="card-icone">
-                    <i class="fas fa-check-circle"></i>
-                </div>
+            <div class="card">
+                <h3>Comercial</h3>
+                <div class="valor" id="totalComercial">—</div>
+                <p class="descricao">Plano Comercial</p>
             </div>
-
-            <div class="card-resumo card-pendente">
-                <div class="card-dados">
-                    <h3>A Vencer</h3>
-                    <p id="valorPendente">R$ 0,00</p>
-                </div>
-                <div class="card-icone">
-                    <i class="fas fa-clock"></i>
-                </div>
+            <div class="card">
+                <h3>Competidor</h3>
+                <div class="valor" id="totalCompetidor">—</div>
+                <p class="descricao">Atletas Competidores</p>
             </div>
-
-            <div class="card-resumo card-atrasado">
-                <div class="card-dados">
-                    <h3>Atrasado</h3>
-                    <p id="valorAtrasado">R$ 0,00</p>
-                </div>
-                <div class="card-icone">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
+            <div class="card">
+                <h3>Baby Class</h3>
+                <div class="valor" id="totalBaby">—</div>
+                <p class="descricao">Turma Baby</p>
             </div>
         </div>
 
-        <div class="acoes-rapidas">
-            <h3>Ações Rápidas</h3>
-            <div class="grid-acoes">
-                <a href="alunos.html" class="btn-acao aluno">
-                    <i class="fas fa-user-plus"></i> Novo Aluno
-                </a>
-                <a href="financeiro.html" class="btn-acao financeiro">
-                    <i class="fas fa-file-invoice-dollar"></i> Lançar Mensalidade
-                </a>
-                <a href="declaracao.html" class="btn-acao declaracao">
-                    <i class="fas fa-file-pdf"></i> Emitir Declaração
-                </a>
-                <a href="relatorios.html" class="btn-acao relatorio">
-                    <i class="fas fa-chart-line"></i> Ver Relatórios
-                </a>
+        <div class="card-lista">
+            <h2>📊 Distribuição por Faixa</h2>
+            <div id="listaFaixas">
+                <p style="color:var(--texto-cinza);text-align:center;padding:20px;">Carregando dados...</p>
             </div>
         </div>
 
-        <div class="grid-inferior">
-            <div class="card-grande">
-                <h3>Distribuição de Alunos por Tipo</h3>
-                <ul class="lista-tipo" id="listaTipos">
-                    <li><span>Kids</span> <span class="badge badge-kids">0</span></li>
-                    <li><span>Baby Class</span> <span class="badge badge-baby">0</span></li>
-                    <li><span>Comercial</span> <span class="badge badge-comercial">0</span></li>
-                    <li><span>Competidor</span> <span class="badge badge-competidor">0</span></li>
-                    <li><span>Bolsista</span> <span class="badge badge-bolsista">0</span></li>
-                </ul>
-            </div>
-
-            <div class="card-grande">
-                <h3>Últimos Cadastros</h3>
-                <ul class="lista-tipo" id="ultimosCadastros">
-                    <li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Carregando...</li>
-                </ul>
-            </div>
-        </div>
     </main>
 
     <script>
@@ -457,97 +251,74 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        function carregarTema() {
+            const temaSalvo = localStorage.getItem('tema') || 'escuro';
+            const corpo = document.body;
+            if (temaSalvo === 'claro') {
+                corpo.classList.remove('tema-escuro');
+                corpo.classList.add('tema-claro');
+            } else {
+                corpo.classList.remove('tema-claro');
+                corpo.classList.add('tema-escuro');
+            }
+        }
+
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        function formatarValor(valor) {
-            return `R$ ${Number(valor).toFixed(2).replace('.', ',')}`;
-        }
-
-        async function carregarDadosDashboard() {
+        async function carregarRelatorios() {
             try {
-                console.log("🔄 Carregando Dashboard...");
-                const alunosSnapshot = await db.collection('alunos').get();
-                const totalAlunos = alunosSnapshot.size;
-                document.getElementById('totalAlunos').textContent = totalAlunos;
-                console.log("✅ Total de alunos:", totalAlunos);
+                const snapshot = await db.collection('alunos').get();
+                const alunos = [];
+                snapshot.forEach(doc => alunos.push(doc.data()));
 
-                let contagemTipos = { "Kids": 0, "Baby Class": 0, "Comercial": 0, "Competidor": 0, "Bolsista": 0 };
-                alunosSnapshot.forEach(doc => {
-                    const d = doc.data();
-                    const tipo = d.tipo || '';
-                    if (contagemTipos.hasOwnProperty(tipo)) contagemTipos[tipo]++;
+                document.getElementById('totalAlunos').textContent = alunos.length;
+
+                const contagem = {
+                    Mensal: 0, Anual: 0, Bolsista: 0,
+                    Kids: 0, Comercial: 0, Competidor: 0, 'Baby Class': 0
+                };
+                const faixas = { Branca: 0, Cinza: 0, Amarela: 0, Laranja: 0, Verde: 0, Azul: 0, Roxa: 0, Marrom: 0, Preta: 0 };
+
+                alunos.forEach(a => {
+                    if (a.periodo === 'Mensal') contagem.Mensal++;
+                    if (a.periodo === 'Anual') contagem.Anual++;
+                    if (a.tipo === 'Bolsista') contagem.Bolsista++;
+                    if (a.tipo === 'Kids') contagem.Kids++;
+                    if (a.tipo === 'Comercial') contagem.Comercial++;
+                    if (a.tipo === 'Competidor') contagem.Competidor++;
+                    if (a.tipo === 'Baby Class') contagem['Baby Class']++;
+                    if (faixas[a.faixa] !== undefined) faixas[a.faixa]++;
                 });
 
-                document.querySelector('.badge-kids').textContent = contagemTipos.Kids;
-                document.querySelector('.badge-baby').textContent = contagemTipos["Baby Class"];
-                document.querySelector('.badge-comercial').textContent = contagemTipos.Comercial;
-                document.querySelector('.badge-competidor').textContent = contagemTipos.Competidor;
-                document.querySelector('.badge-bolsista').textContent = contagemTipos.Bolsista;
+                document.getElementById('totalMensal').textContent = contagem.Mensal;
+                document.getElementById('totalAnual').textContent = contagem.Anual;
+                document.getElementById('totalBolsista').textContent = contagem.Bolsista;
+                document.getElementById('totalKids').textContent = contagem.Kids;
+                document.getElementById('totalComercial').textContent = contagem.Comercial;
+                document.getElementById('totalCompetidor').textContent = contagem.Competidor;
+                document.getElementById('totalBaby').textContent = contagem['Baby Class'];
 
-                const listaUltimos = document.getElementById('ultimosCadastros');
-                listaUltimos.innerHTML = '';
-                const alunosOrdenados = [];
-                alunosSnapshot.forEach(doc => alunosOrdenados.push({ id: doc.id, dados: doc.data() }));
-                alunosOrdenados.sort((a, b) => {
-                    const dataA = a.dados.dataCadastro ? (a.dados.dataCadastro.toDate ? a.dados.dataCadastro.toDate() : new Date(a.dados.dataCadastro)) : new Date(0);
-                    const dataB = b.dados.dataCadastro ? (b.dados.dataCadastro.toDate ? b.dados.dataCadastro.toDate() : new Date(b.dados.dataCadastro)) : new Date(0);
-                    return dataB - dataA;
-                });
-                const ultimos5 = alunosOrdenados.slice(0, 5);
-
-                if (ultimos5.length === 0) {
-                    listaUltimos.innerHTML = '<li style="color: var(--texto-cinza); padding: 20px; text-align:center;">Nenhum aluno cadastrado</li>';
-                } else {
-                    ultimos5.forEach(aluno => {
-                        const d = aluno.dados;
-                        const data = d.dataCadastro ? 
-                            (d.dataCadastro.toDate ? d.dataCadastro.toDate().toLocaleDateString('pt-BR') : new Date(d.dataCadastro).toLocaleDateString('pt-BR')) 
-                            : '-';
-                        listaUltimos.innerHTML += `<li><span>${d.nome || 'Sem nome'}</span> <small>${data}</small></li>`;
-                    });
-                }
-
-                const hoje = new Date(); hoje.setHours(0,0,0,0);
-                let valorPrevisto = 0, valorAVencer = 0, valorAtrasado = 0;
-
-                alunosSnapshot.forEach(doc => {
-                    const d = doc.data();
-                    const valor = Number(d.valorPlano) || 0;
-                    const tipo = d.tipo || '';
-
-                    if (tipo === 'Bolsista' || valor <= 0) return;
-
-                    valorPrevisto += valor;
-
-                    let dataVenc = null;
-                    if (d.dataVencimento) dataVenc = d.dataVencimento.toDate();
-                    else if (d.dataMatricula) dataVenc = d.dataMatricula.toDate();
-
-                    if (!dataVenc) return;
-
-                    if (dataVenc < hoje) {
-                        valorAtrasado += valor;
-                    } else {
-                        valorAVencer += valor;
+                let htmlFaixas = '';
+                Object.entries(faixas).forEach(([nome, qtd]) => {
+                    if (qtd > 0) {
+                        htmlFaixas += `
+                        <div class="item-linha">
+                            <span class="item-nome">Faixa ${nome}</span>
+                            <span class="item-valor">${qtd} aluno${qtd !== 1 ? 's' : ''}</span>
+                        </div>`;
                     }
                 });
-
-                document.getElementById('valorRecebido').textContent = formatarValor(valorPrevisto);
-                document.getElementById('valorPendente').textContent = formatarValor(valorAVencer);
-                document.getElementById('valorAtrasado').textContent = formatarValor(valorAtrasado);
-
-                console.log("✅ Dashboard carregado com sucesso!");
+                document.getElementById('listaFaixas').innerHTML = htmlFaixas || '<p style="color:var(--texto-cinza);text-align:center;padding:20px;">Sem dados de faixa</p>';
 
             } catch (erro) {
-                console.error('❌ Erro ao carregar Dashboard:', erro);
-                document.getElementById('ultimosCadastros').innerHTML = `<li style="color: var(--erro); padding: 20px; text-align:center;">Erro: ${erro.message}</li>`;
+                alert('Erro ao carregar relatórios: ' + erro.message);
             }
         }
 
         function sair() {
-            if (confirm('Deseja realmente sair?')) {
+            if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
@@ -555,9 +326,10 @@
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
-                return;
+            } else {
+                carregarTema();
+                carregarRelatorios();
             }
-            carregarDadosDashboard();
         });
     </script>
 </body>
