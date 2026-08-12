@@ -15,7 +15,6 @@
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
             --verde: #00C853;
-            --amarelo: #FFC107;
             --cinza: #6B7280;
         }
 
@@ -134,7 +133,7 @@
         }
         .btn-gerar:hover { background: #00E05C; }
 
-        /* 📄 ESTILO EXATO DO MODELO DA IMAGEM */
+        /* 📄 FORMATO EXATO DO SEU MODELO */
         .documento-area {
             background: white;
             width: 210mm;
@@ -150,101 +149,90 @@
             position: relative;
         }
 
-        /* Cabeçalho com logo + nome + CNPJ */
+        /* Cabeçalho: Logo à esquerda + CNPJ à direita */
         .cabecalho-doc {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 5mm;
         }
         .logo-cabecalho {
-            width: 100%;
-            max-width: 160mm;
             height: auto;
-            display: block;
-            margin: 0 auto 2mm auto;
-        }
-        .nome-federacao {
-            font-size: 16pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            width: 180mm;
         }
         .cnpj-federacao {
             font-size: 11pt;
-            margin-top: 2mm;
+            white-space: nowrap;
         }
 
-        /* Cidade e data no canto direito */
+        /* Cidade e Data alinhada à direita */
         .data-doc {
             text-align: right;
             font-size: 12pt;
             margin-bottom: 15mm;
         }
 
-        /* Destinatário */
         .destinatario {
             text-align: left;
             font-size: 12pt;
             margin-bottom: 10mm;
         }
 
-        /* Título DECLARAÇÃO centralizado e em negrito */
         .titulo-doc {
             text-align: center;
             font-weight: bold;
             font-size: 14pt;
             margin: 8mm 0;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        /* Corpo do texto */
+        /* Texto EXATO igual ao seu modelo */
         .corpo-doc {
             text-align: justify;
             font-size: 12pt;
-            margin-bottom: 20mm;
+            margin-bottom: 25mm;
             line-height: 1.8;
         }
 
         /* Assinatura centralizada */
         .assinatura-doc {
             text-align: center;
-            margin-top: 15mm;
-            margin-bottom: 10mm;
+            margin-top: 10mm;
+            margin-bottom: 15mm;
         }
         .linha-assinatura {
             border-top: 1px solid #000;
             width: 60mm;
-            margin: 0 auto 5mm auto;
+            margin: 0 auto 4mm auto;
         }
         .img-assinatura {
-            height: 50px;
+            height: 45px;
             width: auto;
             display: block;
-            margin: 0 auto 3mm auto;
+            margin: 0 auto 2mm auto;
         }
         .nome-assinatura {
-            font-weight: bold;
+            font-weight: normal;
             font-size: 12pt;
-            margin-bottom: 2mm;
+            margin-bottom: 1mm;
         }
         .cargo-assinatura {
             font-size: 11pt;
         }
 
-        /* Rodapé com validade, linha e contatos */
+        /* Rodapé igual original */
         .rodape-doc {
-            margin-top: 15mm;
+            margin-top: auto;
             text-align: center;
             font-size: 10pt;
         }
         .linha-rodape {
             border-top: 1px solid #000;
             width: 160mm;
-            margin: 5mm auto;
+            margin: 4mm auto;
         }
         .contatos-rodape {
             font-size: 10pt;
-            margin-top: 2mm;
         }
 
         .botoes-acao {
@@ -276,6 +264,8 @@
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
             .card-formulario, .documento-area, .botoes-acao { width: 100% !important; }
+            .cabecalho-doc { flex-direction: column; gap:10px; text-align:center; }
+            .cnpj-federacao { text-align:center; }
         }
 
         @page { size: A4; margin: 0; }
@@ -336,10 +326,6 @@
                     <input type="text" id="campoNome" placeholder="Nome completo" readonly>
                 </div>
                 <div class="form-grupo">
-                    <label>CPF do Aluno</label>
-                    <input type="text" id="campoCpf" placeholder="CPF" readonly>
-                </div>
-                <div class="form-grupo">
                     <label>Nome da Instituição/Escola</label>
                     <input type="text" id="campoEscola" placeholder="Ex: E M de Ensino F Maria Emília Antunes">
                 </div>
@@ -359,17 +345,16 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO NO FORMATO EXATO DA IMAGEM -->
+        <!-- 📄 DECLARAÇÃO IGUALZINHA AO SEU MODELO -->
         <div class="documento-area">
 
-            <!-- Cabeçalho: Logo + Nome Federação + CNPJ -->
+            <!-- Cabeçalho: Logo + CNPJ -->
             <div class="cabecalho-doc">
                 <img src="imagens/logo-fejjpa.png" alt="Federação de Jiu-Jitsu do Estado do Pará" class="logo-cabecalho">
-                <div class="nome-federacao">Federação de Jiu Jitsu do Estado do Pará</div>
                 <div class="cnpj-federacao">CNPJ: 01.171.019/0001-63</div>
             </div>
 
-            <!-- Cidade e Data no canto direito -->
+            <!-- Cidade e Data -->
             <div class="data-doc">BELÉM – PA, <span id="data-atual"></span></div>
 
             <!-- Destinatário -->
@@ -378,10 +363,10 @@
             <!-- Título -->
             <h2 class="titulo-doc">DECLARAÇÃO</h2>
 
-            <!-- Corpo do texto -->
+            <!-- Texto EXATO do modelo -->
             <div class="corpo-doc">
-                A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, portador do CPF nº <span id="texto-cpf">[CPF]</span>, pertence à academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
-                O mesmo precisará se ausentar de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
+                A Federação de Jiu-Jitsu do Estado do Pará declara para os devidos fins, que o atleta <span id="texto-nome-aluno">[NOME DO ATLETA]</span>, pertence à academia PARÁ JIU-JITSU e é filiado e devidamente regularizado.<br><br>
+                O mesmo precisará se ausentar de suas atividades escolares no período de <span id="texto-periodo">[PERÍODO]</span> do corrente ano para representar o estado do Pará no campeonato <span id="texto-campeonato">[NOME DO CAMPEONATO]</span> realizado pela Confederação Brasileira de Jiu-Jitsu (CBJJ) na cidade de <span id="texto-cidade">[CIDADE / ESTADO]</span>.<br><br>
                 Atenciosamente,
             </div>
 
@@ -393,7 +378,7 @@
                 <div class="cargo-assinatura">Presidente</div>
             </div>
 
-            <!-- Rodapé: Validade + Linha + Contatos -->
+            <!-- Rodapé igual original -->
             <div class="rodape-doc">
                 Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.
                 <div class="linha-rodape"></div>
@@ -463,7 +448,7 @@
                 alunos.forEach(aluno => {
                     const dados = aluno.dados;
                     const opcao = document.createElement('option');
-                    opcao.value = JSON.stringify({ nome: dados.nome, cpf: dados.cpf || '' });
+                    opcao.value = JSON.stringify({ nome: dados.nome });
                     opcao.textContent = dados.nome;
                     select.appendChild(opcao);
                 });
@@ -477,24 +462,20 @@
             const valor = document.getElementById('selecionarAluno').value;
             if (!valor) {
                 document.getElementById('campoNome').value = '';
-                document.getElementById('campoCpf').value = '';
                 return;
             }
             const dados = JSON.parse(valor);
             document.getElementById('campoNome').value = dados.nome;
-            document.getElementById('campoCpf').value = dados.cpf;
         }
 
         function gerarDeclaracao() {
             const nome = document.getElementById('campoNome').value.trim();
-            const cpf = document.getElementById('campoCpf').value.trim();
             const escola = document.getElementById('campoEscola').value.trim();
             const periodo = document.getElementById('campoPeriodo').value.trim();
             const campeonato = document.getElementById('campoCampeonato').value.trim();
             const cidade = document.getElementById('campoCidade').value.trim();
 
             document.getElementById('texto-nome-aluno').textContent = nome || '[NOME DO ATLETA]';
-            document.getElementById('texto-cpf').textContent = cpf || '[CPF]';
             document.getElementById('texto-escola').textContent = escola || '[NOME DA INSTITUIÇÃO]';
             document.getElementById('texto-periodo').textContent = periodo || '[PERÍODO]';
             document.getElementById('texto-campeonato').textContent = campeonato || '[NOME DO CAMPEONATO]';
@@ -505,7 +486,6 @@
         function limparFormulario() {
             document.getElementById('selecionarAluno').value = '';
             document.getElementById('campoNome').value = '';
-            document.getElementById('campoCpf').value = '';
             document.getElementById('campoEscola').value = '';
             document.getElementById('campoPeriodo').value = '';
             document.getElementById('campoCampeonato').value = '';
