@@ -192,46 +192,45 @@
             line-height: 1.8;
         }
 
-        /* Assinatura centralizada - AJUSTADA PARA A NOVA IMAGEM */
+        /* ✅ ASSINATURA AJUSTADA: IMAGEM ANTES DA LINHA */
         .assinatura-doc {
             text-align: center;
             margin-top: 10mm;
-            margin-bottom: 15mm;
-        }
-        .linha-assinatura {
-            border-top: 1px solid #000;
-            width: 60mm;
-            margin: 0 auto 2mm auto;
+            margin-bottom: 20mm;
         }
         .img-assinatura {
             height: auto;
-            width: 70mm;
-            max-width: 100%;
+            width: 75mm;
             display: block;
+            margin: 0 auto 1mm auto;
+        }
+        .linha-assinatura {
+            border-top: 1px solid #000;
+            width: 65mm;
             margin: 0 auto 2mm auto;
-            object-fit: contain;
         }
         .nome-assinatura {
             font-weight: normal;
             font-size: 12pt;
-            margin-bottom: 1mm;
+            margin-bottom: 0.5mm;
         }
         .cargo-assinatura {
             font-size: 11pt;
         }
 
-        /* Rodapé igual original */
-        .rodape-doc {
-            margin-top: auto;
+        /* ✅ RODAPÉ SEPARADO IGUAL AO ORIGINAL */
+        .rodape-validade {
             text-align: center;
             font-size: 10pt;
+            margin-bottom: 2mm;
         }
         .linha-rodape {
             border-top: 1px solid #000;
             width: 160mm;
-            margin: 4mm auto;
+            margin: 0 auto 2mm auto;
         }
-        .contatos-rodape {
+        .rodape-contato {
+            text-align: center;
             font-size: 10pt;
         }
 
@@ -277,10 +276,7 @@
                 margin: 0 auto !important;
                 box-shadow: none !important;
             }
-            .img-assinatura {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            .img-assinatura { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 
@@ -347,7 +343,7 @@
             <button class="btn-gerar" onclick="gerarDeclaracao()">Gerar Declaração</button>
         </div>
 
-        <!-- 📄 DECLARAÇÃO COM ASSINATURA ATUALIZADA -->
+        <!-- 📄 DECLARAÇÃO FINAL PERFEITA -->
         <div class="documento-area">
 
             <!-- Cabeçalho SOMENTE com a logo -->
@@ -371,7 +367,7 @@
                 Atenciosamente,
             </div>
 
-            <!-- Assinatura com a NOVA imagem -->
+            <!-- ✅ ASSINATURA: IMAGEM → LINHA → NOME → CARGO -->
             <div class="assinatura-doc">
                 <img src="imagens/assinatura-ricardo.png" alt="Assinatura Ricardo Cândido Gomes" class="img-assinatura">
                 <div class="linha-assinatura"></div>
@@ -379,12 +375,10 @@
                 <div class="cargo-assinatura">Presidente</div>
             </div>
 
-            <!-- Rodapé -->
-            <div class="rodape-doc">
-                Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.
-                <div class="linha-rodape"></div>
-                <div class="contatos-rodape">Contatos: (91) 8356-0215</div>
-            </div>
+            <!-- ✅ RODAPÉ SEPARADO IGUAL AO SEU MODELO -->
+            <div class="rodape-validade">Este documento tem validade de 30 dias a partir da sua expedição para dar entrada em órgãos privados ou públicos.</div>
+            <div class="linha-rodape"></div>
+            <div class="rodape-contato">Contatos: (91) 8356-0215</div>
 
         </div>
 
