@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
+    <link rel="icon" href="imagens/logopjj.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
@@ -159,6 +160,24 @@
             margin-top: 8px;
         }
 
+        .btn-instalar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, var(--verde), #00a847);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,200,83,0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-instalar:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,200,83,0.35); }
+        .btn-instalar.escondido { display: none; }
+
         .grid-resumo {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -263,7 +282,7 @@
 
         .grid-inferior {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 25px;
         }
 
@@ -274,6 +293,7 @@
             padding: 25px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
+        .card-grande.dois { grid-column: span 2; }
 
         .card-grande h3 {
             font-size: 18px;
@@ -282,6 +302,9 @@
             padding-bottom: 10px;
             border-bottom: 1px solid var(--borda);
             color: var(--texto-branco);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .lista-tipo { list-style: none; }
@@ -308,21 +331,44 @@
         .badge-comercial { background: rgba(255, 152, 0, 0.2); color: #FF9800; }
         .badge-competidor { background: rgba(244, 67, 54, 0.2); color: #F44336; }
         .badge-bolsista { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+        .badge-aniversario { background: rgba(255, 193, 7, 0.2); color: #FFC107; }
 
+        .aniversariante-nome { font-weight: 600; }
+        .aniversariante-data { font-size: 13px; color: var(--texto-cinza); }
+
+        .grafico-container { display: flex; align-items: center; gap: 25px; flex-wrap: wrap; }
+        .grafico-pizza { position: relative; width: 200px; height: 200px; }
+        .grafico-pizza svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .grafico-centro {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .grafico-centro strong { display: block; font-size: 28px; }
+        .grafico-centro span { font-size: 12px; color: var(--texto-cinza); }
+
+        .legenda-grafico { flex: 1; min-width: 150px; }
+        .legenda-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; }
+        .legenda-cor { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+        @media (max-width: 1200px) {
+            .grid-inferior { grid-template-columns: 1fr 1fr; }
+            .card-grande.dois { grid-column: span 2; }
+        }
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
             .grid-inferior { grid-template-columns: 1fr; }
+            .card-grande.dois { grid-column: span 1; }
         }
-
         @media (max-width: 600px) {
             .grid-resumo, .grid-acoes { grid-template-columns: 1fr; }
             .cabecalho { flex-direction: column; text-align: center; }
             .titulo-pagina { font-size: 24px; }
             .titulo-pagina::after { left: 50%; transform: translateX(-50%); }
             .logo img { width: 80px; }
+            .grafico-container { justify-content: center; }
         }
     </style>
 
@@ -360,6 +406,9 @@
                 <h1 class="titulo-pagina">Painel de Controle</h1>
                 <p class="subtitulo">Bem-vindo! Acompanhe os dados da academia em tempo real</p>
             </div>
+            <button class="btn-instalar escondido" id="btnInstalarApp">
+                <i class="fas fa-download"></i> Instalar App
+            </button>
         </div>
 
         <div class="grid-resumo">
@@ -424,27 +473,38 @@
 
         <div class="grid-inferior">
             <div class="card-grande">
-                <h3>Distribuição de Alunos por Tipo</h3>
-                <ul class="lista-tipo" id="listaTipos">
-                    <li><span>Kids</span> <span class="badge badge-kids">0</span></li>
-                    <li><span>Baby Class</span> <span class="badge badge-baby">0</span></li>
-                    <li><span>Comercial</span> <span class="badge badge-comercial">0</span></li>
-                    <li><span>Competidor</span> <span class="badge badge-competidor">0</span></li>
-                    <li><span>Bolsista</span> <span class="badge badge-bolsista">0</span></li>
+                <h3><i class="fas fa-chart-pie"></i> Alunos por Faixa</h3>
+                <div class="grafico-container">
+                    <div class="grafico-pizza">
+                        <svg viewBox="0 0 100 100" id="graficoFaixas"></svg>
+                        <div class="grafico-centro">
+                            <strong id="totalGrafico">0</strong>
+                            <span>alunos</span>
+                        </div>
+                    </div>
+                    <div class="legenda-grafico" id="legendaFaixas">
+                        <p style="color:var(--texto-cinza);">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grande">
+                <h3><i class="fas fa-birthday-cake"></i> Próximos Aniversariantes</h3>
+                <ul class="lista-tipo" id="aniversariantes">
+                    <li><span style="color:var(--texto-cinza);">Carregando...</span></li>
                 </ul>
             </div>
 
             <div class="card-grande">
-                <h3>Últimos Cadastros</h3>
+                <h3><i class="fas fa-list-ol"></i> Últimos Cadastros</h3>
                 <ul class="lista-tipo" id="ultimosCadastros">
-                    <li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Carregando...</li>
+                    <li><span style="color:var(--texto-cinza);">Carregando...</span></li>
                 </ul>
             </div>
         </div>
     </main>
 
     <script>
-        // ✅ Configuração direta no arquivo (igual ao financeiro)
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
           authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
@@ -457,6 +517,23 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        let promptInstalacao = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            promptInstalacao = e;
+            document.getElementById('btnInstalarApp').classList.remove('escondido');
+        });
+
+        document.getElementById('btnInstalarApp').addEventListener('click', async () => {
+            if (!promptInstalacao) return;
+            promptInstalacao.prompt();
+            const { outcome } = await promptInstalacao.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('btnInstalarApp').classList.add('escondido');
+            }
+            promptInstalacao = null;
+        });
 
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
@@ -486,6 +563,66 @@
             return hoje > venc;
         }
 
+        function formatarData(data) {
+            if (!data) return '-';
+            const d = data.toDate ? data.toDate() : new Date(data);
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+        }
+
+        function desenharGraficoPizza(contagem, total) {
+            const cores = {
+                'Branca': '#FFFFFF',
+                'Cinza': '#9E9E9E',
+                'Amarela': '#FFC107',
+                'Laranja': '#FF9800',
+                'Verde': '#4CAF50',
+                'Azul': '#2196F3',
+                'Roxa': '#9C27B0',
+                'Marrom': '#795548',
+                'Preta': '#121212'
+            };
+
+            const svg = document.getElementById('graficoFaixas');
+            const legenda = document.getElementById('legendaFaixas');
+            let htmlLegenda = '';
+            let caminhos = '';
+            let anguloInicial = 0;
+            const raio = 45;
+            const centro = 50;
+
+            Object.entries(contagem).forEach(([faixa, qtd]) => {
+                if (qtd > 0) {
+                    const porcentagem = qtd / total;
+                    const angulo = porcentagem * 360;
+                    const anguloFinal = anguloInicial + angulo;
+
+                    const radInicio = (anguloInicial * Math.PI) / 180;
+                    const radFim = (anguloFinal * Math.PI) / 180;
+
+                    const x1 = centro + raio * Math.cos(radInicio);
+                    const y1 = centro + raio * Math.sin(radInicio);
+                    const x2 = centro + raio * Math.cos(radFim);
+                    const y2 = centro + raio * Math.sin(radFim);
+
+                    const arcoGrande = angulo > 180 ? 1 : 0;
+
+                    caminhos += `<path d="M${centro},${centro} L${x1},${y1} A${raio},${raio} 0 ${arcoGrande},1 ${x2},${y2} Z" fill="${cores[faixa] || '#666'}" stroke="#1A1A1F" stroke-width="1"/>`;
+
+                    htmlLegenda += `
+                    <div class="legenda-item">
+                        <span class="legenda-cor" style="background:${cores[faixa] || '#666'}"></span>
+                        <span>Faixa ${faixa}: ${qtd} (${Math.round(porcentagem*100)}%)</span>
+                    </div>`;
+
+                    anguloInicial = anguloFinal;
+                }
+            });
+
+            svg.innerHTML = caminhos;
+            legenda.innerHTML = htmlLegenda || '<p style="color:var(--texto-cinza);">Sem dados</p>';
+            document.getElementById('totalGrafico').textContent = total;
+        }
+
         async function carregarDadosDashboard() {
             try {
                 const alunosSnapshot = await db.collection('alunos').get();
@@ -493,9 +630,33 @@
                 document.getElementById('totalAlunos').textContent = totalAlunos;
 
                 let contagemTipos = { Kids: 0, "Baby Class": 0, Comercial: 0, Competidor: 0, Bolsista: 0 };
+                let contagemFaixas = { Branca: 0, Cinza: 0, Amarela: 0, Laranja: 0, Verde: 0, Azul: 0, Roxa: 0, Marrom: 0, Preta: 0 };
+                let listaAniversariantes = [];
+                let todosAlunos = [];
+
                 alunosSnapshot.forEach(doc => {
-                    const tipo = doc.data().tipo || doc.data().tipoAluno;
+                    const d = doc.data();
+                    todosAlunos.push({ id: doc.id, dados: d });
+
+                    const tipo = d.tipo || d.tipoAluno;
                     if (contagemTipos.hasOwnProperty(tipo)) contagemTipos[tipo]++;
+
+                    if (d.faixa && contagemFaixas.hasOwnProperty(d.faixa)) contagemFaixas[d.faixa]++;
+
+                    if (d.dataNascimento) {
+                        const nasc = d.dataNascimento.toDate ? d.dataNascimento.toDate() : new Date(d.dataNascimento);
+                        const hoje = new Date();
+                        const proxAniversario = new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate());
+                        if (proxAniversario < hoje) proxAniversario.setFullYear(hoje.getFullYear() + 1);
+                        const diferencaDias = Math.ceil((proxAniversario - hoje) / (1000 * 60 * 60 * 24));
+                        if (diferencaDias >= 0 && diferencaDias <= 30) {
+                            listaAniversariantes.push({
+                                nome: d.nome || 'Sem nome',
+                                data: proxAniversario,
+                                dias: diferencaDias
+                            });
+                        }
+                    }
                 });
 
                 document.querySelector('.badge-kids').textContent = contagemTipos.Kids;
@@ -504,20 +665,40 @@
                 document.querySelector('.badge-competidor').textContent = contagemTipos.Competidor;
                 document.querySelector('.badge-bolsista').textContent = contagemTipos.Bolsista;
 
-                const listaUltimos = document.getElementById('ultimosCadastros');
-                listaUltimos.innerHTML = '';
-                const alunosOrdenados = [];
-                alunosSnapshot.forEach(doc => alunosOrdenados.push({ id: doc.id, dados: doc.data() }));
-                alunosOrdenados.sort((a, b) => {
+                desenharGraficoPizza(contagemFaixas, totalAlunos);
+
+                listaAniversariantes.sort((a, b) => a.dias - b.dias);
+                const ulAniversario = document.getElementById('aniversariantes');
+                if (listaAniversariantes.length === 0) {
+                    ulAniversario.innerHTML = '<li><span style="color:var(--texto-cinza);">Nenhum aniversariante nos próximos 30 dias</span></li>';
+                } else {
+                    ulAniversario.innerHTML = '';
+                    listaAniversariantes.forEach(anv => {
+                        const diasTexto = anv.dias === 0 ? '🎉 HOJE!' : `em ${anv.dias} dia${anv.dias !== 1 ? 's' : ''}`;
+                        const dataStr = `${String(anv.data.getDate()).padStart(2,'0')}/${String(anv.data.getMonth()+1).padStart(2,'0')}`;
+                        ulAniversario.innerHTML += `
+                        <li>
+                            <div>
+                                <div class="aniversariante-nome">${anv.nome}</div>
+                                <div class="aniversariante-data">${dataStr} — ${diasTexto}</div>
+                            </div>
+                            <span class="badge badge-aniversario">🎂</span>
+                        </li>`;
+                    });
+                }
+
+                todosAlunos.sort((a, b) => {
                     const dataA = a.dados.dataCadastro ? (a.dados.dataCadastro.toDate ? a.dados.dataCadastro.toDate() : new Date(a.dados.dataCadastro)) : new Date(0);
                     const dataB = b.dados.dataCadastro ? (b.dados.dataCadastro.toDate ? b.dados.dataCadastro.toDate() : new Date(b.dados.dataCadastro)) : new Date(0);
                     return dataB - dataA;
                 });
-                const ultimos5 = alunosOrdenados.slice(0, 5);
+                const ultimos5 = todosAlunos.slice(0, 5);
 
+                const listaUltimos = document.getElementById('ultimosCadastros');
                 if (ultimos5.length === 0) {
-                    listaUltimos.innerHTML = '<li class="text-center" style="color: var(--texto-cinza); padding: 20px;">Nenhum aluno cadastrado</li>';
+                    listaUltimos.innerHTML = '<li><span style="color:var(--texto-cinza);">Nenhum aluno cadastrado</span></li>';
                 } else {
+                    listaUltimos.innerHTML = '';
                     ultimos5.forEach(aluno => {
                         const dados = aluno.dados;
                         const data = dados.dataCadastro ? 
@@ -553,7 +734,6 @@
 
             } catch (erro) {
                 console.error('Erro ao carregar dados do Dashboard:', erro);
-                document.getElementById('ultimosCadastros').innerHTML = '<li class="text-center" style="color: var(--erro); padding: 20px;">Erro ao carregar dados</li>';
             }
         }
 
@@ -563,10 +743,13 @@
             }
         }
 
-        // ✅ Inicialização padrão confirmada
         auth.onAuthStateChanged(usuario => {
             if (!usuario) window.location.href = 'login.html';
-            else carregarDadosDashboard();
+            else {
+                setTimeout(() => {
+                    carregarDadosDashboard();
+                }, 300);
+            }
         });
     </script>
 
