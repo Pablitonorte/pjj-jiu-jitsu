@@ -80,7 +80,7 @@
         }
 
         .cabecalho {
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
         }
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
@@ -91,17 +91,6 @@
             transition: 0.2s;
         }
         .btn-novo:hover { background: #b00000; }
-
-        .cards-topo {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 25px;
-        }
-        .card-resumo {
-            background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
-            padding: 18px;
-        }
-        .card-resumo .valor { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
-        .card-resumo .rotulo { font-size: 13px; color: var(--texto-cinza); }
-        .card-resumo .destaque { font-size: 11px; margin-top: 4px; color: var(--texto-cinza); }
 
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
@@ -122,11 +111,6 @@
         .tabela td { padding: 14px 12px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 50px !important; color: var(--texto-cinza); }
-
-        .status { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
-        .status-emdia { background: #00C85320; color: #00C853; }
-        .status-avencer { background: #FFC10720; color: #FFC107; }
-        .status-atrasado { background: #FF3B3B20; color: #FF3B3B; }
 
         .acoes { position: relative; }
         .btn-acoes {
@@ -200,7 +184,6 @@
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
-            .cards-topo { grid-template-columns: repeat(2, 1fr); }
         }
 
         @media (max-width: 600px) {
@@ -246,34 +229,6 @@
             </button>
         </div>
 
-        <div class="cards-topo">
-            <div class="card-resumo">
-                <div class="valor" id="cardTotal">0</div>
-                <div class="rotulo">Total de Alunos</div>
-                <div class="destaque" id="cardPctTotal">Ativos</div>
-            </div>
-            <div class="card-resumo">
-                <div class="valor" id="cardEmDia">0</div>
-                <div class="rotulo">Em dia</div>
-                <div class="destaque" id="cardPctEmDia">—</div>
-            </div>
-            <div class="card-resumo">
-                <div class="valor" id="cardEstaSemana">0</div>
-                <div class="rotulo">Vencem esta semana</div>
-                <div class="destaque" id="cardPctSemana">—</div>
-            </div>
-            <div class="card-resumo">
-                <div class="valor" id="cardAtrasados">0</div>
-                <div class="rotulo">Atrasados</div>
-                <div class="destaque" id="cardPctAtrasados">—</div>
-            </div>
-            <div class="card-resumo">
-                <div class="valor" id="cardReceita">R$ 0,00</div>
-                <div class="rotulo">Receita prevista</div>
-                <div class="destaque">Próximos 30 dias</div>
-            </div>
-        </div>
-
         <div class="card-filtro">
             <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome, CPF ou responsável...">
             <select id="filtroTipo">
@@ -293,7 +248,6 @@
             </select>
         </div>
 
-        <!-- 📋 TABELA ATUALIZADA: sem Status, com Responsável -->
         <table class="tabela">
             <thead>
                 <tr>
@@ -312,7 +266,6 @@
         </table>
     </main>
 
-    <!-- 📝 MODAL CADASTRO/EDIÇÃO -->
     <div id="modalCadastro" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalCadastro()">&times;</button>
@@ -418,7 +371,6 @@
         </div>
     </div>
 
-    <!-- ℹ️ MODAL INFORMAÇÕES DO ALUNO COM TODOS OS CAMPOS -->
     <div id="modalInfo" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalInfo()">&times;</button>
@@ -537,7 +489,6 @@
             menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
         }
 
-        // ℹ️ MODAL COM TODAS AS INFORMAÇÕES DO CADASTRO
         function abrirInfoAluno(id) {
             const aluno = alunosCarregados.find(a => a.id === id);
             if (!aluno) return;
@@ -628,34 +579,6 @@
                     return nomeA.localeCompare(nomeB);
                 });
 
-                const hoje = new Date(); hoje.setHours(0,0,0,0);
-                const fimSemana = new Date(hoje); fimSemana.setDate(fimSemana.getDate() + 7);
-                let total = 0, emDia = 0, estaSemana = 0, atrasados = 0, receita = 0;
-
-                alunosCarregados.forEach(a => {
-                    total++;
-                    let venc = null;
-                    if (a.dados.dataVencimento) venc = a.dados.dataVencimento.toDate();
-                    else if (a.dados.dataMatricula) venc = a.dados.dataMatricula.toDate();
-                    
-                    if (venc) {
-                        const dias = Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24));
-                        if (dias < 0) atrasados++;
-                        else if (dias <= 7) estaSemana++;
-                        else emDia++;
-                    }
-                    receita += Number(a.dados.valorPlano) || 0;
-                });
-
-                document.getElementById('cardTotal').textContent = total;
-                document.getElementById('cardEmDia').textContent = emDia;
-                document.getElementById('cardEstaSemana').textContent = estaSemana;
-                document.getElementById('cardAtrasados').textContent = atrasados;
-                document.getElementById('cardReceita').textContent = `R$ ${receita.toFixed(2).replace('.', ',')}`;
-                document.getElementById('cardPctEmDia').textContent = total > 0 ? `${Math.round((emDia / total) * 100)}% do total` : '—';
-                document.getElementById('cardPctSemana').textContent = total > 0 ? `${Math.round((estaSemana / total) * 100)}% do total` : '—';
-                document.getElementById('cardPctAtrasados').textContent = total > 0 ? `${Math.round((atrasados / total) * 100)}% do total` : '—';
-
                 lista.innerHTML = '';
                 alunosCarregados.forEach((aluno) => {
                     const d = aluno.dados;
@@ -663,7 +586,6 @@
                     const valorTexto = valorPlano === 0 ? 'GRÁTIS' : `R$ ${valorPlano.toFixed(2).replace('.', ',')}`;
                     const cpf = formatarCPF(d.cpf);
                     const responsavel = d.responsavel || '-';
-
                     const menuId = `menu-${aluno.id}`;
 
                     lista.innerHTML += `
