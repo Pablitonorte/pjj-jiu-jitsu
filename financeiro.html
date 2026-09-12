@@ -103,28 +103,6 @@
         .status { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap; }
         .status-emdia { background: rgba(0,200,83,0.15); color: var(--verde); border: 1px solid rgba(0,200,83,0.3); }
         .status-atrasado { background: rgba(209,0,0,0.15); color: var(--vermelho-claro); border: 1px solid rgba(209,0,0,0.3); }
-        .dias-contador { font-size: 12px; color: var(--texto-cinza); white-space: nowrap; }
-        .dias-atrasado { color: var(--vermelho-claro); }
-        .dias-emdia { color: var(--verde); }
-        .btn-acao { padding: 8px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap; }
-        .btn-pago { background: var(--verde); color: white; }
-        .btn-pago:hover { background: #00b348; }
-        .btn-mais { background: var(--borda); color: var(--texto-branco); padding: 8px 10px; width: 36px; }
-        .btn-mais:hover { background: var(--cinza); }
-        .grupo-botoes { display: flex; gap: 8px; align-items: center; position: relative; }
-        .menu-opcoes {
-            position: absolute; right: 0; top: 40px; background: var(--fundo-card); border: 1px solid var(--borda);
-            border-radius: 8px; padding: 8px 0; min-width: 160px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            display: none;
-        }
-        .menu-opcoes.aberto { display: block; }
-        .menu-opcoes button {
-            width: 100%; text-align: left; padding: 10px 15px; background: none; border: none;
-            color: var(--texto-branco); font-size: 14px; cursor: pointer;
-        }
-        .menu-opcoes button:hover { background: rgba(209,0,0,0.1); color: var(--vermelho-principal); }
-        .vencimento-data { font-weight: 600; }
-        .vencimento-semana { font-size: 12px; color: var(--texto-cinza); margin-top: 2px; }
         .dia-fixo { font-weight: 700; font-size: 16px; }
         .desconto-mes { font-size: 12px; color: var(--amarelo); margin-top: 2px; }
         .legenda {
@@ -143,21 +121,40 @@
         }
         .modal {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
-            padding: 25px; width: 100%; max-width: 450px; margin: 50px auto;
+            padding: 25px; width: 100%; max-width: 480px; margin: 30px auto;
         }
         .modal h3 { color: var(--vermelho-principal); margin-bottom: 20px; }
-        .opcao-mes { padding: 10px; margin: 5px 0; background: rgba(255,255,255,0.03); border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+        .opcao-mes { padding: 10px; margin: 5px 0; background: rgba(255,255,255,0.03); border-radius: 6px; cursor: pointer; border: 1px solid transparent; font-size: 14px; }
         .opcao-mes:hover { border-color: var(--vermelho-principal); }
         .opcao-mes.selecionado { border-color: var(--amarelo); background: rgba(255,193,7,0.1); }
         .opcao-mes.pago { border-left: 4px solid var(--verde); opacity: 0.7; }
         .opcao-mes.atrasado { border-left: 4px solid var(--vermelho-principal); }
         .opcao-mes.pendente { border-left: 4px solid var(--amarelo); }
-        .input-valor { width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda); border-radius: 6px; color: var(--texto-branco); font-size: 16px; margin: 10px 0; outline: none; }
+        .input-valor { width: 100%; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda); border-radius: 6px; color: var(--texto-branco); font-size: 16px; margin: 6px 0; outline: none; }
+        .input-valor:read-only { background: rgba(255,255,255,0.05); }
         .input-valor:focus { border-color: var(--amarelo); }
+        .aviso-calculo { font-size: 12px; color: var(--texto-cinza); margin: 6px 0 12px; line-height: 1.4; }
         .botoes-modal { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-cancelar { flex:1; padding:10px; background: var(--borda); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
-        .btn-remover { flex:1; padding:10px; background: var(--vermelho-principal); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
-        .btn-confirmar { flex:1; padding:10px; background: var(--verde); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
+        .btn-cancelar { flex:1; padding:10px; background: var(--borda); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px; }
+        .btn-remover { flex:1; padding:10px; background: var(--vermelho-principal); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px; }
+        .btn-confirmar { flex:1; padding:10px; background: var(--verde); color:white; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px; }
+        .grupo-botoes { display: flex; gap: 8px; align-items: center; position: relative; }
+        .menu-opcoes {
+            position: absolute; right: 0; top: 40px; background: var(--fundo-card); border: 1px solid var(--borda);
+            border-radius: 8px; padding: 8px 0; min-width: 160px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: none;
+        }
+        .menu-opcoes.aberto { display: block; }
+        .menu-opcoes button {
+            width: 100%; text-align: left; padding: 10px 15px; background: none; border: none;
+            color: var(--texto-branco); font-size: 14px; cursor: pointer;
+        }
+        .menu-opcoes button:hover { background: rgba(209,0,0,0.1); color: var(--vermelho-principal); }
+        .vencimento-data { font-weight: 600; }
+        .vencimento-semana { font-size: 12px; color: var(--texto-cinza); margin-top: 2px; }
+        label { display: block; margin-top: 14px; font-size: 14px; }
+        label.amarelo { color: var(--amarelo); font-weight: 600; }
+        label.verde { color: var(--verde); font-weight: 600; }
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 15px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
@@ -231,8 +228,8 @@
             <div class="card-info card-desconto">
                 <div class="icone"><i class="fas fa-tags"></i></div>
                 <div class="valor" id="cardDesconto">R$ 0,00</div>
-                <div class="rotulo">Descontos do Mês</div>
-                <div class="detalhe">Valor reduzido</div>
+                <div class="rotulo">Descontos Concedidos</div>
+                <div class="detalhe">Valor dado de desconto</div>
             </div>
         </div>
         <div class="card-filtro">
@@ -287,10 +284,19 @@
         <div class="modal">
             <h3>💰 Aplicar Desconto</h3>
             <p style="color:var(--texto-cinza); margin-bottom:10px;">Aluno: <strong id="nomeAlunoDesconto"></strong></p>
-            <p style="color:var(--texto-cinza); margin-bottom:15px;">Selecione o mês e digite o valor com desconto:</p>
+            <p style="color:var(--texto-cinza); margin-bottom:15px;">Selecione o mês e informe os valores:</p>
             <div id="listaMesesDesconto"></div>
-            <label style="font-size:14px; color:var(--texto-cinza); margin-top:15px; display:block;">Valor com desconto (R$):</label>
-            <input type="number" step="0.01" id="valorDesconto" class="input-valor" placeholder="0,00">
+            
+            <label>💵 Valor integral do plano (R$):</label>
+            <input type="text" id="valorIntegral" class="input-valor" readonly>
+            
+            <label class="amarelo">📉 Valor do DESCONTO que você vai dar (R$):</label>
+            <input type="number" step="0.01" id="valorDescontoDado" class="input-valor" placeholder="70,00" oninput="calcularValorPago()">
+            <p class="aviso-calculo">Exemplo: Plano R$ 80,00 → Desconto R$ 70,00 → Aluno paga R$ 10,00</p>
+            
+            <label class="verde">✅ Valor que o aluno vai pagar (R$):</label>
+            <input type="text" id="valorPagoCalculado" class="input-valor" readonly style="color:var(--verde); font-weight:700;">
+            
             <div class="botoes-modal">
                 <button class="btn-cancelar" onclick="fecharModalDesconto()">Cancelar</button>
                 <button class="btn-confirmar" onclick="salvarDesconto()">Salvar Desconto</button>
@@ -316,9 +322,11 @@
         let mesDescontoSelecionado = null;
         const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+        
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
+        
         function calcularDataVencimento(diaFixo, dataMatricula, indicePagamento) {
             const dataMat = new Date(dataMatricula);
             let mes = dataMat.getMonth() + indicePagamento;
@@ -326,6 +334,7 @@
             while (mes > 11) { mes -= 12; ano++; }
             return new Date(ano, mes, diaFixo);
         }
+        
         function calcularStatusAluno(diaFixo, dataMatricula, qtdPagamentos) {
             const hoje = new Date(); hoje.setHours(0,0,0,0);
             const dataMat = new Date(dataMatricula);
@@ -336,13 +345,7 @@
             while (mesPendente > 11) { mesPendente -= 12; anoPendente++; }
             const dataVencimentoAtual = new Date(anoPendente, mesPendente, diaFixo);
             if (dataVencimentoAtual >= hoje) {
-                return {
-                    classe: 'status-emdia',
-                    texto: 'Em dia',
-                    mesesAtraso: 0,
-                    dataVencimento: dataVencimentoAtual,
-                    emDia: true
-                };
+                return { classe: 'status-emdia', texto: 'Em dia', mesesAtraso: 0, dataVencimento: dataVencimentoAtual, emDia: true };
             }
             let mesesAtraso = 1;
             let mesVerificar = mesPendente + 1;
@@ -350,22 +353,27 @@
             while (true) {
                 while (mesVerificar > 11) { mesVerificar -= 12; anoVerificar++; }
                 const proxData = new Date(anoVerificar, mesVerificar, diaFixo);
-                if (proxData <= hoje) {
-                    mesesAtraso++;
-                    mesVerificar++;
-                } else {
-                    break;
-                }
+                if (proxData <= hoje) { mesesAtraso++; mesVerificar++; }
+                else break;
             }
             const texto = mesesAtraso === 1 ? 'Atrasado' : `${mesesAtraso} meses em atraso`;
-            return {
-                classe: 'status-atrasado',
-                texto: texto,
-                mesesAtraso: mesesAtraso,
-                dataVencimento: dataVencimentoAtual,
-                emDia: false
-            };
+            return { classe: 'status-atrasado', texto: texto, mesesAtraso: mesesAtraso, dataVencimento: dataVencimentoAtual, emDia: false };
         }
+        
+        // ✅ Calcula: Aluno paga = Valor Integral − Valor do Desconto DADO
+        function calcularValorPago() {
+            if (!alunoDescontoAtual) return;
+            const valorPlano = Number(alunoDescontoAtual.dados.valorFinal || alunoDescontoAtual.dados.valorPlano || 0);
+            const descontoDado = Number(document.getElementById('valorDescontoDado').value || 0);
+            
+            if (descontoDado > valorPlano) {
+                document.getElementById('valorPagoCalculado').value = '⚠️ Desconto maior que o plano!';
+                return;
+            }
+            const valorPago = valorPlano - descontoDado;
+            document.getElementById('valorPagoCalculado').value = valorPago.toFixed(2).replace('.', ',');
+        }
+        
         async function carregarFinanceiro() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>';
@@ -379,61 +387,40 @@
                 snapshot.forEach(doc => {
                     const d = doc.data();
                     if (d.tipo === 'Bolsista') return;
-                    let diaFixo = null;
-                    let dataBase = null;
-                    if (d.dataMatricula) {
-                        diaFixo = d.dataMatricula.toDate().getDate();
-                        dataBase = d.dataMatricula.toDate();
-                    } else if (d.dataVencimento) {
-                        diaFixo = d.dataVencimento.toDate().getDate();
-                        dataBase = d.dataVencimento.toDate();
-                    } else if (d.dataInicioAula) {
-                        diaFixo = d.dataInicioAula.toDate().getDate();
-                        dataBase = d.dataInicioAula.toDate();
-                    }
+                    let diaFixo = null, dataBase = null;
+                    if (d.dataMatricula) { diaFixo = d.dataMatricula.toDate().getDate(); dataBase = d.dataMatricula.toDate(); }
+                    else if (d.dataVencimento) { diaFixo = d.dataVencimento.toDate().getDate(); dataBase = d.dataVencimento.toDate(); }
+                    else if (d.dataInicioAula) { diaFixo = d.dataInicioAula.toDate().getDate(); dataBase = d.dataInicioAula.toDate(); }
                     if (!diaFixo || !dataBase) return;
                     const qtdPag = d.qtdPagamentos || 0;
                     const status = calcularStatusAluno(diaFixo, dataBase, qtdPag);
-                    alunosCarregados.push({
-                        id: doc.id,
-                        dados: d,
-                        diaFixo,
-                        dataBase,
-                        qtdPagamentos: qtdPag,
-                        status
-                    });
+                    alunosCarregados.push({ id: doc.id, dados: d, diaFixo, dataBase, qtdPagamentos: qtdPag, status });
                 });
-                alunosCarregados.sort((a, b) => {
-                    const nomeA = (a.dados.nome || '').toLowerCase();
-                    const nomeB = (b.dados.nome || '').toLowerCase();
-                    return nomeA.localeCompare(nomeB);
-                });
+                alunosCarregados.sort((a, b) => ((a.dados.nome||'').toLowerCase()).localeCompare((b.dados.nome||'').toLowerCase()));
+                
                 const total = alunosCarregados.length;
                 let emdia = 0, atrasados = 0;
-                let receitaPrevista = 0, recebidoMes = 0, totalDescontoMes = 0;
+                let receitaPrevista = 0, recebidoMes = 0, totalDescontoConcedido = 0;
                 const hoje = new Date();
                 const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+                
                 alunosCarregados.forEach(a => {
-                    const valorPlanoCadastrado = Number(a.dados.valorFinal || a.dados.valorPlano || 0);
-                    receitaPrevista += valorPlanoCadastrado;
-                    if (a.status.emDia) emdia++;
-                    else atrasados++;
+                    const valorPlano = Number(a.dados.valorFinal || a.dados.valorPlano || 0);
+                    receitaPrevista += valorPlano;
+                    if (a.status.emDia) emdia++; else atrasados++;
+                    
                     if (a.qtdPagamentos > 0) {
-                        const indicePagamento = a.qtdPagamentos - 1;
-                        const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indicePagamento);
+                        const indiceUltimo = a.qtdPagamentos - 1;
+                        const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indiceUltimo);
                         if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
-                            let valorRecebido = valorPlanoCadastrado;
-                            if (a.dados.descontos && a.dados.descontos[indicePagamento]) {
-                                valorRecebido = Number(a.dados.descontos[indicePagamento]);
-                            }
-                            recebidoMes += valorRecebido;
-                            const valorDescontoSalvo = a.dados.descontos && a.dados.descontos[indicePagamento] 
-                                ? valorPlanoCadastrado - Number(a.dados.descontos[indicePagamento])
-                                : 0;
-                            totalDescontoMes += Math.round(valorDescontoSalvo * 100) / 100;
+                            // ✅ Salva e mostra o VALOR DO DESCONTO CONCEDIDO
+                            const descontoDado = (a.dados.descontos && a.dados.descontos[indiceUltimo]) ? Number(a.dados.descontos[indiceUltimo]) : 0;
+                            totalDescontoConcedido += descontoDado;
+                            recebidoMes += (valorPlano - descontoDado);
                         }
                     }
                 });
+                
                 document.getElementById('cardTotal').textContent = total;
                 document.getElementById('cardEmDia').textContent = emdia;
                 document.getElementById('pctEmDia').textContent = total ? `${Math.round(emdia/total*100)}%` : '0%';
@@ -442,45 +429,42 @@
                 document.getElementById('cardReceita').textContent = `R$ ${receitaPrevista.toFixed(2).replace('.',',')}`;
                 document.getElementById('cardRecebido').textContent = `R$ ${recebidoMes.toFixed(2).replace('.',',')}`;
                 document.getElementById('pctRecebido').textContent = receitaPrevista ? `${Math.round(recebidoMes/receitaPrevista*100)}%` : '0%';
-                document.getElementById('cardDesconto').textContent = `R$ ${totalDescontoMes.toFixed(2).replace('.',',')}`;
+                document.getElementById('cardDesconto').textContent = `R$ ${totalDescontoConcedido.toFixed(2).replace('.',',')}`;
+                
                 renderizarLista(alunosCarregados);
             } catch (erro) {
-                console.error('ERRO:', erro);
                 lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
+        
         function renderizarLista(lista) {
             const tb = document.getElementById('listaAlunos');
             tb.innerHTML = '';
             lista.forEach(a => {
                 const d = a.dados;
-                const valorPlanoCadastrado = Number(d.valorFinal || d.valorPlano || 0);
+                const valorPlano = Number(d.valorFinal || d.valorPlano || 0);
                 const dataVenc = a.status.dataVencimento;
                 const dataStr = `${dataVenc.getDate().toString().padStart(2,'0')}/${(dataVenc.getMonth()+1).toString().padStart(2,'0')}/${dataVenc.getFullYear()}`;
                 const diaSem = diasSemana[dataVenc.getDay()];
+                
                 let descontoTexto = '';
                 if (d.descontos && d.descontos[a.qtdPagamentos]) {
-                    descontoTexto = `<div class="desconto-mes">💰 Com desconto: R$ ${Number(d.descontos[a.qtdPagamentos]).toFixed(2).replace('.',',')}</div>`;
+                    const desc = Number(d.descontos[a.qtdPagamentos]);
+                    const pago = valorPlano - desc;
+                    descontoTexto = `<div class="desconto-mes">💰 Desconto dado: R$ ${desc.toFixed(2).replace('.',',')} → Paga: R$ ${pago.toFixed(2).replace('.',',')}</div>`;
                 }
+                
                 tb.innerHTML += `
                 <tr>
-                    <td>
-                        <div style="font-weight:600;">${d.nome || '-'}</div>
-                        <div style="font-size:12px; color:var(--texto-cinza);">${d.telefone || ''}</div>
-                    </td>
-                    <td>${d.periodo || '-'}<br><span style="font-size:12px;">R$ ${valorPlanoCadastrado.toFixed(2).replace('.',',')}</span>${descontoTexto}</td>
+                    <td><div style="font-weight:600;">${d.nome||'-'}</div><div style="font-size:12px; color:var(--texto-cinza)">${d.telefone||''}</div></td>
+                    <td>${d.periodo||'-'}<br><span style="font-size:12px;">R$ ${valorPlano.toFixed(2).replace('.',',')}</span>${descontoTexto}</td>
                     <td class="dia-fixo">${a.diaFixo}</td>
-                    <td>
-                        <div class="vencimento-data">${dataStr}</div>
-                        <div class="vencimento-semana">(${diaSem})</div>
-                    </td>
+                    <td><div class="vencimento-data">${dataStr}</div><div class="vencimento-semana">(${diaSem})</div></td>
                     <td><span class="status ${a.status.classe}">${a.status.texto}</span></td>
                     <td>
                         <div class="grupo-botoes">
-                            <button class="btn-acao btn-pago" onclick="abrirModalPagamento('${a.id}')">Marcar Pago</button>
-                            <button class="btn-acao btn-mais" onclick="abrirMenuOpcoes(event, '${a.id}')">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
+                            <button class="btn-acao btn-pago" style="padding:8px 12px; font-size:13px; border-radius:6px; border:none; cursor:pointer; background:var(--verde); color:white; font-weight:700;" onclick="abrirModalPagamento('${a.id}')">Marcar Pago</button>
+                            <button class="btn-acao btn-mais" style="padding:8px 10px; width:36px; border-radius:6px; border:none; cursor:pointer; background:var(--borda); color:white;" onclick="abrirMenuOpcoes(event, '${a.id}')"><i class="fas fa-ellipsis-v"></i></button>
                             <div class="menu-opcoes" id="menuOpcoes-${a.id}">
                                 <button onclick="abrirModalDesconto('${a.id}')">💰 Aplicar Desconto</button>
                             </div>
@@ -489,23 +473,20 @@
                 </tr>`;
             });
         }
-        function abrirMenuOpcoes(event, idAluno) {
-            event.stopPropagation();
+        
+        function abrirMenuOpcoes(e, id) {
+            e.stopPropagation();
             document.querySelectorAll('.menu-opcoes').forEach(m => m.classList.remove('aberto'));
-            const menu = document.getElementById(`menuOpcoes-${idAluno}`);
-            menu.classList.toggle('aberto');
+            document.getElementById(`menuOpcoes-${id}`).classList.toggle('aberto');
         }
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.menu-opcoes').forEach(m => m.classList.remove('aberto'));
-        });
-        document.getElementById('buscaAluno').addEventListener('input', aplicarFiltros);
-        document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
-        document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
+        document.addEventListener('click', () => document.querySelectorAll('.menu-opcoes').forEach(m => m.classList.remove('aberto')));
+        
+        ['buscaAluno','filtroTipo','filtroStatus'].forEach(id => document.getElementById(id).addEventListener('input', aplicarFiltros));
         function aplicarFiltros() {
             const termo = document.getElementById('buscaAluno').value.toLowerCase();
             const tipoFiltro = document.getElementById('filtroTipo').value;
             const statusFiltro = document.getElementById('filtroStatus').value;
-            let filtrado = alunosCarregados.filter(a => {
+            renderizarLista(alunosCarregados.filter(a => {
                 const d = a.dados;
                 const texto = `${d.nome||''}${d.responsavel||''}${d.cpf||''}`.toLowerCase();
                 if (termo && !texto.includes(termo)) return false;
@@ -513,167 +494,139 @@
                 if (statusFiltro === 'emdia' && !a.status.emDia) return false;
                 if (statusFiltro === 'atrasado' && a.status.emDia) return false;
                 return true;
-            });
-            renderizarLista(filtrado);
+            }));
         }
+        
         async function abrirModalPagamento(idAluno) {
             alunoAtual = alunosCarregados.find(a => a.id === idAluno);
             if (!alunoAtual) return;
             document.getElementById('nomeAlunoPagamento').textContent = `Pagamentos — ${alunoAtual.dados.nome}`;
             const listaMeses = document.getElementById('listaMeses');
             listaMeses.innerHTML = '';
-            const diaFixo = alunoAtual.diaFixo;
-            const dataBase = alunoAtual.dataBase;
-            const qtdPag = alunoAtual.qtdPagamentos;
+            const diaFixo = alunoAtual.diaFixo, dataBase = alunoAtual.dataBase, qtdPag = alunoAtual.qtdPagamentos;
             const hoje = new Date();
             const dataMat = new Date(dataBase);
-            const mesInicio = dataMat.getMonth();
-            const anoInicio = dataMat.getFullYear();
-            let mesAtualBase = hoje.getMonth();
-            let anoAtualBase = hoje.getFullYear();
-            const totalMeses = (anoAtualBase - anoInicio)*12 + (mesAtualBase - mesInicio) + 2;
+            const mesInicio = dataMat.getMonth(), anoInicio = dataMat.getFullYear();
+            const totalMeses = (hoje.getFullYear() - anoInicio)*12 + (hoje.getMonth() - mesInicio) + 2;
+            
             for (let i = 0; i < totalMeses; i++) {
                 const m = mesInicio + i;
-                let ano = anoInicio + Math.floor(m/12);
-                let mes = m % 12;
-                const dataVenc = new Date(ano, mes, diaFixo);
-                dataVenc.setHours(0,0,0,0);
+                const ano = anoInicio + Math.floor(m/12), mes = m % 12;
+                const dataVenc = new Date(ano, mes, diaFixo); dataVenc.setHours(0,0,0,0);
                 const jaPago = i < qtdPag;
                 const ehPendente = i === qtdPag;
                 const estaAtrasado = dataVenc < hoje && !jaPago;
-                let classe = '';
-                if (jaPago) classe = 'pago';
-                else if (estaAtrasado) classe = 'atrasado';
-                else classe = 'pendente';
-                const temDesconto = alunoAtual.dados.descontos && alunoAtual.dados.descontos[i];
-                const textoDesconto = temDesconto ? ` 💰 Desconto: R$ ${Number(alunoAtual.dados.descontos[i]).toFixed(2).replace('.',',')}` : '';
-                listaMeses.innerHTML += `
-                <div class="opcao-mes ${classe}" data-indice="${i}" 
-                     onclick="selecionarMes(this, ${i})">
-                    <strong>${nomesMeses[mes]} de ${ano}</strong> — ${diaFixo.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}
-                    ${textoDesconto}
-                    ${jaPago ? ' ✅ PAGO' : estaAtrasado ? ' ⚠️ ATRASADO' : ''}
-                    ${ehPendente ? ' ← PRÓXIMO A PAGAR' : ''}
-                </div>`;
+                const classe = jaPago ? 'pago' : estaAtrasado ? 'atrasado' : 'pendente';
+                
+                let infoDesconto = '';
+                if (jaPago && alunoAtual.dados.descontos && alunoAtual.dados.descontos[i]) {
+                    const valorPlano = Number(alunoAtual.dados.valorFinal || alunoAtual.dados.valorPlano || 0);
+                    const desc = Number(alunoAtual.dados.descontos[i]);
+                    const pago = valorPlano - desc;
+                    infoDesconto = ` 💰 Desconto dado: R$ ${desc.toFixed(2).replace('.',',')} → Pago: R$ ${pago.toFixed(2).replace('.',',')}`;
+                }
+                listaMeses.innerHTML += `<div class="opcao-mes ${classe}" onclick="selecionarMes(this,${i})"><strong>${nomesMeses[mes]} de ${ano}</strong> — ${diaFixo.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}${infoDesconto}${jaPago?' ✅ PAGO':estaAtrasado?' ⚠️ ATRASADO':''}${ehPendente?' ← PRÓXIMO':''}</div>`;
             }
-            document.getElementById('btnRemoverPagamento').style.display = qtdPag > 0 ? 'block' : 'none';
+            document.getElementById('btnRemoverPagamento').style.display = qtdPag>0 ? 'block' : 'none';
             mesSelecionado = null;
             document.getElementById('modalPagamento').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-        function selecionarMes(el, indice) {
+        function selecionarMes(el, i) {
             document.querySelectorAll('#listaMeses .opcao-mes').forEach(e => e.style.outline = '');
             el.style.outline = '2px solid var(--vermelho-principal)';
-            mesSelecionado = indice;
+            mesSelecionado = i;
         }
         function fecharModalPagamento() {
             document.getElementById('modalPagamento').style.display = 'none';
             document.body.style.overflow = 'auto';
-            alunoAtual = null;
-            mesSelecionado = null;
+            alunoAtual = mesSelecionado = null;
         }
         async function confirmarPagamento() {
             if (!alunoAtual) return;
             const novoQtd = (mesSelecionado !== null ? mesSelecionado + 1 : alunoAtual.qtdPagamentos + 1);
-            try {
-                await db.collection('alunos').doc(alunoAtual.id).update({ qtdPagamentos: novoQtd });
-                alert('✅ Pagamento registrado! O próximo vencimento já foi atualizado.');
-                fecharModalPagamento();
-                carregarFinanceiro();
-            } catch (e) {
-                alert('Erro: ' + e.message);
-            }
+            await db.collection('alunos').doc(alunoAtual.id).update({ qtdPagamentos: novoQtd });
+            alert('✅ Pagamento registrado!');
+            fecharModalPagamento();
+            carregarFinanceiro();
         }
         async function removerPagamento() {
-            if (!alunoAtual || !confirm('Remover o último pagamento? O vencimento voltará um mês.')) return;
-            const novoQtd = Math.max(0, alunoAtual.qtdPagamentos - 1);
-            try {
-                await db.collection('alunos').doc(alunoAtual.id).update({ qtdPagamentos: novoQtd });
-                alert('✅ Pagamento removido!');
-                fecharModalPagamento();
-                carregarFinanceiro();
-            } catch (e) {
-                alert('Erro: ' + e.message);
-            }
+            if (!alunoAtual || !confirm('Remover o último pagamento?')) return;
+            await db.collection('alunos').doc(alunoAtual.id).update({ qtdPagamentos: Math.max(0, alunoAtual.qtdPagamentos - 1) });
+            alert('✅ Pagamento removido!');
+            fecharModalPagamento();
+            carregarFinanceiro();
         }
+        
         async function abrirModalDesconto(idAluno) {
             alunoDescontoAtual = alunosCarregados.find(a => a.id === idAluno);
             if (!alunoDescontoAtual) return;
             document.getElementById('nomeAlunoDesconto').textContent = alunoDescontoAtual.dados.nome;
+            const valorPlano = Number(alunoDescontoAtual.dados.valorFinal || alunoDescontoAtual.dados.valorPlano || 0);
+            document.getElementById('valorIntegral').value = valorPlano.toFixed(2).replace('.', ',');
+            
             const listaMeses = document.getElementById('listaMesesDesconto');
             listaMeses.innerHTML = '';
             mesDescontoSelecionado = null;
-            document.getElementById('valorDesconto').value = '';
-            const diaFixo = alunoDescontoAtual.diaFixo;
-            const dataBase = alunoDescontoAtual.dataBase;
-            const qtdPag = alunoDescontoAtual.qtdPagamentos;
+            document.getElementById('valorDescontoDado').value = '';
+            document.getElementById('valorPagoCalculado').value = '';
+            
+            const diaFixo = alunoDescontoAtual.diaFixo, dataBase = alunoDescontoAtual.dataBase, qtdPag = alunoDescontoAtual.qtdPagamentos;
             const hoje = new Date();
             const dataMat = new Date(dataBase);
-            const mesInicio = dataMat.getMonth();
-            const anoInicio = dataMat.getFullYear();
-            let mesAtualBase = hoje.getMonth();
-            let anoAtualBase = hoje.getFullYear();
-            const totalMeses = (anoAtualBase - anoInicio)*12 + (mesAtualBase - mesInicio) + 2;
+            const mesInicio = dataMat.getMonth(), anoInicio = dataMat.getFullYear();
+            const totalMeses = (hoje.getFullYear() - anoInicio)*12 + (hoje.getMonth() - mesInicio) + 2;
+            
             for (let i = 0; i < totalMeses; i++) {
                 const m = mesInicio + i;
-                let ano = anoInicio + Math.floor(m/12);
-                let mes = m % 12;
-                const dataVenc = new Date(ano, mes, diaFixo);
-                dataVenc.setHours(0,0,0,0);
+                const ano = anoInicio + Math.floor(m/12), mes = m % 12;
+                const dataVenc = new Date(ano, mes, diaFixo); dataVenc.setHours(0,0,0,0);
                 const jaPago = i < qtdPag;
                 const temDesconto = alunoDescontoAtual.dados.descontos && alunoDescontoAtual.dados.descontos[i];
-                const classe = temDesconto ? 'selecionado' : (jaPago ? 'pago' : 'pendente');
-                const textoDesconto = temDesconto ? ` 💰 Desconto atual: R$ ${Number(alunoDescontoAtual.dados.descontos[i]).toFixed(2).replace('.',',')}` : '';
-                listaMeses.innerHTML += `
-                <div class="opcao-mes ${classe}" data-indice="${i}" 
-                     onclick="selecionarMesDesconto(this, ${i})">
-                    <strong>${nomesMeses[mes]} de ${ano}</strong> — ${diaFixo.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}
-                    ${textoDesconto}
-                    ${jaPago ? ' ✅ PAGO' : ''}
-                </div>`;
+                const classe = temDesconto ? 'selecionado' : jaPago ? 'pago' : 'pendente';
+                
+                let infoDesconto = '';
+                if (temDesconto) {
+                    const desc = Number(alunoDescontoAtual.dados.descontos[i]);
+                    const pago = valorPlano - desc;
+                    infoDesconto = ` 💰 Desconto dado: R$ ${desc.toFixed(2).replace('.',',')} → Paga: R$ ${pago.toFixed(2).replace('.',',')}`;
+                }
+                listaMeses.innerHTML += `<div class="opcao-mes ${classe}" onclick="selecionarMesDesconto(this,${i})"><strong>${nomesMeses[mes]} de ${ano}</strong> — ${diaFixo.toString().padStart(2,'0')}/${(mes+1).toString().padStart(2,'0')}/${ano}${infoDesconto}${jaPago?' ✅ PAGO':''}</div>`;
             }
             document.getElementById('modalDesconto').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-        function selecionarMesDesconto(el, indice) {
+        function selecionarMesDesconto(el, i) {
             document.querySelectorAll('#listaMesesDesconto .opcao-mes').forEach(e => e.style.outline = '');
             el.style.outline = '2px solid var(--amarelo)';
-            mesDescontoSelecionado = indice;
-            if (alunoDescontoAtual.dados.descontos && alunoDescontoAtual.dados.descontos[indice]) {
-                document.getElementById('valorDesconto').value = alunoDescontoAtual.dados.descontos[indice];
+            mesDescontoSelecionado = i;
+            if (alunoDescontoAtual.dados.descontos && alunoDescontoAtual.dados.descontos[i]) {
+                document.getElementById('valorDescontoDado').value = Number(alunoDescontoAtual.dados.descontos[i]);
+                calcularValorPago();
             } else {
-                document.getElementById('valorDesconto').value = '';
+                document.getElementById('valorDescontoDado').value = '';
+                document.getElementById('valorPagoCalculado').value = '';
             }
         }
         function fecharModalDesconto() {
             document.getElementById('modalDesconto').style.display = 'none';
             document.body.style.overflow = 'auto';
-            alunoDescontoAtual = null;
-            mesDescontoSelecionado = null;
+            alunoDescontoAtual = mesDescontoSelecionado = null;
         }
         async function salvarDesconto() {
-            if (!alunoDescontoAtual || mesDescontoSelecionado === null) {
-                return alert('⚠️ Selecione o mês primeiro!');
-            }
-            const valor = document.getElementById('valorDesconto').value;
-            if (!valor || Number(valor) <= 0) {
-                return alert('⚠️ Digite um valor válido!');
-            }
-            try {
-                const descontos = alunoDescontoAtual.dados.descontos || {};
-                descontos[mesDescontoSelecionado] = Number(valor);
-                await db.collection('alunos').doc(alunoDescontoAtual.id).update({ descontos: descontos });
-                alert('✅ Desconto salvo com sucesso!');
-                fecharModalDesconto();
-                carregarFinanceiro();
-            } catch (e) {
-                alert('Erro ao salvar: ' + e.message);
-            }
+            if (!alunoDescontoAtual || mesDescontoSelecionado === null) return alert('⚠️ Selecione o mês!');
+            const descontoDado = Number(document.getElementById('valorDescontoDado').value);
+            if (isNaN(descontoDado) || descontoDado < 0) return alert('⚠️ Digite um valor válido!');
+            const descontos = alunoDescontoAtual.dados.descontos || {};
+            descontos[mesDescontoSelecionado] = descontoDado;
+            await db.collection('alunos').doc(alunoDescontoAtual.id).update({ descontos });
+            alert('✅ Desconto salvo! O valor salvo é o DESCONTO CONCEDIDO.');
+            fecharModalDesconto();
+            carregarFinanceiro();
         }
+        
         function sair() {
-            if (confirm('Deseja sair?')) {
-                auth.signOut().then(() => window.location.href = 'login.html');
-            }
+            if (confirm('Deseja sair?')) auth.signOut().then(() => window.location.href = 'login.html');
         }
         auth.onAuthStateChanged(u => {
             if (!u) window.location.href = 'login.html';
