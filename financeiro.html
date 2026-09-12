@@ -433,26 +433,38 @@
                 let receitaPrevista = 0, recebidoMes = 0, totalDescontoMes = 0;
                 const hoje = new Date();
                 const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+
                 alunosCarregados.forEach(a => {
-                    receitaPrevista += (a.dados.valorPlano || 0);
+                    // ✅ Usa o VALOR FINAL do cadastro como referência
+                    const valorPlanoCadastrado = Number(a.dados.valorFinal || a.dados.valorPlano || 0);
+                    receitaPrevista += valorPlanoCadastrado;
+
                     if (a.status.emDia) emdia++;
                     else atrasados++;
+
                     // ✅ Recebido do mês atual — COM DESCONTO
                     if (a.qtdPagamentos > 0) {
                         const indicePagamento = a.qtdPagamentos - 1;
                         const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indicePagamento);
+
                         if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
-                            const valorPlano = a.dados.valorPlano || 0;
+                            let valorRecebido = valorPlanoCadastrado; // Por padrão = valor integral
+
                             if (a.dados.descontos && a.dados.descontos[indicePagamento]) {
-                                const valorComDesconto = Number(a.dados.descontos[indicePagamento]);
-                                recebidoMes += valorComDesconto;
-                                totalDescontoMes += (valorPlano - valorComDesconto); // ✅ DIFERENÇA = DESCONTO
-                            } else {
-                                recebidoMes += valorPlano;
+                                valorRecebido = Number(a.dados.descontos[indicePagamento]);
+                            }
+
+                            recebidoMes += valorRecebido;
+
+                            // ✅ Desconto = valor do cadastro - valor pago
+                            const desconto = valorPlanoCadastrado - valorRecebido;
+                            if (desconto > 0.001) { // Só soma se for maior que 0,001
+                                totalDescontoMes += desconto;
                             }
                         }
                     }
                 });
+
                 // ✅ Atualiza cards
                 document.getElementById('cardTotal').textContent = total;
                 document.getElementById('cardEmDia').textContent = emdia;
@@ -464,6 +476,7 @@
                 document.getElementById('pctRecebido').textContent = receitaPrevista ? `${Math.round(recebidoMes/receitaPrevista*100)}%` : '0%';
                 // ✅ Novo card: Total de Descontos do Mês
                 document.getElementById('cardDesconto').textContent = `R$ ${totalDescontoMes.toFixed(2).replace('.',',')}`;
+
                 renderizarLista(alunosCarregados);
             } catch (erro) {
                 console.error('ERRO:', erro);
@@ -476,6 +489,7 @@
             tb.innerHTML = '';
             lista.forEach(a => {
                 const d = a.dados;
+                const valorPlanoCadastrado = Number(d.valorFinal || d.valorPlano || 0);
                 const dataVenc = a.status.dataVencimento;
                 const dataStr = `${dataVenc.getDate().toString().padStart(2,'0')}/${(dataVenc.getMonth()+1).toString().padStart(2,'0')}/${dataVenc.getFullYear()}`;
                 const diaSem = diasSemana[dataVenc.getDay()];
@@ -492,7 +506,7 @@
                         <div style="font-weight:600;">${d.nome || '-'}</div>
                         <div style="font-size:12px; color:var(--texto-cinza);">${d.telefone || ''}</div>
                     </td>
-                    <td>${d.periodo || '-'}<br><span style="font-size:12px;">R$ ${(d.valorPlano||0).toFixed(2).replace('.',',')}</span>${descontoTexto}</td>
+                    <td>${d.periodo || '-'}<br><span style="font-size:12px;">R$ ${valorPlanoCadastrado.toFixed(2).replace('.',',')}</span>${descontoTexto}</td>
                     <td class="dia-fixo">${a.diaFixo}</td>
                     <td>
                         <div class="vencimento-data">${dataStr}</div>
