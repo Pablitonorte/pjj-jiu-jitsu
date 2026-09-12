@@ -1,0 +1,18 @@
+{
+  "name": "PJJ Pará Jiu-Jitsu",
+  "short_name": "PJJ Pará",
+  "description": "Sistema de Gestão e Financeiro - PJJ Pará Jiu-Jitsu",
+  "start_url": "admin.html",
+  "display": "standalone",
+  "background_color": "#121214",
+  "theme_color": "#D10000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "imagens/logopjj.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
