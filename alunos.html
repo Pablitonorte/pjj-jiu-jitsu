@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alunos - PJJ Pará Jiu-Jitsu</title>
+    <!-- ✅ ÍCONE NA ABA DO NAVEGADOR -->
+    <link rel="icon" type="image/png" href="imagens/logopjj.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ✅ PWA — Reconhecimento pelo navegador -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D10000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PJJ Pará">
+    <link rel="apple-touch-icon" href="imagens/logopjj.png">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
@@ -172,6 +184,7 @@
             .tabela { display: block; overflow-x: auto; }
         }
     </style>
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -409,28 +422,23 @@
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
-
-        // ✅ FUNÇÃO CORRIGIDA — Cálculo com arredondamento exato em 2 casas decimais
         function atualizarValorPlano() {
             const tipo = document.getElementById('tipoAluno').value;
             const periodo = document.getElementById('periodoAluno').value;
             const desconto = parseFloat(document.getElementById('descontoAluno').value) || 0;
             const campoValor = document.getElementById('valorFinalAluno');
-
             if (!tipo || !periodo) {
                 campoValor.value = 'Selecione o tipo e o plano';
                 campoValor.className = 'valor-final valor-vazio';
                 campoValor.removeAttribute('data-valor');
                 return;
             }
-
             if (tipo === 'Bolsista') {
                 campoValor.value = 'GRÁTIS';
                 campoValor.className = 'valor-final valor-gratis';
             } else {
                 const valorBase = valoresPlanos[periodo] || 0;
                 const valorSemArredondar = valorBase - (valorBase * desconto / 100);
-                // 🔑 Arredonda para 2 casas decimais e elimina centavos sobrando
                 const valorFinal = Math.round(valorSemArredondar * 100) / 100;
                 
                 campoValor.value = `R$ ${valorFinal.toFixed(2).replace('.', ',')}`;
@@ -438,7 +446,6 @@
                 campoValor.dataset.valor = valorFinal;
             }
         }
-
         let menuAberto = null;
         document.addEventListener('click', (e) => {
             if (menuAberto && !e.target.closest('.acoes')) {
