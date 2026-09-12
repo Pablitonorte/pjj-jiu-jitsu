@@ -412,8 +412,12 @@
                         status
                     });
                 });
-                // ✅ Ordena: atrasados primeiro
-                alunosCarregados.sort((a,b) => b.status.mesesAtraso - a.status.mesesAtraso);
+                // ✅ Ordena por NOME em ordem alfabética (A → Z)
+                alunosCarregados.sort((a, b) => {
+                    const nomeA = (a.dados.nome || '').toLowerCase();
+                    const nomeB = (b.dados.nome || '').toLowerCase();
+                    return nomeA.localeCompare(nomeB);
+                });
                 // ✅ Calcula estatísticas
                 const total = alunosCarregados.length;
                 let emdia = 0, atrasados = 0;
