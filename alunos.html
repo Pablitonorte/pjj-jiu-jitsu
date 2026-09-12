@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -18,7 +16,6 @@
             --azul: #2563eb;
             --cinza: #6B7280;
         }
-
         .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
@@ -27,7 +24,6 @@
             --borda: #29292E;
             --fundo-input: #0C0C0E;
         }
-
         .tema-claro {
             --fundo-escuro: #F8F9FA;
             --fundo-card: #FFFFFF;
@@ -36,7 +32,6 @@
             --borda: #DEE2E6;
             --fundo-input: #FFFFFF;
         }
-
         html, body { 
             background: var(--fundo-escuro); 
             color: var(--texto-branco); 
@@ -44,14 +39,12 @@
             overflow-y: auto;
             transition: background 0.3s ease, color 0.3s ease;
         }
-
         .btn-menu {
             display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
             background: var(--vermelho-principal); border: none; color: white;
             width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-
         .menu-lateral {
             width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
             padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
@@ -59,11 +52,9 @@
         }
         .menu-lateral.fechado { transform: translateX(-100%); }
         .menu-lateral.aberto { transform: translateX(0); }
-
         .logo { text-align: center; margin-bottom: 40px; }
         .logo img { width: 90px; margin-bottom: 10px; }
         .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; color: var(--texto-branco); }
-
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
             display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
@@ -71,14 +62,12 @@
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
         .menu-navegacao li a.sair { color: #FF4D4D; margin-top: 20px; }
-
         .conteudo { 
             margin-left: 240px; 
             padding: 25px 30px; 
             min-height: 100vh;
             width: calc(100% - 240px);
         }
-
         .cabecalho {
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;
         }
@@ -91,14 +80,12 @@
             transition: 0.2s;
         }
         .btn-novo:hover { background: #b00000; }
-
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
             flex: 1; min-width: 160px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
             border-radius: 6px; color: var(--texto-branco); font-size: 14px; outline: none;
         }
         .card-filtro input:focus, .card-filtro select:focus { border-color: var(--vermelho-principal); box-shadow: 0 0 0 2px rgba(209,0,0,0.15); }
-
         .tabela { 
             width: 100%; 
             border-collapse: collapse; 
@@ -111,7 +98,6 @@
         .tabela td { padding: 14px 12px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
         .tabela tr:hover { background: rgba(255,255,255,0.03); }
         .vazio { text-align: center; padding: 50px !important; color: var(--texto-cinza); }
-
         .acoes { position: relative; }
         .btn-acoes {
             background: none; border: none; color: var(--texto-cinza);
@@ -135,7 +121,6 @@
         .menu-acoes button:hover { background: rgba(209,0,0,0.1); color: var(--vermelho-principal); }
         .menu-acoes button.destaque { color: var(--azul); }
         .menu-acoes button.vermelho { color: var(--vermelho-claro); }
-
         .fundo-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); z-index: 2000;
@@ -154,11 +139,9 @@
             color: var(--texto-cinza); font-size: 28px; cursor: pointer; transition: 0.2s;
         }
         .fechar-modal:hover { color: var(--vermelho-principal); }
-
         .secao { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--borda); }
         .secao h3 { font-size: 16px; font-weight: 600; color: var(--texto-cinza); margin-bottom: 15px; }
         .info-dica { font-size: 12px; color: var(--amarelo); margin-top: 5px; }
-
         .linha { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 18px; }
         .campo { display: flex; flex-direction: column; }
         .campo label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--texto-branco); }
@@ -173,36 +156,30 @@
         .valor-final { margin-top: 5px; font-size: 18px; font-weight: 800; color: var(--verde); }
         .valor-gratis { color: #4CAF50; }
         .valor-vazio { color: var(--texto-cinza); font-style: italic; }
-
         .info-linha { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--borda); }
         .info-linha:last-child { border-bottom: none; }
         .info-label { font-weight: 600; color: var(--texto-cinza); font-size: 14px; }
         .info-valor { font-size: 14px; color: var(--texto-branco); text-align: right; }
-
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
             .menu-lateral { transform: translateX(-100%); }
             .menu-lateral.aberto { transform: translateX(0); }
         }
-
         @media (max-width: 600px) {
             .linha { grid-template-columns: 1fr; }
             .modal { padding: 20px; margin: 10px auto; }
             .tabela { display: block; overflow-x: auto; }
         }
     </style>
-
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body class="tema-escuro">
-
     <button class="btn-menu" onclick="abrirFecharMenu()">
         <i class="fas fa-bars"></i>
     </button>
-
     <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
@@ -220,7 +197,6 @@
             </ul>
         </nav>
     </aside>
-
     <main class="conteudo">
         <div class="cabecalho">
             <h1 class="titulo-pagina">Gerenciar Alunos</h1>
@@ -228,7 +204,6 @@
                 <i class="fas fa-plus"></i> Novo Aluno
             </button>
         </div>
-
         <div class="card-filtro">
             <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome, CPF ou responsável...">
             <select id="filtroTipo">
@@ -247,7 +222,6 @@
                 <option value="Anual">Anual</option>
             </select>
         </div>
-
         <table class="tabela">
             <thead>
                 <tr>
@@ -265,14 +239,12 @@
             </tbody>
         </table>
     </main>
-
     <div id="modalCadastro" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalCadastro()">&times;</button>
             <h2 id="tituloModal">Cadastrar Novo Aluno</h2>
             <form id="formAluno">
                 <input type="hidden" id="idAluno" value="">
-
                 <div class="secao">
                     <h3>Dados Pessoais</h3>
                     <div class="linha">
@@ -324,7 +296,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="secao">
                     <h3>Plano e Valores</h3>
                     <div class="linha">
@@ -365,12 +336,10 @@
                         </div>
                     </div>
                 </div>
-
                 <button type="submit" class="btn-salvar" style="width:100%;padding:14px;background:var(--verde);color:white;border:none;border-radius:6px;font-weight:700;font-size:16px;cursor:pointer;">Salvar Aluno</button>
             </form>
         </div>
     </div>
-
     <div id="modalInfo" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalInfo()">&times;</button>
@@ -378,7 +347,6 @@
             <div id="conteudoInfo"></div>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -388,20 +356,16 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
-
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
         const valoresPlanos = {
             'Mensal': 90.00,
             'Trimestral': 240.00,
             'Semestral': 450.00,
             'Anual': 820.00
         };
-
         let alunosCarregados = [];
-
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -413,7 +377,6 @@
                 corpo.classList.add('tema-escuro');
             }
         }
-
         function formatarCPF(cpf) {
             if (!cpf) return '-';
             const apenasNumeros = cpf.replace(/\D/g, '');
@@ -422,20 +385,17 @@
             }
             return apenasNumeros || '-';
         }
-
         function formatarTelefone(tel) {
             if (!tel) return '-';
             const n = tel.replace(/\D/g, '');
             if (n.length === 11) return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
             return tel;
         }
-
         function formatarData(data) {
             if (!data) return '-';
             if (data.toDate) return data.toDate().toLocaleDateString('pt-BR');
             return new Date(data).toLocaleDateString('pt-BR');
         }
-
         document.getElementById('cpfAluno').addEventListener('input', function() {
             const apenasNumeros = this.value.replace(/\D/g, '');
             if (apenasNumeros.length <= 11) {
@@ -446,11 +406,11 @@
                 this.value = cpfFormatado;
             }
         });
-
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
+        // ✅ FUNÇÃO CORRIGIDA — Cálculo com arredondamento exato em 2 casas decimais
         function atualizarValorPlano() {
             const tipo = document.getElementById('tipoAluno').value;
             const periodo = document.getElementById('periodoAluno').value;
@@ -469,7 +429,10 @@
                 campoValor.className = 'valor-final valor-gratis';
             } else {
                 const valorBase = valoresPlanos[periodo] || 0;
-                const valorFinal = valorBase - (valorBase * desconto / 100);
+                const valorSemArredondar = valorBase - (valorBase * desconto / 100);
+                // 🔑 Arredonda para 2 casas decimais e elimina centavos sobrando
+                const valorFinal = Math.round(valorSemArredondar * 100) / 100;
+                
                 campoValor.value = `R$ ${valorFinal.toFixed(2).replace('.', ',')}`;
                 campoValor.className = 'valor-final';
                 campoValor.dataset.valor = valorFinal;
@@ -488,15 +451,12 @@
             menuEl.classList.toggle('aberto');
             menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
         }
-
         function abrirInfoAluno(id) {
             const aluno = alunosCarregados.find(a => a.id === id);
             if (!aluno) return;
             const d = aluno.dados;
-
             const valorTexto = (d.valorPlano || 0) === 0 ? 'GRÁTIS' : `R$ ${(d.valorPlano||0).toFixed(2).replace('.', ',')}`;
             const descontoTexto = (d.desconto || 0) === 0 ? '0%' : `${d.desconto}%`;
-
             document.getElementById('nomeInfo').textContent = d.nome || 'Aluno';
             document.getElementById('conteudoInfo').innerHTML = `
                 <div class="info-linha">
@@ -555,20 +515,16 @@
             document.getElementById('modalInfo').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>';
-
             try {
                 const snapshot = await db.collection('alunos').get();
-
                 if (snapshot.empty) {
                     lista.innerHTML = '<tr><td colspan="7" class="vazio">Nenhum aluno cadastrado ainda</td></tr>';
                     alunosCarregados = [];
                     return;
                 }
-
                 alunosCarregados = [];
                 snapshot.forEach(doc => {
                     alunosCarregados.push({ id: doc.id, dados: doc.data() });
@@ -578,7 +534,6 @@
                     const nomeB = String((b.dados.nome || '')).toLowerCase();
                     return nomeA.localeCompare(nomeB);
                 });
-
                 lista.innerHTML = '';
                 alunosCarregados.forEach((aluno) => {
                     const d = aluno.dados;
@@ -587,7 +542,6 @@
                     const cpf = formatarCPF(d.cpf);
                     const responsavel = d.responsavel || '-';
                     const menuId = `menu-${aluno.id}`;
-
                     lista.innerHTML += `
                     <tr>
                         <td><strong>${d.nome || '-'}</strong></td>
@@ -607,17 +561,14 @@
                         </td>
                     </tr>`;
                 });
-
             } catch (erro) {
                 console.error('ERRO NO CARREGAMENTO:', erro);
                 lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
-
         function abrirDeclaracao(nome, cpf) {
             window.open(`declaracao.html?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`, '_blank');
         }
-
         function abrirModalCadastro() {
             document.getElementById('idAluno').value = '';
             document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
@@ -628,17 +579,14 @@
             document.getElementById('modalCadastro').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
         function fecharModalCadastro() {
             document.getElementById('modalCadastro').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-
         async function editarAluno(id) {
             try {
                 const doc = await db.collection('alunos').doc(id).get();
                 if (!doc.exists) return;
-
                 const dados = doc.data();
                 document.getElementById('idAluno').value = id;
                 document.getElementById('tituloModal').textContent = 'Editar Aluno';
@@ -649,7 +597,6 @@
                 document.getElementById('responsavelAluno').value = dados.responsavel || '';
                 document.getElementById('telefoneAluno').value = dados.telefone || '';
                 document.getElementById('emailAluno').value = dados.email || '';
-
                 let dataVenc = null;
                 if (dados.dataVencimento) {
                     dataVenc = dados.dataVencimento.toDate();
@@ -659,20 +606,16 @@
                     dataVenc = dados.dataInicioAula.toDate();
                 }
                 document.getElementById('matriculaAluno').value = dataVenc ? dataVenc.toISOString().split('T')[0] : '';
-
                 document.getElementById('periodoAluno').value = dados.periodo || '';
                 document.getElementById('descontoAluno').value = dados.desconto || 0;
                 document.getElementById('faixaAluno').value = dados.faixa || '';
-
                 atualizarValorPlano();
                 document.getElementById('modalCadastro').style.display = 'flex';
                 document.body.style.overflow = 'hidden';
-
             } catch (erro) {
                 alert('Erro ao carregar: ' + erro.message);
             }
         }
-
         async function excluirAluno(id) {
             if (!confirm('Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
             try {
@@ -682,13 +625,11 @@
                 alert('Erro ao excluir: ' + erro.message);
             }
         }
-
         document.getElementById('formAluno').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('idAluno').value;
             const valorFinal = parseFloat(document.getElementById('valorFinalAluno').dataset.valor) || 0;
             const cpfSemFormatacao = document.getElementById('cpfAluno').value.replace(/\D/g, '');
-
             const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
                 cpf: cpfSemFormatacao,
@@ -704,7 +645,6 @@
                 faixa: document.getElementById('faixaAluno').value,
                 dataCadastro: firebase.firestore.Timestamp.now()
             };
-
             try {
                 if (id) {
                     const docAntigo = await db.collection('alunos').doc(id).get();
@@ -725,7 +665,6 @@
                 alert('Erro ao salvar: ' + erro.message);
             }
         });
-
         document.getElementById('buscaAluno').addEventListener('input', () => {
             const termo = document.getElementById('buscaAluno').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -733,7 +672,6 @@
                 linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
             });
         });
-
         document.getElementById('filtroTipo').addEventListener('change', () => {
             const tipo = document.getElementById('filtroTipo').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -741,7 +679,6 @@
                 linha.style.display = !tipo || linha.textContent.toLowerCase().includes(tipo) ? '' : 'none';
             });
         });
-
         document.getElementById('filtroPeriodo').addEventListener('change', () => {
             const periodo = document.getElementById('filtroPeriodo').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -749,13 +686,11 @@
                 linha.style.display = !periodo || linha.textContent.toLowerCase().includes(periodo) ? '' : 'none';
             });
         });
-
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
-
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
