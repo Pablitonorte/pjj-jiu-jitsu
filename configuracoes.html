@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações - PJJ Pará Jiu-Jitsu</title>
+    <link rel="icon" href="imagens/logopjj.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-
-        /* 🎨 VARIÁVEIS DOS TEMAS */
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -18,8 +16,6 @@
             --amarelo: #FFC107;
             --cinza: #6B7280;
         }
-
-        /* 🌙 TEMA ESCURO (PADRÃO) */
         .tema-escuro {
             --fundo-escuro: #121214;
             --fundo-card: #1A1A1F;
@@ -28,8 +24,6 @@
             --borda: #29292E;
             --fundo-input: #0C0C0E;
         }
-
-        /* ☀️ TEMA CLARO */
         .tema-claro {
             --fundo-escuro: #F8F9FA;
             --fundo-card: #FFFFFF;
@@ -38,21 +32,18 @@
             --borda: #DEE2E6;
             --fundo-input: #FFFFFF;
         }
-
         html, body { 
             background: var(--fundo-escuro); 
             color: var(--texto-branco); 
             min-height: 100vh; 
             transition: background 0.3s ease, color 0.3s ease;
         }
-
         .btn-menu {
             display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
             background: var(--vermelho-principal); border: none; color: white;
             width: 48px; height: 48px; border-radius: 8px; font-size: 22px; cursor: pointer;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-
         .menu-lateral {
             width: 240px; background: var(--fundo-card); border-right: 1px solid var(--borda);
             padding: 30px 0; position: fixed; height: 100vh; top: 0; left: 0; z-index: 999;
@@ -60,24 +51,19 @@
         }
         .menu-lateral.aberto { transform: translateX(0); }
         .menu-lateral.fechado { transform: translateX(-100%); }
-
         .logo { text-align: center; margin-bottom: 40px; }
         .logo img { width: 90px; margin-bottom: 10px; }
         .logo h1 { font-size: 14px; font-weight: 700; line-height: 1.3; }
-
         .menu-navegacao ul { list-style: none; padding: 0 15px; }
         .menu-navegacao li a {
             display: flex; align-items: center; gap: 10px; padding: 12px 15px; margin-bottom: 5px;
             color: var(--texto-cinza); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 6px; transition: 0.2s;
         }
         .menu-navegacao li a.ativo, .menu-navegacao li a:hover { background: rgba(209,0,0,0.15); color: var(--vermelho-principal); }
-
         .conteudo { margin-left: 240px; padding: 35px 45px; min-height: 100vh; width: calc(100% - 240px); }
-
         .cabecalho { margin-bottom: 30px; }
         .titulo-pagina { font-size: 26px; font-weight: 800; position: relative; }
         .titulo-pagina::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 70px; height: 3px; background: var(--vermelho-principal); }
-
         .card-config {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
             padding: 25px; margin-bottom: 25px;
@@ -90,8 +76,6 @@
             padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
             border-radius: 6px; color: var(--texto-branco); font-size: 14px;
         }
-
-        /* SWITCH TEMA */
         .linha-tema { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
         .switch { position: relative; width: 55px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -105,14 +89,12 @@
         }
         input:checked + .slider { background-color: var(--vermelho-principal); }
         input:checked + .slider:before { transform: translateX(27px); }
-
         .botoes { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
         .btn { padding: 12px 24px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: 0.3s; }
         .btn-vermelho { background: var(--vermelho-principal); color: white; }
         .btn-vermelho:hover { background: var(--vermelho-claro); }
         .btn-verde { background: var(--verde); color: white; }
         .btn-verde:hover { background: #00E05C; }
-
         .alerta-sucesso {
             background: rgba(0, 200, 83, 0.15); border: 1px solid var(--verde); color: var(--verde);
             padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none;
@@ -121,7 +103,11 @@
             background: rgba(255, 59, 59, 0.15); border: 1px solid var(--vermelho-claro); color: var(--vermelho-claro);
             padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none;
         }
-
+        .alerta-aviso {
+            background: rgba(255, 193, 7, 0.15); border: 1px solid var(--amarelo); color: var(--amarelo);
+            padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 13px;
+        }
+        .carregando { opacity: 0.6; pointer-events: none; }
         @media (max-width: 992px) {
             .conteudo { margin-left: 0; width: 100%; padding: 80px 20px 20px; }
             .btn-menu { display: flex; align-items: center; justify-content: center; }
@@ -129,13 +115,14 @@
             .menu-lateral.aberto { transform: translateX(0); }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body class="tema-escuro">
-
     <button class="btn-menu" onclick="abrirFecharMenu()">
         <i class="fas fa-bars"></i>
     </button>
-
     <aside class="menu-lateral" id="menuLateral">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ">
@@ -153,17 +140,19 @@
             </ul>
         </nav>
     </aside>
-
     <main class="conteudo">
         <div class="cabecalho">
             <h1 class="titulo-pagina">Configurações do Sistema</h1>
         </div>
 
         <div class="alerta-sucesso" id="alertaSalvo">
-            <i class="fas fa-check-circle"></i> Configurações salvas com sucesso!
+            <i class="fas fa-check-circle"></i> ✅ Configurações salvas com sucesso!
         </div>
         <div class="alerta-erro" id="alertaErro">
-            <i class="fas fa-exclamation-circle"></i> Erro: senhas não coincidem!
+            <i class="fas fa-exclamation-circle"></i> <span id="textoErro">Erro ao salvar!</span>
+        </div>
+        <div class="alerta-aviso" id="alertaAviso" style="display:none;">
+            <i class="fas fa-info-circle"></i> <span id="textoAviso"></span>
         </div>
 
         <!-- 🎨 APARENCIA -->
@@ -184,7 +173,7 @@
             <div class="form-grid">
                 <div class="form-grupo">
                     <label>Nome da Academia</label>
-                    <input type="text" id="nomeAcademia" value="Pará Jiu-Jitsu">
+                    <input type="text" id="nomeAcademia" placeholder="Pará Jiu-Jitsu">
                 </div>
                 <div class="form-grupo">
                     <label>CNPJ / Razão Social</label>
@@ -215,19 +204,19 @@
             <div class="form-grid">
                 <div class="form-grupo">
                     <label>Plano Mensal (R$)</label>
-                    <input type="number" step="0.01" id="valorMensal" placeholder="100,00">
+                    <input type="number" step="0.01" id="valorMensal" placeholder="100.00">
                 </div>
                 <div class="form-grupo">
                     <label>Plano Trimestral (R$)</label>
-                    <input type="number" step="0.01" id="valorTrimestral" placeholder="285,00">
+                    <input type="number" step="0.01" id="valorTrimestral" placeholder="285.00">
                 </div>
                 <div class="form-grupo">
                     <label>Plano Semestral (R$)</label>
-                    <input type="number" step="0.01" id="valorSemestral" placeholder="540,00">
+                    <input type="number" step="0.01" id="valorSemestral" placeholder="540.00">
                 </div>
                 <div class="form-grupo">
                     <label>Plano Anual (R$)</label>
-                    <input type="number" step="0.01" id="valorAnual" placeholder="960,00">
+                    <input type="number" step="0.01" id="valorAnual" placeholder="960.00">
                 </div>
             </div>
         </div>
@@ -235,6 +224,9 @@
         <!-- 🔒 ACESSO DO ADMINISTRADOR -->
         <div class="card-config">
             <h2>🔒 Dados de Acesso</h2>
+            <div class="alerta-aviso">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Atenção:</strong> alterar e-mail ou senha afeta seu login! Anote a nova senha antes de salvar.
+            </div>
             <div class="form-grid">
                 <div class="form-grupo">
                     <label>E-mail do Administrador</label>
@@ -252,18 +244,152 @@
         </div>
 
         <div class="botoes">
-            <button class="btn btn-verde" onclick="salvarConfiguracoes()"><i class="fas fa-save"></i> Salvar Alterações</button>
-            <button class="btn btn-vermelho" onclick="history.back()"><i class="fas fa-arrow-left"></i> Voltar</button>
+            <button class="btn btn-verde" onclick="salvarConfiguracoes()" id="btnSalvar">
+                <i class="fas fa-save"></i> Salvar Alterações
+            </button>
+            <button class="btn btn-vermelho" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
         </div>
     </main>
 
     <script>
-        // Carrega tema salvo ao abrir a página
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
+            authDomain: "pjj-para-jiu-jitsu.firebaseapp.com",
+            projectId: "pjj-para-jiu-jitsu",
+            storageBucket: "pjj-para-jiu-jitsu.firebasestorage.app",
+            messagingSenderId: "72563195814",
+            appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
+        };
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ✅ CARREGA AS CONFIGURAÇÕES SALVAS AO ABRIR A PÁGINA
+        async function carregarConfiguracoes() {
+            try {
+                const usuario = auth.currentUser;
+                if (!usuario) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Preenche e-mail atual do admin
+                document.getElementById('novoEmail').value = usuario.email || '';
+
+                // Busca configurações no banco
+                const doc = await db.collection('configuracoes').doc('geral').get();
+                if (doc.exists) {
+                    const cfg = doc.data();
+                    document.getElementById('nomeAcademia').value = cfg.nomeAcademia || 'Pará Jiu-Jitsu';
+                    document.getElementById('cnpjAcademia').value = cfg.cnpjAcademia || '';
+                    document.getElementById('enderecoAcademia').value = cfg.enderecoAcademia || '';
+                    document.getElementById('telefoneAcademia').value = cfg.telefoneAcademia || '';
+                    document.getElementById('emailAcademia').value = cfg.emailAcademia || '';
+                    document.getElementById('horarioAcademia').value = cfg.horarioAcademia || '';
+                    document.getElementById('valorMensal').value = cfg.valorMensal || '';
+                    document.getElementById('valorTrimestral').value = cfg.valorTrimestral || '';
+                    document.getElementById('valorSemestral').value = cfg.valorSemestral || '';
+                    document.getElementById('valorAnual').value = cfg.valorAnual || '';
+                }
+            } catch (erro) {
+                console.warn('Não foi possível carregar configurações:', erro);
+            }
+        }
+
+        // ✅ SALVA TUDO NO FIREBASE DE VERDADE
+        async function salvarConfiguracoes() {
+            const usuario = auth.currentUser;
+            if (!usuario) {
+                mostrarErro('Você precisa estar logado!');
+                return;
+            }
+
+            const btnSalvar = document.getElementById('btnSalvar');
+            btnSalvar.classList.add('carregando');
+            btnSalvar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+            const senha = document.getElementById('novaSenha').value.trim();
+            const confirma = document.getElementById('confirmaSenha').value.trim();
+            const novoEmail = document.getElementById('novoEmail').value.trim();
+
+            // Valida senhas
+            if (senha !== '' && senha !== confirma) {
+                mostrarErro('As senhas não coincidem!');
+                btnSalvar.classList.remove('carregando');
+                btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+                return;
+            }
+
+            try {
+                // 1️⃣ SALVA DADOS DA ACADEMIA E VALORES NO BANCO
+                const dados = {
+                    nomeAcademia: document.getElementById('nomeAcademia').value.trim(),
+                    cnpjAcademia: document.getElementById('cnpjAcademia').value.trim(),
+                    enderecoAcademia: document.getElementById('enderecoAcademia').value.trim(),
+                    telefoneAcademia: document.getElementById('telefoneAcademia').value.trim(),
+                    emailAcademia: document.getElementById('emailAcademia').value.trim(),
+                    horarioAcademia: document.getElementById('horarioAcademia').value.trim(),
+                    valorMensal: document.getElementById('valorMensal').value || null,
+                    valorTrimestral: document.getElementById('valorTrimestral').value || null,
+                    valorSemestral: document.getElementById('valorSemestral').value || null,
+                    valorAnual: document.getElementById('valorAnual').value || null,
+                    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection('configuracoes').doc('geral').set(dados, { merge: true });
+
+                // 2️⃣ ALTERA E-MAIL SE FOI MODIFICADO
+                if (novoEmail && novoEmail !== usuario.email) {
+                    await usuario.updateEmail(novoEmail);
+                }
+
+                // 3️⃣ ALTERA SENHA SE FOI PREENCHIDA
+                if (senha !== '') {
+                    if (senha.length < 6) {
+                        mostrarErro('A senha precisa ter pelo menos 6 caracteres!');
+                        btnSalvar.classList.remove('carregando');
+                        btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+                        return;
+                    }
+                    await usuario.updatePassword(senha);
+                }
+
+                // ✅ SUCESSO!
+                document.getElementById('alertaSalvo').style.display = 'block';
+                setTimeout(() => document.getElementById('alertaSalvo').style.display = 'none', 4000);
+
+                // Limpa campos de senha
+                document.getElementById('novaSenha').value = '';
+                document.getElementById('confirmaSenha').value = '';
+
+            } catch (erro) {
+                console.error('Erro ao salvar:', erro);
+                let mensagem = erro.message;
+                if (erro.code === 'auth/requires-recent-login') {
+                    mensagem = 'Para alterar e-mail/senha, faça login novamente e tente logo após.';
+                } else if (erro.code === 'auth/invalid-email') {
+                    mensagem = 'E-mail inválido!';
+                }
+                mostrarErro(mensagem);
+            }
+
+            btnSalvar.classList.remove('carregando');
+            btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
+        }
+
+        function mostrarErro(msg) {
+            const alerta = document.getElementById('alertaErro');
+            document.getElementById('textoErro').textContent = msg;
+            alerta.style.display = 'block';
+            setTimeout(() => alerta.style.display = 'none', 5000);
+        }
+
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
             const botaoTema = document.getElementById('alternarTema');
-
             if (temaSalvo === 'claro') {
                 corpo.classList.remove('tema-escuro');
                 corpo.classList.add('tema-claro');
@@ -275,11 +401,9 @@
             }
         }
 
-        // Alterna entre os temas
         function mudarTema() {
             const corpo = document.body;
             const botaoTema = document.getElementById('alternarTema');
-
             if (botaoTema.checked) {
                 corpo.classList.remove('tema-escuro');
                 corpo.classList.add('tema-claro');
@@ -295,36 +419,21 @@
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
-        function salvarConfiguracoes() {
-            const senha = document.getElementById('novaSenha').value;
-            const confirma = document.getElementById('confirmaSenha').value;
-            const alertaSucesso = document.getElementById('alertaSalvo');
-            const alertaErro = document.getElementById('alertaErro');
-
-            alertaSucesso.style.display = 'none';
-            alertaErro.style.display = 'none';
-
-            // Valida senhas se forem alteradas
-            if (senha !== '' && senha !== confirma) {
-                alertaErro.style.display = 'block';
-                setTimeout(() => alertaErro.style.display = 'none', 3500);
-                return;
-            }
-
-            // Aqui futuramente ligamos ao Firebase para salvar acesso e dados
-            alertaSucesso.style.display = 'block';
-            setTimeout(() => alertaSucesso.style.display = 'none', 3500);
-        }
-
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
-                window.location.href = 'login.html';
+                auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
 
-        // Inicializa tema ao carregar
+        // Inicializa
         carregarTema();
+        auth.onAuthStateChanged(usuario => {
+            if (!usuario) {
+                window.location.href = 'login.html';
+            } else {
+                carregarConfiguracoes();
+            }
+        });
     </script>
-
 </body>
 </html>
