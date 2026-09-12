@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - PJJ Pará Jiu-Jitsu</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ✅ PWA — Instalar como Aplicativo -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D10000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PJJ Pará">
+    <link rel="apple-touch-icon" href="imagens/logopjj.png">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
-
         :root {
             --vermelho-principal: #D10000;
             --vermelho-claro: #FF3B3B;
@@ -20,7 +29,6 @@
             --erro: #FF4D4D;
             --info: #FFC107;
         }
-
         body {
             background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('imagens/capactpjj.png');
             background-size: cover;
@@ -32,7 +40,6 @@
             min-height: 100vh;
             padding: 20px;
         }
-
         .caixa-login {
             background-color: var(--fundo-card);
             padding: 35px 30px;
@@ -42,16 +49,13 @@
             border: 2px solid var(--vermelho-principal);
             box-shadow: 0 0 25px rgba(209, 0, 0, 0.25);
         }
-
         .logo { 
             text-align: center; 
             margin-bottom: 25px; 
         }
-
         .logo img { 
             height: 85px; 
         }
-
         h2 {
             text-align: center;
             color: var(--texto-branco);
@@ -59,18 +63,15 @@
             font-size: 1.6rem;
             font-weight: 700;
         }
-
         .campo { 
             margin-bottom: 22px; 
         }
-
         label {
             display: block;
             color: var(--texto-cinza);
             margin-bottom: 8px;
             font-weight: 500;
         }
-
         input {
             width: 100%;
             padding: 13px;
@@ -81,13 +82,11 @@
             font-size: 1rem;
             transition: border 0.2s;
         }
-
         input:focus { 
             outline: none; 
             border-color: var(--vermelho-principal);
             box-shadow: 0 0 0 2px rgba(209, 0, 0, 0.15);
         }
-
         .btn-entrar {
             width: 100%;
             padding: 14px;
@@ -101,11 +100,9 @@
             transition: background 0.2s;
             margin-bottom: 15px;
         }
-
         .btn-entrar:hover { 
             background-color: var(--vermelho-claro); 
         }
-
         /* ✅ Botão Voltar para o Início */
         .btn-voltar {
             width: 100%;
@@ -124,13 +121,33 @@
             gap: 8px;
             text-decoration: none;
         }
-
         .btn-voltar:hover {
             color: var(--vermelho-principal);
             border-color: var(--vermelho-principal);
             background-color: rgba(209, 0, 0, 0.08);
         }
-
+        /* ✅ Botão Instalar App */
+        .btn-instalar {
+            width: 100%;
+            padding: 12px;
+            background-color: rgba(37, 99, 235, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .btn-instalar:hover {
+            background-color: rgba(37, 99, 235, 0.25);
+            color: #93c5fd;
+        }
         #mensagem {
             margin-top: 18px;
             padding: 13px;
@@ -140,11 +157,9 @@
             display: none;
             font-size: 0.95rem;
         }
-
         .sucesso { background-color: rgba(0, 200, 83, 0.15); color: var(--sucesso); border: 1px solid rgba(0, 200, 83, 0.3); }
         .erro { background-color: rgba(255, 77, 77, 0.15); color: var(--erro); border: 1px solid rgba(255, 77, 77, 0.3); }
         .info { background-color: rgba(255, 193, 7, 0.15); color: var(--info); border: 1px solid rgba(255, 193, 7, 0.3); }
-
         /* Responsivo */
         @media (max-width: 400px) {
             .caixa-login {
@@ -152,21 +167,23 @@
             }
         }
     </style>
-
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-
     <div class="caixa-login">
         <div class="logo">
             <img src="imagens/logopjj.png" alt="Logo PJJ Pará Jiu-Jitsu">
         </div>
         <h2>Acesse sua conta</h2>
-
         <div id="mensagem"></div>
+
+        <!-- ✅ Botão Instalar App (aparece quando disponível) -->
+        <button id="btnInstalarApp" class="btn-instalar" style="display:none;" onclick="instalarApp()">
+            <i class="fas fa-download"></i> Instalar Aplicativo
+        </button>
 
         <form id="formLogin">
             <div class="campo">
@@ -196,10 +213,33 @@
           messagingSenderId: "72563195814",
           appId: "1:72563195814:web:5bc90e7bc0c51f415c1967"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
+        // ✅ INSTALAR COMO APLICATIVO
+        let promptInstalacao;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            promptInstalacao = e;
+            document.getElementById('btnInstalarApp').style.display = 'flex';
+        });
+
+        async function instalarApp() {
+            if (!promptInstalacao) {
+                alert('Use o menu do navegador (três pontinhos) → "Instalar aplicativo"');
+                return;
+            }
+            promptInstalacao.prompt();
+            const resultado = await promptInstalacao.userChoice;
+            promptInstalacao = null;
+            document.getElementById('btnInstalarApp').style.display = 'none';
+        }
+
+        window.addEventListener('appinstalled', () => {
+            alert('✅ PJJ Pará instalado com sucesso!');
+            document.getElementById('btnInstalarApp').style.display = 'none';
+        });
 
         // Função para exibir mensagens
         function mostrarMensagem(texto, tipo) {
@@ -232,13 +272,10 @@
         // ✅ Lógica do login atualizada
         document.getElementById('formLogin').addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const entrada = document.getElementById('login').value.trim();
             const senha = document.getElementById('senha').value.trim();
             let emailFinal = entrada;
-
             mostrarMensagem("🔄 Verificando dados...", "info");
-
             try {
                 // Se for telefone, busca o e-mail correspondente
                 if (ehTelefone(entrada)) {
@@ -248,21 +285,17 @@
                     }
                     emailFinal = emailEncontrado;
                 }
-
                 // Realiza o login com o e-mail
                 const resultado = await auth.signInWithEmailAndPassword(emailFinal, senha);
                 const usuario = resultado.user;
                 console.log("Usuário autenticado:", usuario.uid);
-
                 // Busca dados do usuário
                 const doc = await db.collection('usuarios').doc(usuario.uid).get();
                 if (!doc.exists) {
                     throw new Error("Conta existe, mas não tem cadastro no sistema!");
                 }
-
                 const dados = doc.data();
                 console.log("Dados do usuário:", dados);
-
                 if (dados.tipo === "admin") {
                     mostrarMensagem("✅ Acesso de Administrador! Entrando...", "sucesso");
                     setTimeout(() => window.location.href = "admin.html", 1200);
@@ -272,11 +305,9 @@
                 } else {
                     throw new Error("Tipo de usuário não definido: " + dados.tipo);
                 }
-
             } catch (erro) {
                 console.error("Erro completo:", erro);
                 let msg;
-
                 switch(erro.code) {
                     case "auth/user-not-found":
                         msg = "❌ E-mail ou telefone não cadastrado";
@@ -293,11 +324,9 @@
                     default:
                         msg = "❌ " + erro.message;
                 }
-
                 mostrarMensagem(msg, "erro");
             }
         });
     </script>
-
 </body>
 </html>
