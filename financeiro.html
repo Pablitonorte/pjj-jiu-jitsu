@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financeiro - PJJ Pará Jiu-Jitsu</title>
+    <!-- ✅ ÍCONE NA ABA DO NAVEGADOR -->
+    <link rel="icon" type="image/png" href="imagens/logopjj.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ✅ PWA — Reconhecimento pelo navegador -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#D10000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PJJ Pará">
+    <link rel="apple-touch-icon" href="imagens/logopjj.png">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
@@ -169,6 +181,7 @@
             .tabela { display: block; overflow-x: auto; }
         }
     </style>
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -272,7 +285,6 @@
             <span style="margin-left:auto; font-size:11px; color:var(--texto-cinza)">O vencimento avança SOMENTE após o pagamento do mês atual</span>
         </div>
     </main>
-
     <div id="modalPagamento" class="fundo-modal">
         <div class="modal">
             <h3 id="nomeAlunoPagamento">Marcar Pagamento</h3>
@@ -285,7 +297,6 @@
             </div>
         </div>
     </div>
-
     <div id="modalDesconto" class="fundo-modal">
         <div class="modal">
             <h3>💰 Aplicar Desconto</h3>
@@ -309,7 +320,6 @@
             </div>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -322,13 +332,11 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
         let alunosCarregados = [];
         let alunoAtual = null;
         let alunoDescontoAtual = null;
         let mesSelecionado = null;
         let mesDescontoSelecionado = null;
-
         const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
         
