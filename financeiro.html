@@ -428,11 +428,17 @@
                     receitaPrevista += (a.dados.valorPlano || 0);
                     if (a.status.emDia) emdia++;
                     else atrasados++;
-                    // Recebido do mês atual
+                    // ✅ Recebido do mês atual — COM DESCONTO
                     if (a.qtdPagamentos > 0) {
-                        const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, a.qtdPagamentos - 1);
+                        const indicePagamento = a.qtdPagamentos - 1;
+                        const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indicePagamento);
                         if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
-                            recebidoMes += (a.dados.valorPlano || 0);
+                            // Se tem desconto, soma o valor com desconto
+                            if (a.dados.descontos && a.dados.descontos[indicePagamento]) {
+                                recebidoMes += Number(a.dados.descontos[indicePagamento]);
+                            } else {
+                                recebidoMes += (a.dados.valorPlano || 0);
+                            }
                         }
                     }
                 });
