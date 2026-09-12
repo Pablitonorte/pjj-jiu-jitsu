@@ -62,10 +62,11 @@
         .titulo-pagina { font-size: 26px; font-weight: 800; margin-bottom: 5px; }
         .subtitulo { color: var(--texto-cinza); font-size: 14px; }
         .grade-cards {
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; margin-bottom: 25px;
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-bottom: 25px;
         }
-        @media (max-width: 1200px) { .grade-cards { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { .grade-cards { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1400px) { .grade-cards { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 992px) { .grade-cards { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) { .grade-cards { grid-template-columns: repeat(2, 1fr); } }
         .card-info {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
             padding: 18px; transition: 0.2s;
@@ -80,6 +81,7 @@
         .card-atrasados .icone { color: var(--vermelho-principal); }
         .card-receita .icone { color: var(--azul); }
         .card-recebido .icone { color: var(--verde); }
+        .card-desconto .icone { color: var(--amarelo); }
         .card-filtro { background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; }
         .card-filtro input, .card-filtro select {
             flex: 1; min-width: 180px; padding: 12px; background: var(--fundo-input); border: 1px solid var(--borda);
@@ -225,6 +227,13 @@
                 <div class="valor" id="cardRecebido">R$ 0,00</div>
                 <div class="rotulo">Recebido este mês</div>
                 <div class="detalhe" id="pctRecebido">0%</div>
+            </div>
+            <!-- ✅ NOVO CARD: Total de Descontos do Mês -->
+            <div class="card-info card-desconto">
+                <div class="icone"><i class="fas fa-tags"></i></div>
+                <div class="valor" id="cardDesconto">R$ 0,00</div>
+                <div class="rotulo">Descontos do Mês</div>
+                <div class="detalhe">Valor reduzido</div>
             </div>
         </div>
         <div class="card-filtro">
@@ -421,7 +430,7 @@
                 // ✅ Calcula estatísticas
                 const total = alunosCarregados.length;
                 let emdia = 0, atrasados = 0;
-                let receitaPrevista = 0, recebidoMes = 0;
+                let receitaPrevista = 0, recebidoMes = 0, totalDescontoMes = 0;
                 const hoje = new Date();
                 const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
                 alunosCarregados.forEach(a => {
@@ -433,11 +442,13 @@
                         const indicePagamento = a.qtdPagamentos - 1;
                         const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indicePagamento);
                         if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
-                            // Se tem desconto, soma o valor com desconto
+                            const valorPlano = a.dados.valorPlano || 0;
                             if (a.dados.descontos && a.dados.descontos[indicePagamento]) {
-                                recebidoMes += Number(a.dados.descontos[indicePagamento]);
+                                const valorComDesconto = Number(a.dados.descontos[indicePagamento]);
+                                recebidoMes += valorComDesconto;
+                                totalDescontoMes += (valorPlano - valorComDesconto); // ✅ DIFERENÇA = DESCONTO
                             } else {
-                                recebidoMes += (a.dados.valorPlano || 0);
+                                recebidoMes += valorPlano;
                             }
                         }
                     }
@@ -451,6 +462,8 @@
                 document.getElementById('cardReceita').textContent = `R$ ${receitaPrevista.toFixed(2).replace('.',',')}`;
                 document.getElementById('cardRecebido').textContent = `R$ ${recebidoMes.toFixed(2).replace('.',',')}`;
                 document.getElementById('pctRecebido').textContent = receitaPrevista ? `${Math.round(recebidoMes/receitaPrevista*100)}%` : '0%';
+                // ✅ Novo card: Total de Descontos do Mês
+                document.getElementById('cardDesconto').textContent = `R$ ${totalDescontoMes.toFixed(2).replace('.',',')}`;
                 renderizarLista(alunosCarregados);
             } catch (erro) {
                 console.error('ERRO:', erro);
