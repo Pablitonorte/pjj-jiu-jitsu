@@ -228,7 +228,6 @@
                 <div class="rotulo">Recebido este mês</div>
                 <div class="detalhe" id="pctRecebido">0%</div>
             </div>
-            <!-- ✅ NOVO CARD: Total de Descontos do Mês -->
             <div class="card-info card-desconto">
                 <div class="icone"><i class="fas fa-tags"></i></div>
                 <div class="valor" id="cardDesconto">R$ 0,00</div>
@@ -272,8 +271,6 @@
             <span style="margin-left:auto; font-size:11px; color:var(--texto-cinza)">O vencimento avança SOMENTE após o pagamento do mês atual</span>
         </div>
     </main>
-
-    <!-- MODAL DE PAGAMENTO -->
     <div id="modalPagamento" class="fundo-modal">
         <div class="modal">
             <h3 id="nomeAlunoPagamento">Marcar Pagamento</h3>
@@ -286,8 +283,6 @@
             </div>
         </div>
     </div>
-
-    <!-- MODAL DE DESCONTO -->
     <div id="modalDesconto" class="fundo-modal">
         <div class="modal">
             <h3>💰 Aplicar Desconto</h3>
@@ -302,7 +297,6 @@
             </div>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -315,7 +309,6 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
         let alunosCarregados = [];
         let alunoAtual = null;
         let alunoDescontoAtual = null;
@@ -323,12 +316,9 @@
         let mesDescontoSelecionado = null;
         const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
-
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
-
-        // 📅 Calcula a data de vencimento de um mês específico
         function calcularDataVencimento(diaFixo, dataMatricula, indicePagamento) {
             const dataMat = new Date(dataMatricula);
             let mes = dataMat.getMonth() + indicePagamento;
@@ -336,20 +326,15 @@
             while (mes > 11) { mes -= 12; ano++; }
             return new Date(ano, mes, diaFixo);
         }
-
-        // 🧮 CONTA QUANTOS MESES ESTÃO EM ATRASO
         function calcularStatusAluno(diaFixo, dataMatricula, qtdPagamentos) {
             const hoje = new Date(); hoje.setHours(0,0,0,0);
             const dataMat = new Date(dataMatricula);
             const mesInicio = dataMat.getMonth();
             const anoInicio = dataMat.getFullYear();
-            // Encontra o PRÓXIMO mês que DEVERIA ter sido pago
             let mesPendente = mesInicio + qtdPagamentos;
             let anoPendente = anoInicio;
             while (mesPendente > 11) { mesPendente -= 12; anoPendente++; }
-            // Data do vencimento atual (o que está esperando pagamento)
             const dataVencimentoAtual = new Date(anoPendente, mesPendente, diaFixo);
-            // ✅ SE AINDA CHEGOU A DATA → EM DIA
             if (dataVencimentoAtual >= hoje) {
                 return {
                     classe: 'status-emdia',
@@ -359,7 +344,6 @@
                     emDia: true
                 };
             }
-            // 🔴 SE PASSOU → CONTA QUANTOS MESES ESTÃO ATRASADOS
             let mesesAtraso = 1;
             let mesVerificar = mesPendente + 1;
             let anoVerificar = anoPendente;
@@ -382,7 +366,6 @@
                 emDia: false
             };
         }
-
         async function carregarFinanceiro() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="6" class="vazio">🔄 Carregando alunos...</td></tr>';
@@ -396,7 +379,6 @@
                 snapshot.forEach(doc => {
                     const d = doc.data();
                     if (d.tipo === 'Bolsista') return;
-                    // ✅ Pega o DIA FIXO e a DATA BASE
                     let diaFixo = null;
                     let dataBase = null;
                     if (d.dataMatricula) {
@@ -421,51 +403,37 @@
                         status
                     });
                 });
-                // ✅ Ordena por NOME em ordem alfabética (A → Z)
                 alunosCarregados.sort((a, b) => {
                     const nomeA = (a.dados.nome || '').toLowerCase();
                     const nomeB = (b.dados.nome || '').toLowerCase();
                     return nomeA.localeCompare(nomeB);
                 });
-                // ✅ Calcula estatísticas
                 const total = alunosCarregados.length;
                 let emdia = 0, atrasados = 0;
                 let receitaPrevista = 0, recebidoMes = 0, totalDescontoMes = 0;
                 const hoje = new Date();
                 const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
-
                 alunosCarregados.forEach(a => {
-                    // ✅ Usa o VALOR FINAL do cadastro como referência
                     const valorPlanoCadastrado = Number(a.dados.valorFinal || a.dados.valorPlano || 0);
                     receitaPrevista += valorPlanoCadastrado;
-
                     if (a.status.emDia) emdia++;
                     else atrasados++;
-
-                    // ✅ Recebido do mês atual — COM DESCONTO
                     if (a.qtdPagamentos > 0) {
                         const indicePagamento = a.qtdPagamentos - 1;
                         const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indicePagamento);
-
                         if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
-                            let valorRecebido = valorPlanoCadastrado; // Por padrão = valor integral
-
+                            let valorRecebido = valorPlanoCadastrado;
                             if (a.dados.descontos && a.dados.descontos[indicePagamento]) {
                                 valorRecebido = Number(a.dados.descontos[indicePagamento]);
                             }
-
                             recebidoMes += valorRecebido;
-
-                            // ✅ Desconto = valor do cadastro - valor pago
-                            const desconto = valorPlanoCadastrado - valorRecebido;
-                            if (desconto > 0.001) { // Só soma se for maior que 0,001
-                                totalDescontoMes += desconto;
-                            }
+                            const valorDescontoSalvo = a.dados.descontos && a.dados.descontos[indicePagamento] 
+                                ? valorPlanoCadastrado - Number(a.dados.descontos[indicePagamento])
+                                : 0;
+                            totalDescontoMes += Math.round(valorDescontoSalvo * 100) / 100;
                         }
                     }
                 });
-
-                // ✅ Atualiza cards
                 document.getElementById('cardTotal').textContent = total;
                 document.getElementById('cardEmDia').textContent = emdia;
                 document.getElementById('pctEmDia').textContent = total ? `${Math.round(emdia/total*100)}%` : '0%';
@@ -474,16 +442,13 @@
                 document.getElementById('cardReceita').textContent = `R$ ${receitaPrevista.toFixed(2).replace('.',',')}`;
                 document.getElementById('cardRecebido').textContent = `R$ ${recebidoMes.toFixed(2).replace('.',',')}`;
                 document.getElementById('pctRecebido').textContent = receitaPrevista ? `${Math.round(recebidoMes/receitaPrevista*100)}%` : '0%';
-                // ✅ Novo card: Total de Descontos do Mês
                 document.getElementById('cardDesconto').textContent = `R$ ${totalDescontoMes.toFixed(2).replace('.',',')}`;
-
                 renderizarLista(alunosCarregados);
             } catch (erro) {
                 console.error('ERRO:', erro);
                 lista.innerHTML = `<tr><td colspan="6" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
-
         function renderizarLista(lista) {
             const tb = document.getElementById('listaAlunos');
             tb.innerHTML = '';
@@ -493,13 +458,10 @@
                 const dataVenc = a.status.dataVencimento;
                 const dataStr = `${dataVenc.getDate().toString().padStart(2,'0')}/${(dataVenc.getMonth()+1).toString().padStart(2,'0')}/${dataVenc.getFullYear()}`;
                 const diaSem = diasSemana[dataVenc.getDay()];
-                
-                // Verifica se tem desconto no mês atual
                 let descontoTexto = '';
                 if (d.descontos && d.descontos[a.qtdPagamentos]) {
                     descontoTexto = `<div class="desconto-mes">💰 Com desconto: R$ ${Number(d.descontos[a.qtdPagamentos]).toFixed(2).replace('.',',')}</div>`;
                 }
-
                 tb.innerHTML += `
                 <tr>
                     <td>
@@ -527,26 +489,18 @@
                 </tr>`;
             });
         }
-
-        // Abre/fecha o menu dos 3 pontinhos
         function abrirMenuOpcoes(event, idAluno) {
             event.stopPropagation();
-            // Fecha todos os outros menus
             document.querySelectorAll('.menu-opcoes').forEach(m => m.classList.remove('aberto'));
-            // Abre o menu clicado
             const menu = document.getElementById(`menuOpcoes-${idAluno}`);
             menu.classList.toggle('aberto');
         }
-
-        // Clica fora → fecha o menu
         document.addEventListener('click', () => {
             document.querySelectorAll('.menu-opcoes').forEach(m => m.classList.remove('aberto'));
         });
-
         document.getElementById('buscaAluno').addEventListener('input', aplicarFiltros);
         document.getElementById('filtroTipo').addEventListener('change', aplicarFiltros);
         document.getElementById('filtroStatus').addEventListener('change', aplicarFiltros);
-
         function aplicarFiltros() {
             const termo = document.getElementById('buscaAluno').value.toLowerCase();
             const tipoFiltro = document.getElementById('filtroTipo').value;
@@ -562,8 +516,6 @@
             });
             renderizarLista(filtrado);
         }
-
-        // ========== MODAL DE PAGAMENTO ==========
         async function abrirModalPagamento(idAluno) {
             alunoAtual = alunosCarregados.find(a => a.id === idAluno);
             if (!alunoAtual) return;
@@ -577,7 +529,6 @@
             const dataMat = new Date(dataBase);
             const mesInicio = dataMat.getMonth();
             const anoInicio = dataMat.getFullYear();
-            // Gera meses desde matrícula até o mês atual + 1
             let mesAtualBase = hoje.getMonth();
             let anoAtualBase = hoje.getFullYear();
             const totalMeses = (anoAtualBase - anoInicio)*12 + (mesAtualBase - mesInicio) + 2;
@@ -594,11 +545,8 @@
                 if (jaPago) classe = 'pago';
                 else if (estaAtrasado) classe = 'atrasado';
                 else classe = 'pendente';
-
-                // Verifica se tem desconto
                 const temDesconto = alunoAtual.dados.descontos && alunoAtual.dados.descontos[i];
                 const textoDesconto = temDesconto ? ` 💰 Desconto: R$ ${Number(alunoAtual.dados.descontos[i]).toFixed(2).replace('.',',')}` : '';
-
                 listaMeses.innerHTML += `
                 <div class="opcao-mes ${classe}" data-indice="${i}" 
                      onclick="selecionarMes(this, ${i})">
@@ -613,27 +561,22 @@
             document.getElementById('modalPagamento').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
         function selecionarMes(el, indice) {
             document.querySelectorAll('#listaMeses .opcao-mes').forEach(e => e.style.outline = '');
             el.style.outline = '2px solid var(--vermelho-principal)';
             mesSelecionado = indice;
         }
-
         function fecharModalPagamento() {
             document.getElementById('modalPagamento').style.display = 'none';
             document.body.style.overflow = 'auto';
             alunoAtual = null;
             mesSelecionado = null;
         }
-
         async function confirmarPagamento() {
             if (!alunoAtual) return;
             const novoQtd = (mesSelecionado !== null ? mesSelecionado + 1 : alunoAtual.qtdPagamentos + 1);
             try {
-                await db.collection('alunos').doc(alunoAtual.id).update({
-                    qtdPagamentos: novoQtd
-                });
+                await db.collection('alunos').doc(alunoAtual.id).update({ qtdPagamentos: novoQtd });
                 alert('✅ Pagamento registrado! O próximo vencimento já foi atualizado.');
                 fecharModalPagamento();
                 carregarFinanceiro();
@@ -641,7 +584,6 @@
                 alert('Erro: ' + e.message);
             }
         }
-
         async function removerPagamento() {
             if (!alunoAtual || !confirm('Remover o último pagamento? O vencimento voltará um mês.')) return;
             const novoQtd = Math.max(0, alunoAtual.qtdPagamentos - 1);
@@ -654,18 +596,14 @@
                 alert('Erro: ' + e.message);
             }
         }
-
-        // ========== MODAL DE DESCONTO ==========
         async function abrirModalDesconto(idAluno) {
             alunoDescontoAtual = alunosCarregados.find(a => a.id === idAluno);
             if (!alunoDescontoAtual) return;
-
             document.getElementById('nomeAlunoDesconto').textContent = alunoDescontoAtual.dados.nome;
             const listaMeses = document.getElementById('listaMesesDesconto');
             listaMeses.innerHTML = '';
             mesDescontoSelecionado = null;
             document.getElementById('valorDesconto').value = '';
-
             const diaFixo = alunoDescontoAtual.diaFixo;
             const dataBase = alunoDescontoAtual.dataBase;
             const qtdPag = alunoDescontoAtual.qtdPagamentos;
@@ -673,12 +611,9 @@
             const dataMat = new Date(dataBase);
             const mesInicio = dataMat.getMonth();
             const anoInicio = dataMat.getFullYear();
-
-            // Gera meses desde matrícula até o mês atual + 1
             let mesAtualBase = hoje.getMonth();
             let anoAtualBase = hoje.getFullYear();
             const totalMeses = (anoAtualBase - anoInicio)*12 + (mesAtualBase - mesInicio) + 2;
-
             for (let i = 0; i < totalMeses; i++) {
                 const m = mesInicio + i;
                 let ano = anoInicio + Math.floor(m/12);
@@ -689,7 +624,6 @@
                 const temDesconto = alunoDescontoAtual.dados.descontos && alunoDescontoAtual.dados.descontos[i];
                 const classe = temDesconto ? 'selecionado' : (jaPago ? 'pago' : 'pendente');
                 const textoDesconto = temDesconto ? ` 💰 Desconto atual: R$ ${Number(alunoDescontoAtual.dados.descontos[i]).toFixed(2).replace('.',',')}` : '';
-
                 listaMeses.innerHTML += `
                 <div class="opcao-mes ${classe}" data-indice="${i}" 
                      onclick="selecionarMesDesconto(this, ${i})">
@@ -698,50 +632,37 @@
                     ${jaPago ? ' ✅ PAGO' : ''}
                 </div>`;
             }
-
             document.getElementById('modalDesconto').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
         function selecionarMesDesconto(el, indice) {
             document.querySelectorAll('#listaMesesDesconto .opcao-mes').forEach(e => e.style.outline = '');
             el.style.outline = '2px solid var(--amarelo)';
             mesDescontoSelecionado = indice;
-
-            // Se já tem desconto, preenche o valor
             if (alunoDescontoAtual.dados.descontos && alunoDescontoAtual.dados.descontos[indice]) {
                 document.getElementById('valorDesconto').value = alunoDescontoAtual.dados.descontos[indice];
             } else {
                 document.getElementById('valorDesconto').value = '';
             }
         }
-
         function fecharModalDesconto() {
             document.getElementById('modalDesconto').style.display = 'none';
             document.body.style.overflow = 'auto';
             alunoDescontoAtual = null;
             mesDescontoSelecionado = null;
         }
-
         async function salvarDesconto() {
             if (!alunoDescontoAtual || mesDescontoSelecionado === null) {
                 return alert('⚠️ Selecione o mês primeiro!');
             }
-
             const valor = document.getElementById('valorDesconto').value;
             if (!valor || Number(valor) <= 0) {
                 return alert('⚠️ Digite um valor válido!');
             }
-
             try {
-                // Pega os descontos já salvos ou cria objeto novo
                 const descontos = alunoDescontoAtual.dados.descontos || {};
                 descontos[mesDescontoSelecionado] = Number(valor);
-
-                await db.collection('alunos').doc(alunoDescontoAtual.id).update({
-                    descontos: descontos
-                });
-
+                await db.collection('alunos').doc(alunoDescontoAtual.id).update({ descontos: descontos });
                 alert('✅ Desconto salvo com sucesso!');
                 fecharModalDesconto();
                 carregarFinanceiro();
@@ -749,13 +670,11 @@
                 alert('Erro ao salvar: ' + e.message);
             }
         }
-
         function sair() {
             if (confirm('Deseja sair?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
-
         auth.onAuthStateChanged(u => {
             if (!u) window.location.href = 'login.html';
             else carregarFinanceiro();
