@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
-    <link rel="icon" href="imagens/logopjj.png">
+    <!-- ✅ ÍCONE NA ABA + PWA -->
+    <link rel="icon" type="image/png" href="imagens/logopjj.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#D10000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="PJJ Pará">
     <link rel="apple-touch-icon" href="imagens/logopjj.png">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
@@ -20,6 +23,7 @@
             --vermelho-claro: #FF3B3B;
             --verde: #00C853;
             --amarelo: #FFC107;
+            --laranja: #FF9800;
             --azul: #2563eb;
             --cinza: #6B7280;
         }
@@ -45,6 +49,29 @@
             min-height: 100vh; 
             overflow-y: auto;
             transition: background 0.3s ease, color 0.3s ease;
+        }
+        /* ✅ AVISO DE ANIVERSÁRIO */
+        .aviso-aniversario {
+            background: linear-gradient(135deg, #FFC107, #FF9800);
+            color: #000;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(255,193,7,0.25);
+            animation: balanco 0.6s ease-in-out;
+        }
+        .aviso-aniversario i { font-size: 26px; }
+        @keyframes balanco {
+            0%,100% { transform: rotate(0deg); }
+            20% { transform: rotate(-5deg); }
+            40% { transform: rotate(5deg); }
+            60% { transform: rotate(-3deg); }
+            80% { transform: rotate(3deg); }
         }
         .btn-menu {
             display: none; position: fixed; top: 15px; left: 15px; z-index: 9999;
@@ -106,7 +133,6 @@
         .card:hover { border-color: var(--vermelho-principal); transform: translateY(-3px); }
         .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--texto-cinza); }
         .card .valor { font-size: 32px; font-weight: 800; }
-        .card .descricao { font-size: 13px; color: var(--texto-cinza); margin-top: 8px; }
         .card.azul .valor { color: var(--azul); }
         .card.verde .valor { color: var(--verde); }
         .card.amarelo .valor { color: var(--amarelo); }
@@ -160,6 +186,9 @@
             <button class="btn-atualizar" onclick="carregarDashboard()">🔄 Atualizar</button>
         </div>
 
+        <!-- ✅ AVISO DE ANIVERSÁRIO DO DIA (aparece SOMENTE se houver) -->
+        <div id="avisoAniversario"></div>
+
         <section class="acesso-rapido">
             <h2>Acesso Rápido</h2>
             <div class="grade-botoes">
@@ -181,7 +210,6 @@
                 </a>
             </div>
         </section>
-
         <div class="grade-cards">
             <div class="card azul">
                 <h3>Total de Alunos</h3>
@@ -204,7 +232,6 @@
                 <p class="descricao">Pagamentos em atraso</p>
             </div>
         </div>
-
         <div class="grade-inferior">
             <div class="card-lista">
                 <h2>🎂 Próximos Aniversariantes</h2>
@@ -226,7 +253,6 @@
             </div>
         </div>
     </main>
-
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -239,8 +265,8 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
         let promptInstalacao;
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             promptInstalacao = e;
@@ -252,7 +278,6 @@
             promptInstalacao = null;
             document.getElementById('itemInstalarApp').style.display = 'none';
         }
-
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             if (temaSalvo === 'claro') {
@@ -263,13 +288,14 @@
                 document.body.classList.add('tema-escuro');
             }
         }
-
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
 
+        // ✅ FORMATAR VALOR COM PONTO DE MILHAR: 10.000,00
         function formatarValor(valor) {
-            return `R$ ${Number(valor || 0).toFixed(2).replace('.', ',')}`;
+            const numero = Number(valor || 0);
+            return `R$ ${numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         function pegarData(dataCampo) {
@@ -277,20 +303,26 @@
             if (typeof dataCampo.toDate === 'function') return dataCampo.toDate();
             return new Date(dataCampo);
         }
-
         function formatarData(dataCampo) {
             const d = pegarData(dataCampo);
             if (!d || isNaN(d.getTime())) return '-';
             return d.toLocaleDateString('pt-BR');
         }
-
         function formatarDataAniversario(dataCampo) {
             const d = pegarData(dataCampo);
             if (!d || isNaN(d.getTime())) return null;
             const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
             return `${d.getDate()} de ${meses[d.getMonth()]}`;
         }
-
+        function calcularIdade(dataNascimento) {
+            const hoje = new Date();
+            const nasc = pegarData(dataNascimento);
+            if (!nasc || isNaN(nasc.getTime())) return null;
+            let idade = hoje.getFullYear() - nasc.getFullYear();
+            const m = hoje.getMonth() - nasc.getMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+            return idade;
+        }
         function calcularDataVencimento(diaFixo, dataMatricula, indicePagamento) {
             const dataMat = new Date(dataMatricula);
             let mes = dataMat.getMonth() + indicePagamento;
@@ -298,7 +330,6 @@
             while (mes > 11) { mes -= 12; ano++; }
             return new Date(ano, mes, diaFixo);
         }
-
         function calcularStatusAluno(diaFixo, dataMatricula, qtdPagamentos) {
             const hoje = new Date(); hoje.setHours(0,0,0,0);
             const dataMat = new Date(dataMatricula);
@@ -310,7 +341,6 @@
             const dataVencimentoAtual = new Date(anoPendente, mesPendente, diaFixo);
             return { vencimento: dataVencimentoAtual, emDia: dataVencimentoAtual >= hoje };
         }
-
         async function carregarDashboard() {
             try {
                 const usuario = auth.currentUser;
@@ -318,7 +348,6 @@
                     window.location.href = 'login.html';
                     return;
                 }
-
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
                     document.getElementById('totalAlunos').textContent = '0';
@@ -328,16 +357,16 @@
                     document.getElementById('aniversariantes').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
                     document.getElementById('ultimosCadastros').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
                     document.getElementById('alunosPorFaixa').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
+                    document.getElementById('avisoAniversario').innerHTML = '';
                     return;
                 }
-
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
                 document.getElementById('totalAlunos').textContent = alunos.length;
 
                 // ✅ DETECTA SEMESTRE ATUAL
                 const hoje = new Date();
-                const semestreAtual = (hoje.getMonth() <= 5) ? 1 : 2; // 0-5 = 1º, 6-11 = 2º
+                const semestreAtual = (hoje.getMonth() <= 5) ? 1 : 2;
                 const anoAtual = hoje.getFullYear();
 
                 // ✅ ATUALIZA TÍTULO E DESCRIÇÃO DO CARD
@@ -348,17 +377,14 @@
 
                 let recebidoSemestreAtual = 0;
                 let pendente = 0, atrasado = 0;
-
                 alunos.forEach(a => {
                     const d = a.dados;
                     if (d.tipo === 'Bolsista') return;
-
                     let diaFixo = null, dataBase = null;
                     if (d.dataMatricula) { diaFixo = d.dataMatricula.toDate().getDate(); dataBase = d.dataMatricula.toDate(); }
                     else if (d.dataVencimento) { diaFixo = d.dataVencimento.toDate().getDate(); dataBase = d.dataVencimento.toDate(); }
                     else if (d.dataInicioAula) { diaFixo = d.dataInicioAula.toDate().getDate(); dataBase = d.dataInicioAula.toDate(); }
                     if (!diaFixo || !dataBase) return;
-
                     const qtdPag = Number(d.qtdPagamentos || 0);
                     const valorPlano = Number(d.valorFinal || d.valorPlano || 0);
 
@@ -368,14 +394,11 @@
                         const anoPag = dataPagamento.getFullYear();
                         const mesPag = dataPagamento.getMonth();
                         const semestrePag = (mesPag <= 5) ? 1 : 2;
-
-                        // SÓ SOMA SE FOR O SEMESTRE E O ANO CORRENTES
                         if (anoPag === anoAtual && semestrePag === semestreAtual) {
                             const desconto = (d.descontos && d.descontos[i]) ? Number(d.descontos[i]) : 0;
                             recebidoSemestreAtual += (valorPlano - desconto);
                         }
                     }
-
                     const status = calcularStatusAluno(diaFixo, dataBase, qtdPag);
                     if (status.emDia) {
                         pendente += valorPlano;
@@ -384,9 +407,29 @@
                     }
                 });
 
+                // ✅ VALORES FORMATADOS COM PONTO DE MILHAR
                 document.getElementById('valorRecebido').textContent = formatarValor(recebidoSemestreAtual);
                 document.getElementById('valorPendente').textContent = formatarValor(pendente);
                 document.getElementById('valorAtrasado').textContent = formatarValor(atrasado);
+
+                // ✅ AVISO DE ANIVERSÁRIO DO DIA
+                const avisoEl = document.getElementById('avisoAniversario');
+                avisoEl.innerHTML = '';
+                alunos.forEach(a => {
+                    const nasc = pegarData(a.dados.dataNascimento);
+                    if (!nasc || isNaN(nasc.getTime())) return;
+                    if (nasc.getDate() === hoje.getDate() && nasc.getMonth() === hoje.getMonth()) {
+                        const idade = calcularIdade(a.dados.dataNascimento);
+                        avisoEl.innerHTML = `
+                            <div class="aviso-aniversario">
+                                <i class="fas fa-birthday-cake"></i>
+                                <div>
+                                    <strong>🎉 Hoje é aniversário do aluno(a) ${a.dados.nome || a.dados.nomeCompleto}!</strong><br>
+                                    Ele(a) está fazendo ${idade} anos. Deseje os parabéns a ele(a)!
+                                </div>
+                            </div>`;
+                    }
+                });
 
                 // === ANIVERSARIANTES ===
                 const aniversarios = alunos.map(a => {
@@ -456,13 +499,11 @@
                 alert('Erro ao carregar dados: ' + erro.message);
             }
         }
-
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
-
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
