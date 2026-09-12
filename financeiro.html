@@ -65,7 +65,11 @@
             display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-bottom: 25px;
         }
         @media (max-width: 1400px) { .grade-cards { grid-template-columns: repeat(4, 1fr); } }
-        @media (max-width: 992px) { .grade-cards { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 992px) { 
+            .conteudo { margin-left: 0; width: 100%; padding: 80px 15px 15px; } 
+            .btn-menu { display: flex; align-items: center; justify-content: center; } 
+            .menu-lateral { transform: translateX(-100%); } 
+        }
         @media (max-width: 600px) { .grade-cards { grid-template-columns: repeat(2, 1fr); } }
         .card-info {
             background: var(--fundo-card); border: 1px solid var(--borda); border-radius: 10px;
@@ -268,6 +272,7 @@
             <span style="margin-left:auto; font-size:11px; color:var(--texto-cinza)">O vencimento avança SOMENTE após o pagamento do mês atual</span>
         </div>
     </main>
+
     <div id="modalPagamento" class="fundo-modal">
         <div class="modal">
             <h3 id="nomeAlunoPagamento">Marcar Pagamento</h3>
@@ -280,6 +285,7 @@
             </div>
         </div>
     </div>
+
     <div id="modalDesconto" class="fundo-modal">
         <div class="modal">
             <h3>💰 Aplicar Desconto</h3>
@@ -303,6 +309,7 @@
             </div>
         </div>
     </div>
+
     <script>
         const firebaseConfig = {
           apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -315,11 +322,13 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+
         let alunosCarregados = [];
         let alunoAtual = null;
         let alunoDescontoAtual = null;
         let mesSelecionado = null;
         let mesDescontoSelecionado = null;
+
         const nomesMeses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
         const diasSemana = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
         
@@ -360,12 +369,10 @@
             return { classe: 'status-atrasado', texto: texto, mesesAtraso: mesesAtraso, dataVencimento: dataVencimentoAtual, emDia: false };
         }
         
-        // ✅ Calcula: Aluno paga = Valor Integral − Valor do Desconto DADO
         function calcularValorPago() {
             if (!alunoDescontoAtual) return;
             const valorPlano = Number(alunoDescontoAtual.dados.valorFinal || alunoDescontoAtual.dados.valorPlano || 0);
-            const descontoDado = Number(document.getElementById('valorDescontoDado').value || 0);
-            
+            const descontoDado = Number(document.getElementById('valorDescontoDado').value.replace(',', '.') || 0);
             if (descontoDado > valorPlano) {
                 document.getElementById('valorPagoCalculado').value = '⚠️ Desconto maior que o plano!';
                 return;
@@ -408,12 +415,10 @@
                     const valorPlano = Number(a.dados.valorFinal || a.dados.valorPlano || 0);
                     receitaPrevista += valorPlano;
                     if (a.status.emDia) emdia++; else atrasados++;
-                    
                     if (a.qtdPagamentos > 0) {
                         const indiceUltimo = a.qtdPagamentos - 1;
                         const dataUltimo = calcularDataVencimento(a.diaFixo, a.dataBase, indiceUltimo);
                         if (dataUltimo.getMonth() === mesAtual && dataUltimo.getFullYear() === anoAtual) {
-                            // ✅ Salva e mostra o VALOR DO DESCONTO CONCEDIDO
                             const descontoDado = (a.dados.descontos && a.dados.descontos[indiceUltimo]) ? Number(a.dados.descontos[indiceUltimo]) : 0;
                             totalDescontoConcedido += descontoDado;
                             recebidoMes += (valorPlano - descontoDado);
@@ -615,10 +620,12 @@
         }
         async function salvarDesconto() {
             if (!alunoDescontoAtual || mesDescontoSelecionado === null) return alert('⚠️ Selecione o mês!');
-            const descontoDado = Number(document.getElementById('valorDescontoDado').value);
+            const descontoDado = Number(document.getElementById('valorDescontoDado').value.replace(',', '.'));
             if (isNaN(descontoDado) || descontoDado < 0) return alert('⚠️ Digite um valor válido!');
+            const valorPlano = Number(alunoDescontoAtual.dados.valorFinal || alunoDescontoAtual.dados.valorPlano || 0);
+            if (descontoDado > valorPlano) return alert('⚠️ Desconto não pode ser maior que o valor do plano!');
             const descontos = alunoDescontoAtual.dados.descontos || {};
-            descontos[mesDescontoSelecionado] = descontoDado;
+            descontos[mesDescontoSelecionado] = descontoDado.toFixed(2);
             await db.collection('alunos').doc(alunoDescontoAtual.id).update({ descontos });
             alert('✅ Desconto salvo! O valor salvo é o DESCONTO CONCEDIDO.');
             fecharModalDesconto();
