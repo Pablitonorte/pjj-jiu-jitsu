@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - PJJ Pará Jiu-Jitsu</title>
     <link rel="icon" href="imagens/logopjj.png">
-    <!-- ✅ PWA COMPLETO: Android + iPhone - Tela cheia sem barra + Ícone personalizado -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#D10000">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -87,7 +86,6 @@
             border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s;
         }
         .btn-atualizar:hover { background: #b00000; }
-        /* === BOTÕES DE ACESSO RÁPIDO === */
         .acesso-rapido { margin-bottom: 30px; }
         .acesso-rapido h2 { font-size: 16px; font-weight: 700; margin-bottom: 15px; color: var(--texto-cinza); }
         .grade-botoes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
@@ -162,7 +160,6 @@
             <button class="btn-atualizar" onclick="carregarDashboard()">🔄 Atualizar</button>
         </div>
 
-        <!-- 🚀 BOTÕES DE ACESSO RÁPIDO -->
         <section class="acesso-rapido">
             <h2>Acesso Rápido</h2>
             <div class="grade-botoes">
@@ -192,9 +189,9 @@
                 <p class="descricao">Alunos cadastrados</p>
             </div>
             <div class="card verde">
-                <h3>Total Recebido</h3>
+                <h3 id="tituloRecebido">Total Recebido</h3>
                 <div class="valor" id="valorRecebido">—</div>
-                <p class="descricao">Valor efetivamente pago (com descontos)</p>
+                <p class="descricao" id="descRecebido">Período atual</p>
             </div>
             <div class="card amarelo">
                 <h3>Total Pendente</h3>
@@ -294,7 +291,6 @@
             return `${d.getDate()} de ${meses[d.getMonth()]}`;
         }
 
-        // ✅ MESMA LÓGICA EXATA DO FINANCEIRO.HTML
         function calcularDataVencimento(diaFixo, dataMatricula, indicePagamento) {
             const dataMat = new Date(dataMatricula);
             let mes = dataMat.getMonth() + indicePagamento;
@@ -326,12 +322,12 @@
                 const snapshot = await db.collection('alunos').get();
                 if (snapshot.empty) {
                     document.getElementById('totalAlunos').textContent = '0';
-                    document.getElementById('aniversariantes').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
-                    document.getElementById('ultimosCadastros').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
-                    document.getElementById('alunosPorFaixa').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
                     document.getElementById('valorRecebido').textContent = 'R$ 0,00';
                     document.getElementById('valorPendente').textContent = 'R$ 0,00';
                     document.getElementById('valorAtrasado').textContent = 'R$ 0,00';
+                    document.getElementById('aniversariantes').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
+                    document.getElementById('ultimosCadastros').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
+                    document.getElementById('alunosPorFaixa').innerHTML = '<p class="vazio">Nenhum aluno cadastrado</p>';
                     return;
                 }
 
@@ -339,9 +335,19 @@
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
                 document.getElementById('totalAlunos').textContent = alunos.length;
 
-                let recebido = 0, pendente = 0, atrasado = 0;
+                // ✅ DETECTA SEMESTRE ATUAL
                 const hoje = new Date();
-                const mesAtual = hoje.getMonth(), anoAtual = hoje.getFullYear();
+                const semestreAtual = (hoje.getMonth() <= 5) ? 1 : 2; // 0-5 = 1º, 6-11 = 2º
+                const anoAtual = hoje.getFullYear();
+
+                // ✅ ATUALIZA TÍTULO E DESCRIÇÃO DO CARD
+                document.getElementById('tituloRecebido').textContent = `Total Recebido — ${semestreAtual}º Semestre`;
+                document.getElementById('descRecebido').textContent = semestreAtual === 1 
+                    ? `${anoAtual} · Janeiro a Junho` 
+                    : `${anoAtual} · Julho a Dezembro`;
+
+                let recebidoSemestreAtual = 0;
+                let pendente = 0, atrasado = 0;
 
                 alunos.forEach(a => {
                     const d = a.dados;
@@ -356,13 +362,20 @@
                     const qtdPag = Number(d.qtdPagamentos || 0);
                     const valorPlano = Number(d.valorFinal || d.valorPlano || 0);
 
-                    // ✅ RECEBIDO = soma do valor pago (plano - desconto) de todos os meses pagos
+                    // ✅ SOMA SOMENTE O SEMESTRE ATUAL
                     for (let i = 0; i < qtdPag; i++) {
-                        const desconto = (d.descontos && d.descontos[i]) ? Number(d.descontos[i]) : 0;
-                        recebido += (valorPlano - desconto);
+                        const dataPagamento = calcularDataVencimento(diaFixo, dataBase, i);
+                        const anoPag = dataPagamento.getFullYear();
+                        const mesPag = dataPagamento.getMonth();
+                        const semestrePag = (mesPag <= 5) ? 1 : 2;
+
+                        // SÓ SOMA SE FOR O SEMESTRE E O ANO CORRENTES
+                        if (anoPag === anoAtual && semestrePag === semestreAtual) {
+                            const desconto = (d.descontos && d.descontos[i]) ? Number(d.descontos[i]) : 0;
+                            recebidoSemestreAtual += (valorPlano - desconto);
+                        }
                     }
 
-                    // ✅ Status do próximo vencimento
                     const status = calcularStatusAluno(diaFixo, dataBase, qtdPag);
                     if (status.emDia) {
                         pendente += valorPlano;
@@ -371,7 +384,7 @@
                     }
                 });
 
-                document.getElementById('valorRecebido').textContent = formatarValor(recebido);
+                document.getElementById('valorRecebido').textContent = formatarValor(recebidoSemestreAtual);
                 document.getElementById('valorPendente').textContent = formatarValor(pendente);
                 document.getElementById('valorAtrasado').textContent = formatarValor(atrasado);
 
@@ -380,7 +393,6 @@
                     const d = a.dados;
                     const nasc = pegarData(d.dataNascimento);
                     if (!nasc || isNaN(nasc.getTime())) return null;
-                    const hoje = new Date();
                     const proximo = new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate());
                     if (proximo < hoje) proximo.setFullYear(hoje.getFullYear() + 1);
                     return {
@@ -442,9 +454,6 @@
             } catch (erro) {
                 console.error('ERRO:', erro);
                 alert('Erro ao carregar dados: ' + erro.message);
-                document.getElementById('aniversariantes').innerHTML = `<p class="vazio">Erro: ${erro.message}</p>`;
-                document.getElementById('ultimosCadastros').innerHTML = `<p class="vazio">Erro ao carregar</p>`;
-                document.getElementById('alunosPorFaixa').innerHTML = `<p class="vazio">Erro ao carregar</p>`;
             }
         }
 
