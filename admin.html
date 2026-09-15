@@ -13,7 +13,6 @@
     <meta name="apple-mobile-web-app-title" content="PJJ Pará">
     <link rel="apple-touch-icon" href="imagens/logopjj.png">
     <meta name="mobile-web-app-capable" content="yes">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
@@ -185,10 +184,8 @@
             <h1 class="titulo-pagina">Painel de Controle</h1>
             <button class="btn-atualizar" onclick="carregarDashboard()">🔄 Atualizar</button>
         </div>
-
         <!-- ✅ AVISO DE ANIVERSÁRIO DO DIA (aparece SOMENTE se houver) -->
         <div id="avisoAniversario"></div>
-
         <section class="acesso-rapido">
             <h2>Acesso Rápido</h2>
             <div class="grade-botoes">
@@ -266,7 +263,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let promptInstalacao;
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             promptInstalacao = e;
@@ -291,13 +287,11 @@
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
-
         // ✅ FORMATAR VALOR COM PONTO DE MILHAR: 10.000,00
         function formatarValor(valor) {
             const numero = Number(valor || 0);
             return `R$ ${numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
-
         function pegarData(dataCampo) {
             if (!dataCampo) return null;
             if (typeof dataCampo.toDate === 'function') return dataCampo.toDate();
@@ -308,19 +302,21 @@
             if (!d || isNaN(d.getTime())) return '-';
             return d.toLocaleDateString('pt-BR');
         }
+        // ✅ CORRIGIDO: getUTCDate / getUTCMonth — sem erro de fuso horário!
         function formatarDataAniversario(dataCampo) {
             const d = pegarData(dataCampo);
             if (!d || isNaN(d.getTime())) return null;
             const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-            return `${d.getDate()} de ${meses[d.getMonth()]}`;
+            return `${d.getUTCDate()} de ${meses[d.getUTCMonth()]}`;
         }
         function calcularIdade(dataNascimento) {
             const hoje = new Date();
             const nasc = pegarData(dataNascimento);
             if (!nasc || isNaN(nasc.getTime())) return null;
             let idade = hoje.getFullYear() - nasc.getFullYear();
-            const m = hoje.getMonth() - nasc.getMonth();
-            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+            // ✅ CORRIGIDO: compara com datas corretas
+            const m = hoje.getMonth() - nasc.getUTCMonth();
+            if (m < 0 || (m === 0 && hoje.getDate() < nasc.getUTCDate())) idade--;
             return idade;
         }
         function calcularDataVencimento(diaFixo, dataMatricula, indicePagamento) {
@@ -363,18 +359,15 @@
                 const alunos = [];
                 snapshot.forEach(doc => alunos.push({ id: doc.id, dados: doc.data() }));
                 document.getElementById('totalAlunos').textContent = alunos.length;
-
                 // ✅ DETECTA SEMESTRE ATUAL
                 const hoje = new Date();
                 const semestreAtual = (hoje.getMonth() <= 5) ? 1 : 2;
                 const anoAtual = hoje.getFullYear();
-
                 // ✅ ATUALIZA TÍTULO E DESCRIÇÃO DO CARD
                 document.getElementById('tituloRecebido').textContent = `Total Recebido — ${semestreAtual}º Semestre`;
                 document.getElementById('descRecebido').textContent = semestreAtual === 1 
                     ? `${anoAtual} · Janeiro a Junho` 
                     : `${anoAtual} · Julho a Dezembro`;
-
                 let recebidoSemestreAtual = 0;
                 let pendente = 0, atrasado = 0;
                 alunos.forEach(a => {
@@ -387,7 +380,6 @@
                     if (!diaFixo || !dataBase) return;
                     const qtdPag = Number(d.qtdPagamentos || 0);
                     const valorPlano = Number(d.valorFinal || d.valorPlano || 0);
-
                     // ✅ SOMA SOMENTE O SEMESTRE ATUAL
                     for (let i = 0; i < qtdPag; i++) {
                         const dataPagamento = calcularDataVencimento(diaFixo, dataBase, i);
@@ -406,19 +398,18 @@
                         atrasado += valorPlano;
                     }
                 });
-
                 // ✅ VALORES FORMATADOS COM PONTO DE MILHAR
                 document.getElementById('valorRecebido').textContent = formatarValor(recebidoSemestreAtual);
                 document.getElementById('valorPendente').textContent = formatarValor(pendente);
                 document.getElementById('valorAtrasado').textContent = formatarValor(atrasado);
-
-                // ✅ AVISO DE ANIVERSÁRIO DO DIA
+                // ✅ AVISO DE ANIVERSÁRIO DO DIA — CORRIGIDO COM getUTCDate/getUTCMonth
                 const avisoEl = document.getElementById('avisoAniversario');
                 avisoEl.innerHTML = '';
                 alunos.forEach(a => {
                     const nasc = pegarData(a.dados.dataNascimento);
                     if (!nasc || isNaN(nasc.getTime())) return;
-                    if (nasc.getDate() === hoje.getDate() && nasc.getMonth() === hoje.getMonth()) {
+                    // ✅ COMPARAÇÃO CORRIGIDA — usa getUTCDate e getUTCMonth
+                    if (nasc.getUTCDate() === hoje.getDate() && nasc.getUTCMonth() === hoje.getMonth()) {
                         const idade = calcularIdade(a.dados.dataNascimento);
                         avisoEl.innerHTML = `
                             <div class="aviso-aniversario">
@@ -430,13 +421,12 @@
                             </div>`;
                     }
                 });
-
                 // === ANIVERSARIANTES ===
                 const aniversarios = alunos.map(a => {
                     const d = a.dados;
                     const nasc = pegarData(d.dataNascimento);
                     if (!nasc || isNaN(nasc.getTime())) return null;
-                    const proximo = new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate());
+                    const proximo = new Date(hoje.getFullYear(), nasc.getUTCMonth(), nasc.getUTCDate());
                     if (proximo < hoje) proximo.setFullYear(hoje.getFullYear() + 1);
                     return {
                         nome: d.nome || d.nomeCompleto || 'Sem nome',
@@ -455,7 +445,6 @@
                     </div>`;
                 });
                 document.getElementById('aniversariantes').innerHTML = htmlAniver || '<p class="vazio">Sem dados de nascimento</p>';
-
                 // === ÚLTIMOS CADASTROS ===
                 alunos.sort((a, b) => {
                     const dataA = pegarData(a.dados.dataCadastro || a.dados.dataMatricula);
@@ -475,7 +464,6 @@
                     </div>`;
                 });
                 document.getElementById('ultimosCadastros').innerHTML = htmlUltimos || '<p class="vazio">Sem cadastros</p>';
-
                 // === ALUNOS POR FAIXA ===
                 const faixas = { Branca: 0, Cinza: 0, Amarela: 0, Laranja: 0, Verde: 0, Azul: 0, Roxa: 0, Marrom: 0, Preta: 0 };
                 alunos.forEach(a => {
@@ -493,7 +481,6 @@
                     }
                 });
                 document.getElementById('alunosPorFaixa').innerHTML = htmlFaixas || '<p class="vazio">Sem dados de faixa</p>';
-
             } catch (erro) {
                 console.error('ERRO:', erro);
                 alert('Erro ao carregar dados: ' + erro.message);
