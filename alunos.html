@@ -214,7 +214,6 @@
                 <i class="fas fa-plus"></i> Novo Aluno
             </button>
         </div>
-
         <div class="card-filtro">
             <input type="text" id="buscaAluno" placeholder="🔍 Buscar por nome, CPF ou responsável...">
             <select id="filtroTipo">
@@ -233,7 +232,6 @@
                 <option value="Anual">Anual</option>
             </select>
         </div>
-
         <table class="tabela">
             <thead>
                 <tr>
@@ -251,7 +249,6 @@
             </tbody>
         </table>
     </main>
-
     <div id="modalCadastro" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalCadastro()">&times;</button>
@@ -309,7 +306,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="secao">
                     <h3>Plano e Valores</h3>
                     <p class="aviso-valores">💡 Valores carregados das Configurações do sistema</p>
@@ -318,7 +314,6 @@
                             <label>Período do Plano *</label>
                             <select id="periodoAluno" onchange="atualizarValorPlano()" required>
                                 <option value="">Selecione</option>
-                                <!-- Preenchido automaticamente -->
                             </select>
                         </div>
                         <div class="campo">
@@ -348,12 +343,10 @@
                         </div>
                     </div>
                 </div>
-
                 <button type="submit" class="btn-salvar" style="width:100%;padding:14px;background:var(--verde);color:white;border:none;border-radius:6px;font-weight:700;font-size:16px;cursor:pointer;">Salvar Aluno</button>
             </form>
         </div>
     </div>
-
     <div id="modalInfo" class="fundo-modal">
         <div class="modal">
             <button class="fechar-modal" onclick="fecharModalInfo()">&times;</button>
@@ -361,7 +354,6 @@
             <div id="conteudoInfo"></div>
         </div>
     </div>
-
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAwbIaioYPlQsHEz2bNh5ATi3cGicu12bw",
@@ -374,18 +366,13 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
-        // ✅ VALORES Vêm das CONFIGURAÇÕES (padrão caso não haja salvo)
         let valoresPlanos = {
             'Mensal': 90.00,
             'Trimestral': 240.00,
             'Semestral': 450.00,
             'Anual': 820.00
         };
-
         let alunosCarregados = [];
-
-        // ✅ CARREGA VALORES DAS CONFIGURAÇÕES
         async function carregarValoresConfiguracoes() {
             try {
                 const doc = await db.collection('configuracoes').doc('geral').get();
@@ -399,11 +386,8 @@
             } catch (erro) {
                 console.warn('Usando valores padrão:', erro);
             }
-            // ✅ Atualiza o select com os valores carregados
             preencherOpcoesPlanos();
         }
-
-        // ✅ PREENCHE OPÇÕES DO PLANO COM VALORES ATUAIS
         function preencherOpcoesPlanos() {
             const select = document.getElementById('periodoAluno');
             select.innerHTML = '<option value="">Selecione</option>';
@@ -414,7 +398,6 @@
                 select.appendChild(opt);
             }
         }
-
         function carregarTema() {
             const temaSalvo = localStorage.getItem('tema') || 'escuro';
             const corpo = document.body;
@@ -426,7 +409,6 @@
                 corpo.classList.add('tema-escuro');
             }
         }
-
         function formatarCPF(cpf) {
             if (!cpf) return '-';
             const apenasNumeros = cpf.replace(/\D/g, '');
@@ -435,20 +417,17 @@
             }
             return apenasNumeros || '-';
         }
-
         function formatarTelefone(tel) {
             if (!tel) return '-';
             const n = tel.replace(/\D/g, '');
             if (n.length === 11) return `(${n.slice(0,2)}) ${n.slice(2,7)}-${n.slice(7)}`;
             return tel;
         }
-
         function formatarData(data) {
             if (!data) return '-';
             if (data.toDate) return data.toDate().toLocaleDateString('pt-BR');
             return new Date(data).toLocaleDateString('pt-BR');
         }
-
         document.getElementById('cpfAluno').addEventListener('input', function() {
             const apenasNumeros = this.value.replace(/\D/g, '');
             if (apenasNumeros.length <= 11) {
@@ -459,25 +438,20 @@
                 this.value = cpfFormatado;
             }
         });
-
         function abrirFecharMenu() {
             document.getElementById('menuLateral').classList.toggle('aberto');
         }
-
-        // ✅ CALCULA VALOR FINAL COM DESCONTO
         function atualizarValorPlano() {
             const tipo = document.getElementById('tipoAluno').value;
             const periodo = document.getElementById('periodoAluno').value;
             const desconto = parseFloat(document.getElementById('descontoAluno').value) || 0;
             const campoValor = document.getElementById('valorFinalAluno');
-
             if (!tipo || !periodo) {
                 campoValor.value = 'Selecione o tipo e o plano';
                 campoValor.className = 'valor-final valor-vazio';
                 campoValor.removeAttribute('data-valor');
                 return;
             }
-
             if (tipo === 'Bolsista') {
                 campoValor.value = 'GRÁTIS';
                 campoValor.className = 'valor-final valor-gratis';
@@ -492,7 +466,6 @@
                 campoValor.dataset.valor = valorFinal;
             }
         }
-
         let menuAberto = null;
         document.addEventListener('click', (e) => {
             if (menuAberto && !e.target.closest('.acoes')) {
@@ -500,13 +473,11 @@
                 menuAberto = null;
             }
         });
-
         function alternarMenu(menuEl) {
             if (menuAberto && menuAberto !== menuEl) menuAberto.classList.remove('aberto');
             menuEl.classList.toggle('aberto');
             menuAberto = menuEl.classList.contains('aberto') ? menuEl : null;
         }
-
         function abrirInfoAluno(id) {
             const aluno = alunosCarregados.find(a => a.id === id);
             if (!aluno) return;
@@ -567,12 +538,10 @@
             document.getElementById('modalInfo').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
         function fecharModalInfo() {
             document.getElementById('modalInfo').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-
         async function carregarAlunos() {
             const lista = document.getElementById('listaAlunos');
             lista.innerHTML = '<tr><td colspan="7" class="vazio">🔄 Carregando alunos...</td></tr>';
@@ -624,11 +593,9 @@
                 lista.innerHTML = `<tr><td colspan="7" class="vazio">Erro: ${erro.message}</td></tr>`;
             }
         }
-
         function abrirDeclaracao(nome, cpf) {
             window.open(`declaracao.html?nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`, '_blank');
         }
-
         function abrirModalCadastro() {
             document.getElementById('idAluno').value = '';
             document.getElementById('tituloModal').textContent = 'Cadastrar Novo Aluno';
@@ -640,12 +607,10 @@
             document.getElementById('modalCadastro').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
-
         function fecharModalCadastro() {
             document.getElementById('modalCadastro').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
-
         async function editarAluno(id) {
             try {
                 const doc = await db.collection('alunos').doc(id).get();
@@ -680,7 +645,6 @@
                 alert('Erro ao carregar: ' + erro.message);
             }
         }
-
         async function excluirAluno(id) {
             if (!confirm('Tem certeza que deseja excluir? Essa ação não pode ser desfeita.')) return;
             try {
@@ -690,21 +654,22 @@
                 alert('Erro ao excluir: ' + erro.message);
             }
         }
-
         document.getElementById('formAluno').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('idAluno').value;
             const valorFinal = parseFloat(document.getElementById('valorFinalAluno').dataset.valor) || 0;
             const cpfSemFormatacao = document.getElementById('cpfAluno').value.replace(/\D/g, '');
+            const dataNascimentoValor = document.getElementById('nascimentoAluno').value;
+            const dataVencimentoValor = document.getElementById('matriculaAluno').value;
             const dados = {
                 nome: document.getElementById('nomeAluno').value.trim(),
                 cpf: cpfSemFormatacao,
                 tipo: document.getElementById('tipoAluno').value,
-                dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('nascimentoAluno').value)),
+                dataNascimento: firebase.firestore.Timestamp.fromDate(new Date(dataNascimentoValor + 'T00:00:00')),
                 responsavel: document.getElementById('responsavelAluno').value.trim(),
                 telefone: document.getElementById('telefoneAluno').value.trim(),
                 email: document.getElementById('emailAluno').value.trim(),
-                dataVencimento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('matriculaAluno').value)),
+                dataVencimento: firebase.firestore.Timestamp.fromDate(new Date(dataVencimentoValor + 'T00:00:00')),
                 periodo: document.getElementById('periodoAluno').value,
                 desconto: parseFloat(document.getElementById('descontoAluno').value) || 0,
                 valorPlano: valorFinal,
@@ -731,7 +696,6 @@
                 alert('Erro ao salvar: ' + erro.message);
             }
         });
-
         document.getElementById('buscaAluno').addEventListener('input', () => {
             const termo = document.getElementById('buscaAluno').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -739,7 +703,6 @@
                 linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
             });
         });
-
         document.getElementById('filtroTipo').addEventListener('change', () => {
             const tipo = document.getElementById('filtroTipo').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -747,7 +710,6 @@
                 linha.style.display = !tipo || linha.textContent.toLowerCase().includes(tipo) ? '' : 'none';
             });
         });
-
         document.getElementById('filtroPeriodo').addEventListener('change', () => {
             const periodo = document.getElementById('filtroPeriodo').value.toLowerCase();
             document.querySelectorAll('#listaAlunos tr').forEach(linha => {
@@ -755,19 +717,17 @@
                 linha.style.display = !periodo || linha.textContent.toLowerCase().includes(periodo) ? '' : 'none';
             });
         });
-
         function sair() {
             if (confirm('Deseja sair do sistema?')) {
                 auth.signOut().then(() => window.location.href = 'login.html');
             }
         }
-
         auth.onAuthStateChanged(usuario => {
             if (!usuario) {
                 window.location.href = 'login.html';
             } else {
                 carregarTema();
-                carregarValoresConfiguracoes(); // ✅ Carrega valores antes de tudo
+                carregarValoresConfiguracoes();
                 carregarAlunos();
             }
         });
